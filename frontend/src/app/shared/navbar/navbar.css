@@ -1,36 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .tudo {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-family: sans-serif;
+    padding: 15px 40px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+    height: 45px;
+    width: auto;
 }
 
 .navbar {
     display: flex;
     list-style: none;
-    gap: 60px;
+    gap: 40px;
 }
 
-.navbar a{
+.navbar a {
     text-decoration: none;
-    color: black;
+    color: #333;
+    font-weight: 500;
+    transition: 0.2s;
 }
 
-.botoes{
+.navbar a:hover {
+    color: #0056b3;
+}
+
+.botoes {
     display: flex;
-    gap: 20px;
+    gap: 15px;
+    align-items: center;
 }
-
 
 #btn-login {
-   border: none;
-   cursor: pointer;
-   font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    font-size: 15px;
 }
 
 #btn-cadastro {
-   border: none;
-   cursor: pointer;
-   font-weight: bold;
-   border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 20px;
+    padding: 10px 24px;
+    background-color: #0056b3;
+    color: white;
+    transition: 0.2s;
+}
+
+#btn-cadastro:hover {
+    background-color: #004494;
 }
