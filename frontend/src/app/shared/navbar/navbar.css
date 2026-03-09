@@ -1,0 +1,36 @@
+.tudo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: sans-serif;
+}
+
+.navbar {
+    display: flex;
+    list-style: none;
+    gap: 60px;
+}
+
+.navbar a{
+    text-decoration: none;
+    color: black;
+}
+
+.botoes{
+    display: flex;
+    gap: 20px;
+}
+
+
+#btn-login {
+   border: none;
+   cursor: pointer;
+   font-weight: bold;
+}
+
+#btn-cadastro {
+   border: none;
+   cursor: pointer;
+   font-weight: bold;
+   border-radius: 20px;
+}
