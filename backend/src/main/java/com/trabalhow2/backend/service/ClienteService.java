@@ -7,6 +7,8 @@ import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
@@ -15,11 +17,13 @@ import java.util.Random;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final EmailService emailService;
 
     @Autowired
-    public ClienteService(ClienteRepository clienteRepository, UsuarioRepository usuarioRepository) {
+    public ClienteService(ClienteRepository clienteRepository, UsuarioRepository usuarioRepository, EmailService emailService) {
         this.clienteRepository = clienteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.emailService = emailService;
     }
 
 
@@ -63,7 +67,7 @@ public class ClienteService {
         //Ainda não sei fazer
     }
 
-
+    @Transactional
     public void cadastroCliente(CadastroClienteRequest request) {
         //Falta validação dos campos
         Usuario usuario;
@@ -75,6 +79,16 @@ public class ClienteService {
         usuarioRepository.save(usuario);
         cliente = criarCliente(request, usuario);
         clienteRepository.save(cliente);
-        //Falta fazer mandar por email
+
+        try {
+            emailService.sendEmail(
+                    request.getEmail(),
+                    "Cadastro realizado!",
+                    "Seu cadastro foi realizado com sucesso. Sua senha temporária é: " + senhaTemporaria
+            );
+        } catch (MailException e) {
+            System.err.println("Erro ao enviar senha para o e-mail: " + e.getMessage());
+            throw new RuntimeException("Falha ao enviar e-mail. Cadastro cancelado.", e);
+        }
     }
 }
