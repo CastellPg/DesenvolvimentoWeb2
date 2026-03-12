@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     Optional<Cliente> findByCpf(String cpf);
 
-    boolean existByCpf(@NotBlank String cpf);
+    boolean existsByCpf(@NotBlank String cpf);
 }

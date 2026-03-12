@@ -80,6 +80,7 @@ public class ClienteService {
     }
 
     private void validarCadastro(CadastroClienteRequest request) {
+        //Mais validação colocar aqui
         if(request.getNome() == null || request.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
         }
