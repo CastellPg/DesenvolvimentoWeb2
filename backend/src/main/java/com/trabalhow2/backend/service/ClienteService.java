@@ -5,10 +5,15 @@ import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.UsuarioRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Random;
@@ -52,7 +57,7 @@ public class ClienteService {
     }
 
     private String gerarSenhaTemporaria() {
-        Random random = new Random();
+        final Random random = new SecureRandom();
         return Integer.toString(random.nextInt(9000) + 1000);
     }
 
@@ -64,20 +69,43 @@ public class ClienteService {
     }
 
     private String gerarHash(String senhaTemporaria, String salt) {
-        //Ainda não sei fazer
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            String senhaComSalt = senhaTemporaria + salt;
+            byte[] hashBytes = md.digest(senhaComSalt.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hashBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erro ao gerar hash da senha.", e);
+        }
+    }
+
+    private void validarCadastro(CadastroClienteRequest request) {
+        if(request.getNome() == null || request.getNome().isBlank()) {
+            throw new IllegalArgumentException("Nome é obrigatório.");
+        }
+        if(request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email é obrigatório.");
+        }
+        if(request.getCpf() == null || request.getCpf().isBlank()) {
+            throw new IllegalArgumentException("CPF é obrigatório.");
+        }
+        if(usuarioRepository.existsByEmail(request.getEmail())){
+            throw new IllegalArgumentException("Email já cadastrado.");
+        }
+        if(clienteRepository.existsByCpf(request.getCpf())){
+            throw new IllegalArgumentException("CPF já cadastrado.");
+        }
     }
 
     @Transactional
     public void cadastroCliente(CadastroClienteRequest request) {
-        //Falta validação dos campos
-        Usuario usuario;
-        Cliente cliente;
+        validarCadastro(request);
         String senhaTemporaria = gerarSenhaTemporaria();
         String salt = gerarSalt();
         String hash = gerarHash(senhaTemporaria, salt);
-        usuario = criarUsuario(request, hash, salt);
+        Usuario usuario = criarUsuario(request, hash, salt);
         usuarioRepository.save(usuario);
-        cliente = criarCliente(request, usuario);
+        Cliente cliente = criarCliente(request, usuario);
         clienteRepository.save(cliente);
 
         try {
