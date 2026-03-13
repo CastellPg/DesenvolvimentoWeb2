@@ -3,6 +3,7 @@ package com.trabalhow2.backend.service;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Usuario;
+import com.trabalhow2.backend.model.enums.Perfil;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.UsuarioRepository;
 
@@ -35,16 +36,17 @@ public class ClienteService {
     private Usuario criarUsuario(CadastroClienteRequest request, String hash, String salt) {
         Usuario usuario = new Usuario();
         usuario.setNome(request.getNome());
-        usuario.setEmail(request.getEmail());
+        usuario.setEmail(normalizarEmail(request.getEmail()));
         usuario.setSenha(hash);
         usuario.setSalt(salt);
+        usuario.setPerfil(Perfil.CLIENTE);
         return usuario;
     }
 
     private Cliente criarCliente(CadastroClienteRequest request, Usuario usuario) {
         Cliente cliente = new Cliente();
         cliente.setUsuario(usuario);
-        cliente.setCpf(request.getCpf());
+        cliente.setCpf(limparCpf(request.getCpf()));
         cliente.setTelefone(request.getTelefone());
         cliente.setCep(request.getCep());
         cliente.setLogradouro(request.getLogradouro());
@@ -55,6 +57,15 @@ public class ClienteService {
         cliente.setEstado(request.getEstado());
         return cliente;
     }
+
+    private String limparCpf(String cpf) {
+        return cpf.replaceAll("\\D", "");
+    }
+
+    private String normalizarEmail(String email) {
+        return email.trim().toLowerCase();
+    }
+
 
     private String gerarSenhaTemporaria() {
         final Random random = new SecureRandom();
@@ -80,26 +91,50 @@ public class ClienteService {
     }
 
     private void validarCadastro(CadastroClienteRequest request) {
-        //Mais validação colocar aqui
-        if(request.getNome() == null || request.getNome().isBlank()) {
+        //Mais validações colocar aqui
+        if (request.getNome() == null || request.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
         }
-        if(request.getEmail() == null || request.getEmail().isBlank()) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email é obrigatório.");
         }
-        if(request.getCpf() == null || request.getCpf().isBlank()) {
+        String email = normalizarEmail(request.getEmail());
+        if (request.getCpf() == null || request.getCpf().isBlank()) {
             throw new IllegalArgumentException("CPF é obrigatório.");
         }
-        if(usuarioRepository.existsByEmail(request.getEmail())){
+        //Tira todos os carácteres não númericos
+        String cpfLimpo = limparCpf(request.getCpf());
+        if (cpfLimpo.length() != 11) {
+            throw new IllegalArgumentException("CPF deve ter 11 dígitos.");
+        }
+        if (!email.contains("@")) {
+            throw new IllegalArgumentException("Email inválido.");
+        }
+        if (usuarioRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email já cadastrado.");
         }
-        if(clienteRepository.existsByCpf(request.getCpf())){
+        if (clienteRepository.existsByCpf(cpfLimpo)){
             throw new IllegalArgumentException("CPF já cadastrado.");
+        }
+        if (request.getCep() == null || request.getCep().isBlank()) {
+            throw new IllegalArgumentException("CEP é obrigatório.");
+        }
+        if (request.getLogradouro() == null || request.getLogradouro().isBlank()) {
+            throw new IllegalArgumentException("Logradouro é obrigatório.");
+        }
+        if (request.getBairro() == null || request.getBairro().isBlank()) {
+            throw new IllegalArgumentException("Bairro é obrigatório.");
+        }
+        if (request.getCidade() == null || request.getCidade().isBlank()) {
+            throw new IllegalArgumentException("Cidade é obrigatória.");
+        }
+        if (request.getEstado() == null || request.getEstado().isBlank()) {
+            throw new IllegalArgumentException("Estado é obrigatório.");
         }
     }
 
     @Transactional
-    public void cadastroCliente(CadastroClienteRequest request) {
+    public void cadastrarCliente(CadastroClienteRequest request) {
         validarCadastro(request);
         String senhaTemporaria = gerarSenhaTemporaria();
         String salt = gerarSalt();
@@ -111,7 +146,7 @@ public class ClienteService {
 
         try {
             emailService.sendEmail(
-                    request.getEmail(),
+                    normalizarEmail(request.getEmail()),
                     "Cadastro realizado!",
                     "Seu cadastro foi realizado com sucesso. Sua senha temporária é: " + senhaTemporaria
             );

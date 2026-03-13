@@ -22,7 +22,7 @@ public class ClienteController {
 
     @PostMapping("/cadastro")
     public void cadastroCliente(@RequestBody @Valid CadastroClienteRequest request) {
-        clienteService.cadastroCliente(request);
+        clienteService.cadastrarCliente(request);
     }
 
 
