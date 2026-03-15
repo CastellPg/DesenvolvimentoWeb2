@@ -7,8 +7,9 @@
   justify-content: center;
   align-items: center;
 
-background: linear-gradient(rgba(255,255,255,0.9), rgba(225,235,255,0.85)),
-            url('https://images.unsplash.com/photo-1744302570940-0f44e1b2a9f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlcXVpcG1lbnQlMjBtYWludGVuYW5jZSUyMHRvb2xzJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczMjI5MjI3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.9), rgba(225, 235, 255, 0.85)),
+    url('https://images.unsplash.com/photo-1744302570940-0f44e1b2a9f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlcXVpcG1lbnQlMjBtYWludGVuYW5jZSUyMHRvb2xzJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczMjI5MjI3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');
 
   background-size: cover;
   background-position: center;
@@ -86,7 +87,7 @@ background: linear-gradient(rgba(255,255,255,0.9), rgba(225,235,255,0.85)),
 
 .header {
   display: flex;
-  
+
   text-align: left;
   padding: 0 20px;
   gap: 10px;
@@ -96,7 +97,6 @@ background: linear-gradient(rgba(255,255,255,0.9), rgba(225,235,255,0.85)),
   margin: 0;
   font-size: 22px;
   color: #333;
-  
 }
 
 .title-text-group p {
