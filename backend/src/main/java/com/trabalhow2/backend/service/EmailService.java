@@ -1,20 +1,25 @@
 package com.trabalhow2.backend.service;
 
-
-import org.apache.logging.log4j.message.SimpleMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EmailService {
+    private final JavaMailSender emailSender;
 
     @Autowired
-    private JavaMailSender emailSender;
+    public EmailService(JavaMailSender emailSender) {
+        this.emailSender = emailSender;
+    }
 
-    public void sendEmail(String to, String subject, String body){
-        SimpleMessage message = new SimpleMessage();
+    public void sendEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
 
-        mailSender.send(message);
+        emailSender.send(message);
     }
 }

@@ -1,6 +1,7 @@
 package com.trabalhow2.backend.service;
 
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
+import com.trabalhow2.backend.controller.response.ClienteResponse;
 import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.model.enums.Perfil;
@@ -17,6 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -133,6 +135,7 @@ public class ClienteService {
         }
     }
 
+    //CRUD
     @Transactional
     public void cadastrarCliente(CadastroClienteRequest request) {
         validarCadastro(request);
@@ -155,4 +158,36 @@ public class ClienteService {
             throw new RuntimeException("Falha ao enviar e-mail. Cadastro cancelado.", e);
         }
     }
+
+    private ClienteResponse converterParaResponse(Cliente cliente) {
+        ClienteResponse response = new ClienteResponse();
+        response.setId(cliente.getId());
+        response.setNome(cliente.getUsuario().getNome());
+        response.setEmail(cliente.getUsuario().getEmail());
+        response.setCpf(cliente.getCpf());
+        response.setTelefone(cliente.getTelefone());
+        response.setCep(cliente.getCep());
+        response.setLogradouro(cliente.getLogradouro());
+        response.setNumero(cliente.getNumero());
+        response.setComplemento(cliente.getComplemento());
+        response.setBairro(cliente.getBairro());
+        response.setCidade(cliente.getCidade());
+        response.setEstado(cliente.getEstado());
+        return response;
+    }
+
+    public ClienteResponse buscarPorId(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
+        return converterParaResponse(cliente);
+    }
+
+    public List<ClienteResponse> listarTodos() {
+        return clienteRepository.findAll()
+                .stream()
+                .map(this::converterParaResponse)
+                .toList();
+    }
+
+
 }
