@@ -1,0 +1,98 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:      #f7f5f1;
+  --surface: #ffffff;
+  --surf2:   #f0ede8;
+  --border:  #e5e0d8;
+  --border2: #d4cec4;
+  --tx1:     #1c1917;
+  --tx2:     #6b6560;
+  --tx3:     #a09890;
+  --accent:  #2b2824;
+  --accent2: #d4b896;
+
+  --f-head: 'DM Serif Display', serif;
+  --f-body: 'Outfit', sans-serif;
+  --f-mono: 'JetBrains Mono', monospace;
+
+  --r:    12px;
+  --r-sm: 7px;
+  --sh:   0 2px 10px rgba(0,0,0,0.06);
+  --sh-lg:0 16px 56px rgba(0,0,0,0.15);
+
+  /* Estados */
+  --aberta:        #6b7280; --aberta-bg:        #f3f4f6; --aberta-b:        #d1d5db;
+  --orcada:        #854d0e; --orcada-bg:        #fefce8; --orcada-b:        #fde047;
+  --aprovada:      #a16207; --aprovada-bg:      #fefce8; --aprovada-b:      #fcd34d;
+  --rejeitada:     #b91c1c; --rejeitada-bg:     #fef2f2; --rejeitada-b:     #fca5a5;
+  --redirecionada: #6d28d9; --redirecionada-bg: #f5f3ff; --redirecionada-b: #c4b5fd;
+  --arrumada:      #1d4ed8; --arrumada-bg:      #eff6ff; --arrumada-b:      #93c5fd;
+  --paga:          #c2410c; --paga-bg:          #fff7ed; --paga-b:          #fdba74;
+  --finalizada:    #15803d; --finalizada-bg:    #f0fdf4; --finalizada-b:    #86efac;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.page {
+  font-family: var(--f-body);
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--tx1);
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 60px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-shadow: var(--sh);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-icon {
+  font-size: 1.35rem;
+  color: var(--accent2);
+  line-height: 1;
+}
+
+.brand-name {
+  font-family: var(--f-head);
+  font-size: 1.2rem;
+  color: #f5f1ec;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/*  a tabela vai começar assim, mas tem todo um trumbt, e to saindo do trampo então depois eu arrumo*/
+}/* .table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+ 
+.table-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surf2);
+} */
