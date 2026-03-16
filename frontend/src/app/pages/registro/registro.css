@@ -1,0 +1,128 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.register-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px;
+
+  justify-content: center;
+  align-items: center;
+
+background: linear-gradient(rgba(255,255,255,0.9), rgba(225,235,255,0.85)),
+            url('https://images.unsplash.com/photo-1744302570940-0f44e1b2a9f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlcXVpcG1lbnQlMjBtYWludGVuYW5jZSUyMHRvb2xzJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczMjI5MjI3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.register-card {
+  display: flex;
+  width: 800px;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  border: none;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+
+  font-size: 16px;
+
+  border: 1px solid #dcdcdc;
+
+  background-color: #f7f8fa;
+  color: #555;
+  outline: none;
+
+  transition: border-color 0.2s;
+}
+
+.input-group input::placeholder {
+  color: #b0b0b0;
+}
+
+.input-group input:focus {
+  border-color: #a0a0a0;
+}
+
+.row {
+  display: flex;
+  gap: 15px;
+}
+
+.row .input-group {
+  flex: 1;
+}
+
+.row .input-group.small {
+  flex: 0.2;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  
+  text-align: left;
+  padding: 0 20px;
+  gap: 10px;
+}
+
+.title-text-group h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #333;
+  
+}
+
+.title-text-group p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.icon-box {
+  background-color: #007bff;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.icon-box i {
+  color: white;
+  font-size: 24px;
+}

@@ -1,0 +1,82 @@
+<div class="register-container">
+    <div class="register-card">
+
+        <div class="header">
+            <div class="icon-box"> <i class="bi bi-tools"></i> 
+            </div>
+            <div class="title-text-group">
+                <h2>Criar nova conta</h2>
+                <p>Preencha os dados abaixo para acessar o sistema TecMaint</p>
+            </div>
+        </div>
+
+        <form class="register-form">
+
+            <div class="form-section">
+                <div class="input-group">
+                    <label for="cpf">CPF</label>
+                    <input type="text" class="form-control rounded" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14">
+                </div>
+
+                <div class="input-group">
+                    <label for="nome">Nome completo</label>
+                    <input type="text" class="form-control rounded" id="nome" name="nome" placeholder="Digite seu nome" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" class="form-control rounded" id="email" name="email" placeholder="exemplo@gmail.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" class="form-control rounded" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                </div>
+
+                <hr class="divider">
+
+                <div class="form-section">
+                    <h3>Endereço</h3>
+
+                    <div class="input-group">
+                        <label for="cep">CEP</label>
+                        <input type="text" class="form-control rounded" id="cep" name="cep" placeholder="00000-000" required maxlength="9">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="logradouro">Rua / Logradouro</label>
+                        <input type="text" class="form-control rounded" id="logradouro" name="logradouro" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-group small">
+                            <label for="numero">Número</label>
+                            <input type="text" class="form-control rounded" id="numero" name="numero" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="complemento">Complemento</label>
+                            <input type="text" class="form-control rounded" id="complemento" name="complemento">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-group">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" class="form-control rounded" id="cidade" name="cidade" required readonly>
+                        </div>
+                        <div class="input-group small">
+                            <label for="estado">Estado (UF)</label>
+                            <input type="text" class="form-control rounded" id="estado" name="estado" required readonly>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button type="submit"  class="btn btn-primary">CADASTRAR</button>
+                    <button type="button"  class="btn btn-secondary" routerLink="/login">CANCELAR</button>
+                </div>
+                
+            </div>
+        </form>
+    </div>
+</div>
