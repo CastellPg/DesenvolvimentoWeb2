@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, WritableSignal, Signal, signal } from '@angular/core';
 import { RouterLink } from "@angular/router";
 
 @Component({
@@ -7,4 +7,10 @@ import { RouterLink } from "@angular/router";
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class LoginComponent {}
+export class LoginComponent {
+  hidePassword: WritableSignal<boolean> = signal(true);
+
+  togglePassword() {
+    this.hidePassword.update(value => !value);
+  }
+}
