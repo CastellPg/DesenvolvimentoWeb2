@@ -1,4 +1,5 @@
 package com.trabalhow2.backend.model;
+import com.trabalhow2.backend.model.enums.Perfil;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +17,10 @@ public class Usuario {
     private String email;
     private String senha;
     private String salt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Perfil perfil;
+
     private boolean ativo = true;
 }
