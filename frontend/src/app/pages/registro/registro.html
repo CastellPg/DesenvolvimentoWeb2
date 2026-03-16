@@ -17,6 +17,9 @@
             class="form-control rounded"
             id="cpf"
             name="cpf"
+            mask="000.000.000-00"
+            [validation]="true"
+            [(ngModel)]="dados.cpf"
             placeholder="000.000.000-00"
             maxlength="14"
           />
@@ -29,6 +32,7 @@
             class="form-control rounded"
             id="nome"
             name="nome"
+            [ngModel]="dados.nomeCompleto"
             placeholder="Digite seu nome"
             required
           />
@@ -41,6 +45,7 @@
             class="form-control rounded"
             id="email"
             name="email"
+            [ngModel]="dados.email"
             placeholder="exemplo@gmail.com"
             required
           />
@@ -49,12 +54,14 @@
         <div class="input-group">
           <label for="telefone">Telefone</label>
           <input
-            type="tel"
+            type="text"
             class="form-control rounded"
             id="telefone"
             name="telefone"
+            mask="(00) 00000-0000"
+            [validation]="true"
+            [(ngModel)]="dados.telefone"
             placeholder="(00) 00000-0000"
-            required
           />
         </div>
 
@@ -70,10 +77,11 @@
               class="form-control rounded"
               id="cep"
               name="cep"
+              mask="00000-000"
+              [validation]="true"
               [(ngModel)]="endereco.cep"
-              (blur)="buscarCep()"
+              (input)="buscarCep()"
               placeholder="00000-000"
-              required
               maxlength="9"
             />
           </div>
@@ -94,11 +102,11 @@
           <div class="row">
             <div class="input-group small">
               <label for="numero">Número</label>
-              <input type="text" class="form-control rounded" id="numero" name="numero" required />
+              <input type="text" #inputNumero class="form-control rounded" id="numero" name="numero" [(ngModel)]="endereco.numero" required />
             </div>
             <div class="input-group">
               <label for="complemento">Complemento</label>
-              <input type="text" class="form-control rounded" id="complemento" name="complemento" />
+              <input type="text" class="form-control rounded" id="complemento" name="complemento" [(ngModel)]="endereco.complemento" />
             </div>
           </div>
 

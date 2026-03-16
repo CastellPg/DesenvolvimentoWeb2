@@ -25,11 +25,11 @@
 
 .register-card {
   display: flex;
-  width: 800px;
+  width: 650px;
   flex-direction: column;
   background-color: white;
   border-radius: 20px;
-  padding: 40px;
+  padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   justify-content: center;
   border: none;
@@ -60,6 +60,7 @@
   background-color: #f7f8fa;
   color: #555;
   outline: none;
+  padding-left: 10px;
 
   transition: border-color 0.2s;
 }
