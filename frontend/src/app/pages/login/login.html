@@ -1,16 +1,13 @@
 <div class="login-container">
   <div class="login-card">
-    <div class="logo-section">
-      <img src="assets/logo.png" alt="TcMaint Logo" class="logo" />
-      
-    </div>
-
     <form class="login-form">
+      <div class="icon-box"> <i class="bi bi-tools"></i> 
+      </div>
       <h1>Bem-Vindo</h1>
       <h2>Login</h2>
 
       <div class="input-group">
-        <label for="email">Usuário/Email</label>
+        <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required />
       </div>
 
@@ -18,14 +15,16 @@
         <label for="password">Senha</label>
         <div class="password-container">
           <!-- -> vai servir p arrumar o olho dps -->
+           
           <input
-            type="password"
+            [type]="hidePassword() ? 'password' : 'text'"
             id="password"
             name="password"
             placeholder="Digite sua senha"
             required
           />
-          <span class="toggle-password">Vai ter um olho aqui</span>
+          <button (click)="togglePassword()" type="button">
+          <i [class]="hidePassword() ? 'fi-rs-crossed-eye' : 'fi fi-rs-eye'" ></i> </button>
         </div>
       </div>
 
@@ -35,7 +34,7 @@
         <a href="#" class="link-esqueceu">Esqueceu a senha?</a>
         <!-- -> Arrumar aqui quando estiver tudo pronto -->
         <p>
-          Ainda não tem conta? <a routerLink="/registrar" class="link-registro">Registre-se aqui</a>
+          Ainda não tem conta? <a routerLink="/registro" class="link-registro">Registre-se aqui</a>
           <!-- -> Ter certeza dessa rota -->
         </p>
       </div>
