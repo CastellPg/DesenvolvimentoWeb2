@@ -1,16 +1,18 @@
 package com.trabalhow2.backend.controller;
 
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
+import com.trabalhow2.backend.controller.response.ClienteResponse;
+import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/cliente")
+@RequestMapping("/clientes")
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -21,8 +23,19 @@ public class ClienteController {
     }
 
     @PostMapping("/cadastro")
-    public void cadastroCliente(@RequestBody @Valid CadastroClienteRequest request) {
+    public ResponseEntity<String> cadastroCliente(@RequestBody @Valid CadastroClienteRequest request) {
         clienteService.cadastrarCliente(request);
+        return ResponseEntity.ok("Cliente cadastrado com sucesso.");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.buscarPorId(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ClienteResponse>> listarTodos() {
+        return ResponseEntity.ok(clienteService.listarTodos());
     }
 
 
