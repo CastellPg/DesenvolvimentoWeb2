@@ -8,7 +8,7 @@
 
       <div class="input-group">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required />
+        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" [(ngModel)]="loginUsuario.email" required />
       </div>
 
       <div class="input-group">
@@ -17,7 +17,7 @@
           <!-- -> vai servir p arrumar o olho dps -->
            
           <input
-            [type]="hidePassword() ? 'password' : 'text'"
+            [type]="hidePassword() ? 'password' : 'text'" [(ngModel)]="loginUsuario.senha"
             id="password"
             name="password"
             placeholder="Digite sua senha"
@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <button type="submit" class="btn-entrar">ENTRAR</button>
+      <button (click)="fazerLogin()" type="button" class="btn-entrar">ENTRAR</button>
 
       <div class="form-footer">
         <a href="#" class="link-esqueceu">Esqueceu a senha?</a>
