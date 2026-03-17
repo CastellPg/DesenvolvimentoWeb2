@@ -10,7 +10,7 @@
 
     <form class="register-form row g-3 p-3">
       
-        <div class="col-md-3 col-12">
+        <div class="col-md-4 col-12">
           <label for="cpf">CPF</label>
           <input
             type="text"
@@ -25,7 +25,7 @@
           />
         </div>
 
-        <div class="col-md-8 col-12">
+        <div class="col-md-7 ms-3 col-12">
           <label for="nome">Nome completo</label>
           <input
             type="text"
@@ -38,7 +38,7 @@
           />
         </div>
 
-        <div class="col-md-8 col-12">
+        <div class="col-md-9 col-12">
           <label for="email">E-mail</label>
           <input
             type="email"
@@ -49,8 +49,9 @@
             placeholder="exemplo@gmail.com"
             required
           />
+        </div>
 
-        <div class="col-md-3 col-12">
+        <div class="col-md-4 col-12">
           <label for="telefone">Telefone</label>
           <input
             type="text"
@@ -68,6 +69,7 @@
 
         <div class="col-12">
           <h3>Endereço</h3>
+        </div>
 
           <div class="col-md-3 col-12">
             <label for="cep">CEP</label>
@@ -85,7 +87,7 @@
             />
           </div>
 
-          <div class="col-md-8 col-12">
+          <div class="col-md-8 ms-3 col-12">
             <label for="logradouro">Rua / Logradouro</label>
             <input
               type="text"
@@ -103,7 +105,7 @@
               <label for="numero">Número</label>
               <input type="text" #inputNumero class="form-control rounded" id="numero" name="numero" [(ngModel)]="endereco.numero" required />
             </div>
-            <div class="col-md-7 col-7">
+            <div class="col-md-8 ms-3 col-7">
               <label for="complemento">Complemento</label>
               <input type="text" class="form-control rounded" id="complemento" name="complemento" [(ngModel)]="endereco.complemento" />
             </div>
@@ -121,8 +123,9 @@
                 required
                 readonly
               />
+            </div>
            
-            <div class="col-md-2 col-4">
+            <div class="col-md-2 ms-3 col-4">
               <label for="estado">Estado (UF)</label>
               <input
                 type="text"
@@ -134,14 +137,12 @@
                 readonly
               />
             </div>
-          </div>
-        </div>
 
         <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end mt-4 ">
           <button type="submit" class="btn btn-primary">CADASTRAR</button>
           <button type="button" class="btn btn-secondary" routerLink="/login">CANCELAR</button>
         </div>
-      </div>
+      
     </form>
   </div>
 </div>

@@ -24,6 +24,7 @@
 
 .register-card {
   display: flex;
+  width: 100%;
   min-height: auto;
   max-width: 650px;
   flex-direction: column;
@@ -35,46 +36,38 @@
   border: none;
 }
 
-.form-label {
-  font-size: 14px;
-
-}
-
-.input-group label {
+form label {
   display: block;
   font-size: 14px;
   font-weight: bold;
   color: #333;
   margin-bottom: 5px;
+  margin-top: 10px;
+
 }
 
-.input-group input {
-  width: 100%;
-
+.form-control {
   font-size: 16px;
-
   border: 1px solid #dcdcdc;
-
   background-color: #f7f8fa;
   color: #555;
-  outline: none;
-  padding-left: 10px;
-
-  transition: border-color 0.2s;
+  padding: 10px;
+ 
 }
 
-.input-group input::placeholder {
+
+.form-control::placeholder {
   color: #b0b0b0;
 }
 
-.input-group input:focus {
-  border-color: #a0a0a0;
+.form-control:focus {
+  background-color: #fff;
+  border-color: #007bff;
 }
 
 
 .header {
   display: flex;
-
   text-align: left;
   padding: 0 20px;
   gap: 10px;
