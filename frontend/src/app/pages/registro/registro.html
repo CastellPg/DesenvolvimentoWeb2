@@ -1,5 +1,5 @@
 <div class="register-container">
-  <div class="register-card">
+  <div class="register-card w-100">
     <div class="header">
       <div class="icon-box"><i class="bi bi-tools"></i></div>
       <div class="title-text-group">
@@ -8,9 +8,9 @@
       </div>
     </div>
 
-    <form class="register-form">
-      <div class="form-section">
-        <div class="input-group">
+    <form class="register-form row g-3 p-3">
+      
+        <div class="col-md-3 col-12">
           <label for="cpf">CPF</label>
           <input
             type="text"
@@ -25,7 +25,7 @@
           />
         </div>
 
-        <div class="input-group">
+        <div class="col-md-8 col-12">
           <label for="nome">Nome completo</label>
           <input
             type="text"
@@ -38,7 +38,7 @@
           />
         </div>
 
-        <div class="input-group">
+        <div class="col-md-8 col-12">
           <label for="email">E-mail</label>
           <input
             type="email"
@@ -49,9 +49,8 @@
             placeholder="exemplo@gmail.com"
             required
           />
-        </div>
 
-        <div class="input-group">
+        <div class="col-md-3 col-12">
           <label for="telefone">Telefone</label>
           <input
             type="text"
@@ -65,12 +64,12 @@
           />
         </div>
 
-        <hr class="divider" />
+        <div class="col-12"><hr class="divider" /></div>
 
-        <div class="form-section">
+        <div class="col-12">
           <h3>Endereço</h3>
 
-          <div class="input-group">
+          <div class="col-md-3 col-12">
             <label for="cep">CEP</label>
             <input
               type="text"
@@ -86,7 +85,7 @@
             />
           </div>
 
-          <div class="input-group">
+          <div class="col-md-8 col-12">
             <label for="logradouro">Rua / Logradouro</label>
             <input
               type="text"
@@ -99,19 +98,19 @@
             />
           </div>
 
-          <div class="row">
-            <div class="input-group small">
+         
+            <div class="col-md-3 col-5">
               <label for="numero">Número</label>
               <input type="text" #inputNumero class="form-control rounded" id="numero" name="numero" [(ngModel)]="endereco.numero" required />
             </div>
-            <div class="input-group">
+            <div class="col-md-7 col-7">
               <label for="complemento">Complemento</label>
               <input type="text" class="form-control rounded" id="complemento" name="complemento" [(ngModel)]="endereco.complemento" />
             </div>
-          </div>
+          
 
-          <div class="row">
-            <div class="input-group">
+         
+            <div class="col-md-8 col-9">
               <label for="cidade">Cidade</label>
               <input
                 type="text"
@@ -122,8 +121,8 @@
                 required
                 readonly
               />
-            </div>
-            <div class="input-group small">
+           
+            <div class="col-md-2 col-4">
               <label for="estado">Estado (UF)</label>
               <input
                 type="text"
@@ -138,7 +137,7 @@
           </div>
         </div>
 
-        <div class="actions">
+        <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end mt-4 ">
           <button type="submit" class="btn btn-primary">CADASTRAR</button>
           <button type="button" class="btn btn-secondary" routerLink="/login">CANCELAR</button>
         </div>

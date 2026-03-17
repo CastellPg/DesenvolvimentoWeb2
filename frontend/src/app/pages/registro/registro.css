@@ -6,10 +6,9 @@
 
 .register-container {
   display: flex;
-  width: 100%;
   min-height: 100vh;
-  padding: 40px;
-
+  padding: 20px;
+  
   justify-content: center;
   align-items: center;
 
@@ -25,7 +24,8 @@
 
 .register-card {
   display: flex;
-  width: 650px;
+  min-height: auto;
+  max-width: 650px;
   flex-direction: column;
   background-color: white;
   border-radius: 20px;
@@ -35,11 +35,9 @@
   border: none;
 }
 
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 20px;
+.form-label {
+  font-size: 14px;
+
 }
 
 .input-group label {
@@ -73,24 +71,6 @@
   border-color: #a0a0a0;
 }
 
-.row {
-  display: flex;
-  gap: 15px;
-}
-
-.row .input-group {
-  flex: 1;
-}
-
-.row .input-group.small {
-  flex: 0.2;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  padding: 20px;
-}
 
 .header {
   display: flex;
