@@ -1,6 +1,6 @@
 <div class="login-container">
   <div class="login-card">
-    <form class="login-form">
+    <form [(ngModel)]="fazerLogin" class="login-form">
       <div class="icon-box"> <i class="bi bi-tools"></i> 
       </div>
       <h1>Bem-Vindo</h1>
@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <button (click)="fazerLogin()" type="button" class="btn-entrar">ENTRAR</button>
+      <button (click)="fazerLogin()" type="submit" class="btn-entrar">ENTRAR</button>
 
       <div class="form-footer">
         <a href="#" class="link-esqueceu">Esqueceu a senha?</a>

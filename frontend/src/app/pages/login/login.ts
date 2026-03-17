@@ -28,7 +28,20 @@ export class LoginComponent {
   fazerLogin() {
     console.log('Pegando os dados do form', this.loginUsuario);
 
-    this.http.post('http://localhost/backend/src/java/', this.loginUsuario)
+    if (!this.loginUsuario.email || !this.loginUsuario.senha) {
+      console.error('Email e senha são obrigatórios!');
+      return;
+    }
+
+    //falta fazer a parte do backend, mas aqui faz a requisição (alterar a URL para o endpoint do backend quando feito)
+    this.http.post('http://localhost:8080/login', this.loginUsuario).subscribe({
+      next: (response) => {
+        console.log('Resposta do servidor:', response);
+      },
+      error: (error) => {
+        console.error('Erro ao fazer login:', error);
+      }
+    });
   }
 
 
