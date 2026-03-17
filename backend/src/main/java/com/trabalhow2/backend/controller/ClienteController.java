@@ -1,5 +1,6 @@
 package com.trabalhow2.backend.controller;
 
+import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
 import com.trabalhow2.backend.model.Cliente;
@@ -36,6 +37,13 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity<List<ClienteResponse>> listarTodos() {
         return ResponseEntity.ok(clienteService.listarTodos());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarCliente(@PathVariable Long id,
+                                                   @RequestBody @Valid AtualizarClienteRequest request) {
+        clienteService.atualizarCliente(id, request);
+        return ResponseEntity.ok("Cliente atualizado com sucesso.");
     }
 
 
