@@ -1,16 +1,48 @@
-import { Component, WritableSignal, Signal, signal } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { Component, WritableSignal, Signal, signal, inject } from '@angular/core';
+import { RouterLink} from "@angular/router";
+import { FormsModule } from "@angular/forms";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
+
 export class LoginComponent {
   hidePassword: WritableSignal<boolean> = signal(true);
 
   togglePassword() {
     this.hidePassword.update(value => !value);
   }
+
+//teste usando ngModele
+  loginUsuario = {
+    email: '',
+    senha: ''
+  };
+
+  private http = inject(HttpClient);
+
+  fazerLogin() {
+    console.log('Pegando os dados do form', this.loginUsuario);
+
+    if (!this.loginUsuario.email || !this.loginUsuario.senha) {
+      console.error('Email e senha são obrigatórios!');
+      return;
+    }
+
+    //falta fazer a parte do backend, mas aqui faz a requisição (alterar a URL para o endpoint do backend quando feito)
+    this.http.post('http://localhost:8080/login', this.loginUsuario).subscribe({
+      next: (response) => {
+        console.log('Resposta do servidor:', response);
+      },
+      error: (error) => {
+        console.error('Erro ao fazer login:', error);
+      }
+    });
+  }
+
+
 }
