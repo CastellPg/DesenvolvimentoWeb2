@@ -160,7 +160,7 @@ public class ClienteService {
         }
     }
 
-    private ClienteResponse converterParaResponse(Cliente cliente) {
+    private ClienteResponse converterParaClienteResponse(Cliente cliente) {
         ClienteResponse response = new ClienteResponse();
         response.setId(cliente.getId());
         response.setNome(cliente.getUsuario().getNome());
@@ -180,13 +180,13 @@ public class ClienteService {
     public ClienteResponse buscarPorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
-        return converterParaResponse(cliente);
+        return converterParaClienteResponse(cliente);
     }
 
     public List<ClienteResponse> listarTodos() {
         return clienteRepository.findAll()
                 .stream()
-                .map(this::converterParaResponse)
+                .map(this::converterParaClienteResponse)
                 .toList();
     }
 
@@ -200,45 +200,21 @@ public class ClienteService {
         if (request.getNome() == null || request.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
         }
-
         if (request.getEmail() == null || request.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email é obrigatório.");
         }
-
         String emailNormalizado = normalizarEmail(request.getEmail());
 
         if (!emailNormalizado.contains("@")) {
             throw new IllegalArgumentException("Email inválido.");
         }
-
-        if (!usuario.getEmail().equals(emailNormalizado)
-                && usuarioRepository.existsByEmail(emailNormalizado)) {
+        if (!usuario.getEmail().equals(emailNormalizado) &&
+                usuarioRepository.existsByEmail(emailNormalizado)) {
             throw new IllegalArgumentException("Email já cadastrado.");
-        }
-
-        if (request.getCep() == null || request.getCep().isBlank()) {
-            throw new IllegalArgumentException("CEP é obrigatório.");
-        }
-
-        if (request.getLogradouro() == null || request.getLogradouro().isBlank()) {
-            throw new IllegalArgumentException("Logradouro é obrigatório.");
-        }
-
-        if (request.getBairro() == null || request.getBairro().isBlank()) {
-            throw new IllegalArgumentException("Bairro é obrigatório.");
-        }
-
-        if (request.getCidade() == null || request.getCidade().isBlank()) {
-            throw new IllegalArgumentException("Cidade é obrigatória.");
-        }
-
-        if (request.getEstado() == null || request.getEstado().isBlank()) {
-            throw new IllegalArgumentException("Estado é obrigatório.");
         }
 
         usuario.setNome(request.getNome());
         usuario.setEmail(emailNormalizado);
-
         cliente.setTelefone(request.getTelefone());
         cliente.setCep(request.getCep());
         cliente.setLogradouro(request.getLogradouro());
@@ -252,5 +228,12 @@ public class ClienteService {
         clienteRepository.save(cliente);
     }
 
+    @Transactional
+    public void deletarCliente(Long id) {
+        Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado com esse id." + id));
+        Usuario usuario = cliente.getUsuario();
 
+        clienteRepository.delete(cliente);
+        usuarioRepository.delete(usuario);
+    }
 }

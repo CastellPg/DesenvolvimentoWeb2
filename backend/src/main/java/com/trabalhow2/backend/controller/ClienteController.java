@@ -3,7 +3,6 @@ package com.trabalhow2.backend.controller;
 import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
-import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +45,10 @@ public class ClienteController {
         return ResponseEntity.ok("Cliente atualizado com sucesso.");
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarCliente(@PathVariable Long id){
+        clienteService.deletarCliente(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
