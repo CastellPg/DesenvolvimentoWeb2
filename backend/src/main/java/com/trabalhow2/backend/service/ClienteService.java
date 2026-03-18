@@ -1,5 +1,6 @@
 package com.trabalhow2.backend.service;
 
+import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
 import com.trabalhow2.backend.model.Cliente;
@@ -159,7 +160,7 @@ public class ClienteService {
         }
     }
 
-    private ClienteResponse converterParaResponse(Cliente cliente) {
+    private ClienteResponse converterParaClienteResponse(Cliente cliente) {
         ClienteResponse response = new ClienteResponse();
         response.setId(cliente.getId());
         response.setNome(cliente.getUsuario().getNome());
@@ -179,15 +180,60 @@ public class ClienteService {
     public ClienteResponse buscarPorId(Long id) {
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
-        return converterParaResponse(cliente);
+        return converterParaClienteResponse(cliente);
     }
 
     public List<ClienteResponse> listarTodos() {
         return clienteRepository.findAll()
                 .stream()
-                .map(this::converterParaResponse)
+                .map(this::converterParaClienteResponse)
                 .toList();
     }
 
+    @Transactional
+    public void atualizarCliente(Long id, AtualizarClienteRequest request) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
 
+        Usuario usuario = cliente.getUsuario();
+
+        if (request.getNome() == null || request.getNome().isBlank()) {
+            throw new IllegalArgumentException("Nome é obrigatório.");
+        }
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email é obrigatório.");
+        }
+        String emailNormalizado = normalizarEmail(request.getEmail());
+
+        if (!emailNormalizado.contains("@")) {
+            throw new IllegalArgumentException("Email inválido.");
+        }
+        if (!usuario.getEmail().equals(emailNormalizado) &&
+                usuarioRepository.existsByEmail(emailNormalizado)) {
+            throw new IllegalArgumentException("Email já cadastrado.");
+        }
+
+        usuario.setNome(request.getNome());
+        usuario.setEmail(emailNormalizado);
+        cliente.setTelefone(request.getTelefone());
+        cliente.setCep(request.getCep());
+        cliente.setLogradouro(request.getLogradouro());
+        cliente.setNumero(request.getNumero());
+        cliente.setComplemento(request.getComplemento());
+        cliente.setBairro(request.getBairro());
+        cliente.setCidade(request.getCidade());
+        cliente.setEstado(request.getEstado());
+
+        usuarioRepository.save(usuario);
+        clienteRepository.save(cliente);
+    }
+
+    @Transactional
+    public void deletarCliente(Long id) {
+        Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado com esse id." + id));
+        Usuario usuario = cliente.getUsuario();
+
+        clienteRepository.delete(cliente);
+        usuarioRepository.delete(usuario);
+    }
 }
