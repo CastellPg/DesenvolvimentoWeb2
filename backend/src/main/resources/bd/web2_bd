@@ -1,0 +1,102 @@
+CREATE DATABASE web2_bd;
+USE web2_bd;
+
+CREATE TABLE categorias (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE usuarios (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    salt VARCHAR(255) NOT NULL,
+    perfil VARCHAR(20) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE clientes (
+    id BIGINT PRIMARY KEY,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    telefone VARCHAR(15),
+    cep VARCHAR(8),
+    logradouro VARCHAR(80),
+    numero VARCHAR(10),
+    complemento VARCHAR(50),
+    bairro VARCHAR(50),
+    cidade VARCHAR(50),
+    estado VARCHAR(2),
+    FOREIGN KEY (id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE funcionarios (
+    id BIGINT PRIMARY KEY,
+    data_nascimento DATE,
+    FOREIGN KEY (id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE solicitacoes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id BIGINT NOT NULL,
+    categoria_id BIGINT NOT NULL,
+    funcionario_responsavel_id BIGINT NOT NULL,
+    descricao_equipamento VARCHAR(50) NOT NULL,
+    descricao_defeito TEXT NOT NULL,
+    descricao_manutencao TEXT,
+    orientacoes_cliente TEXT,
+    data_hora_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    valor_orcamento DECIMAL(10,2),
+    data_hora_orcamento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    motivo_rejeicao TEXT,
+    data_hora_pagamento DATETIME,
+    estado ENUM(
+        'ABERTA',
+        'ORCADA',
+        'APROVADA',
+        'REJEITADA',
+        'REDIRECIONADA',
+        'ARRUMADA',
+        'PAGA',
+        'FINALIZADA'
+    ) NOT NULL DEFAULT 'ABERTA',
+
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id),
+    FOREIGN KEY (funcionario_responsavel_id) REFERENCES funcionarios(id)
+);
+
+CREATE TABLE historico_solicitacoes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    solicitacao_id BIGINT NOT NULL,
+    funcionario_origem_id BIGINT NULL,
+    funcionario_destino_id BIGINT NULL,
+    estado_anterior ENUM(
+        'ABERTA',
+        'ORCADA',
+        'APROVADA',
+        'REJEITADA',
+        'REDIRECIONADA',
+        'ARRUMADA',
+        'PAGA',
+        'FINALIZADA'
+    ),
+    estado_novo ENUM(
+        'ABERTA',
+        'ORCADA',
+        'APROVADA',
+        'REJEITADA',
+        'REDIRECIONADA',
+        'ARRUMADA',
+        'PAGA',
+        'FINALIZADA'
+    ) NOT NULL,
+    data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    descricao_manutencao TEXT,
+    orientacoes_cliente TEXT,
+
+    FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id),
+    FOREIGN KEY (funcionario_origem_id) REFERENCES funcionarios(id),
+    FOREIGN KEY (funcionario_destino_id) REFERENCES funcionarios(id)
+);
