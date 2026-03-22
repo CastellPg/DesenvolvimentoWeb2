@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <form class="register-form row g-3 p-3">
+    <form (ngSubmit) = "registrar()" class="register-form row g-3 p-3">
       
         <div class="col-md-3 col-12">
           <label for="cpf">CPF</label>
@@ -32,7 +32,7 @@
             class="form-control rounded"
             id="nome"
             name="nome"
-            [ngModel]="dados.nomeCompleto"
+            [(ngModel)]="dados.nomeCompleto"
             placeholder="Digite seu nome"
             required
           />
@@ -45,7 +45,7 @@
             class="form-control rounded"
             id="email"
             name="email"
-            [ngModel]="dados.email"
+            [(ngModel)]="dados.email"
             placeholder="exemplo@gmail.com"
             required
           />
@@ -120,6 +120,19 @@
                 id="cidade"
                 name="cidade"
                 [(ngModel)]="endereco.cidade"
+                required
+                readonly
+              />
+            </div>
+
+            <div class="col-md-8 col-9">
+              <label for="bairro">Bairro</label>
+              <input
+                type="text"
+                class="form-control rounded"
+                id="bairro"
+                name="bairro"
+                [(ngModel)]="endereco.bairro"
                 required
                 readonly
               />

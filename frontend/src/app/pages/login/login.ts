@@ -29,7 +29,12 @@ export class LoginComponent {
     console.log('Pegando os dados do form', this.loginUsuario);
 
     if (!this.loginUsuario.email || !this.loginUsuario.senha) {
-      console.error('Email e senha são obrigatórios!');
+      alert('Email e senha são obrigatórios!');
+      return;
+    }
+
+    if (this.loginUsuario.senha.length < 6){
+      alert('Senha precisa ter 6 digitos')
       return;
     }
 
