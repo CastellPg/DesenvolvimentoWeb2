@@ -1,5 +1,18 @@
 package com.trabalhow2.backend.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.List;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
@@ -8,19 +21,6 @@ import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.model.enums.Perfil;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.UsuarioRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
 
 @Service
 public class ClienteService {
@@ -72,7 +72,7 @@ public class ClienteService {
 
     private String gerarSenhaTemporaria() {
         final Random random = new SecureRandom();
-        return Integer.toString(random.nextInt(9000) + 1000);
+        return Integer.toString(random.nextInt(900000) + 100000);
     }
 
     private String gerarSalt() {
