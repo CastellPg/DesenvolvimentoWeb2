@@ -72,7 +72,7 @@ public class ClienteService {
 
     private String gerarSenhaTemporaria() {
         final Random random = new SecureRandom();
-        return Integer.toString(random.nextInt(900000) + 100000);
+        return Integer.toString(random.nextInt(9000) + 1000);
     }
 
     private String gerarSalt() {

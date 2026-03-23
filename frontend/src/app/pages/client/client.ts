@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-client',
-  imports: [],
   templateUrl: './client.html',
-  styleUrl: './client.css',
+  styleUrls: ['./client.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class Client {}
+export class Client { }
