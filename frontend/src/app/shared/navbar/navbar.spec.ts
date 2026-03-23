@@ -1,26 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Navbar } from './navbar';
 
-@Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.html',
-  styleUrls: ['./navbar.css']
-})
-export class Navbar implements OnInit {
-  perfilUsuario: string | null = null;
-  nomeUsuario: string | null = null;
+describe('Navbar', () => {
+  let component: Navbar;
+  let fixture: ComponentFixture<Navbar>
 
-  constructor(private router: Router) {}
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Navbar],
+    }).compileComponents();
 
-  ngOnInit() {
-    const user = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
-    this.perfilUsuario = user.perfil || null;
-    this.nomeUsuario = user.nome || null;
-  }
+       fixture = TestBed.createComponent(Navbar);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
 
-  logout() {
-    localStorage.removeItem('usuarioLogado');
-    this.perfilUsuario = null;
-    this.router.navigate(['/login']);
-  }
-}
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
