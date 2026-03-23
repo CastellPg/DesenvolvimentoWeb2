@@ -33,8 +33,8 @@ export class LoginComponent {
       return;
     }
 
-    if (this.loginUsuario.senha.length < 6){
-      alert('Senha precisa ter 6 digitos')
+    if (this.loginUsuario.senha.length < 4){
+      alert('Senha precisa ter 4 digitos')
       return;
     }
 
