@@ -1,0 +1,25 @@
+.card{
+    border-radius: 12px;
+}
+
+.badge{
+    font-weight: 500;
+    padding: 0.5em 0.8em;
+}
+
+.btn-dark{
+    background-color: #0c0d12;
+    border-radius: 8px;
+    transition: opacity 0.2s;
+
+    &:hover{
+    opacity: 0.9;
+    background-color: #0c0d12;
+}
+}
+
+label {
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+

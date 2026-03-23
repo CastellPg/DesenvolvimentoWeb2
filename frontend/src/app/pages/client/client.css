@@ -39,11 +39,20 @@
     color: #ffffff !important;
 }
 
-@media (max-width: 768px) {
-    #sidebar-container {
-        margin-left: -280px;
-    }
-    #sidebar-container.active {
-        margin-left: 0;
-    }
+/*  a tabela vai começar assim, mas tem todo um trumbt, e to saindo do trampo então depois eu arrumo*/
+/* .table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  overflow: hidden;
 }
+ 
+.table-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surf2);
+} */
