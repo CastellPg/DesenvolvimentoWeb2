@@ -1,19 +1,48 @@
-<header class="tudo">
-    <div class="logo">
-        <img src="assets/logoplaceholderquevaitarnosassets.png" alt="Logo">
-    </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <i class="bi bi-tools me-2"></i>
+      TechMaint
+    </a>
 
-    <nav>
-        <ul class="navbar">
-            <li><a routerLink = "/">Inicio</a></li>
-            <li><a routerLink = "/">Serviços</a></li>
-            <li><a routerLink = "/">Sobre</a></li>
-            <li><a routerLink = "/">Contato</a></li>
-        </ul>
-    </nav>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNavegacao">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <div class="botoes">
-        <button routerLink="/login" id="btn-login">Login</button>
-        <button id="btn-cadastro">Criar Conta</button>
+    <div class="collapse navbar-collapse" id="menuNavegacao">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/">Início</a>
+        </li>
+
+        <ng-container *ngIf="perfilUsuario === 'CLIENTE'">
+          <li class="nav-item"><a class="nav-link" routerLink="/meus-reparos">Meus Reparos</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/solicitar">Novo Orçamento</a></li>
+        </ng-container>
+
+        <ng-container *ngIf="perfilUsuario === 'FUNCIONARIO'">
+          <li class="nav-item"><a class="nav-link" routerLink="/dashboard">Painel de Controle</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/gerenciar-os">Ordens de Serviço</a></li>
+          <li class="nav-item"><a class="nav-link" routerLink="/clientes">Lista de Clientes</a></li>
+        </ng-container>
+
+        <li class="nav-item" *ngIf="!perfilUsuario">
+          <a class="nav-link" routerLink="/sobre">Sobre</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center">
+        <ng-container *ngIf="!perfilUsuario">
+          <button routerLink="/login" class="btn btn-outline-light me-2">Login</button>
+          <button routerLink="/cadastro" class="btn btn-primary">Criar Conta</button>
+        </ng-container>
+
+        <ng-container *ngIf="perfilUsuario">
+          <span class="badge bg-secondary me-2">{{ perfilUsuario }}</span>
+          <span class="text-white me-3">{{ nomeUsuario }}</span>
+          <button (click)="logout()" class="btn btn-danger btn-sm">Sair</button>
+        </ng-container>
+      </div>
     </div>
-</header>
+  </div>
+</nav>
