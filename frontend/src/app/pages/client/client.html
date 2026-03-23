@@ -1,216 +1,49 @@
-<div class="page">
- 
-  <!-- Navbar improvisada até a principal ficar pronta -->
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <span class="brand-icon">⚙</span>
-      <span class="brand-name">TechReparo</span>
+    <div class="d-flex" id="wrapper">
+        <aside id="sidebar-container" class="bg-white border-end vh-100 position-sticky top-0">
+            <div class="sidebar-heading p-4">
+                <h5 class="m-0 fw-bold text-dark">Sistema de Manutenção</h5>
+                <small class="text-secondary">Carlos Técnico</small>
+            </div>
+            
+            <nav class="p-2">
+                <ul class="nav nav-pills flex-column gap-2">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-dark py-3">
+                            <i class="fa-solid fa-house me-3 text-secondary"></i> indefinido
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active py-3">
+                            <i class="fa-solid fa-list-check me-3"></i> indefinido
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-dark py-3">
+                            <i class="fa-solid fa-tags me-3 text-secondary"></i> indefinido
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-dark py-3">
+                            <i class="fa-solid fa-user-gear me-3 text-secondary"></i> indefinido
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-dark py-3">
+                            <i class="fa-solid fa-file-invoice-dollar me-3 text-secondary"></i> indefinido
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-dark py-3">
+                            <i class="fa-solid fa-chart-pie me-3 text-secondary"></i> indefinido
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="flex-grow-1 p-4 bg-light">
+            <div class="container-fluid">
+                <h2>Visualização de Solicitações</h2>
+            </div>
+        </main>
     </div>
-    <div class="navbar-right">
-      <div class="notif-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-          <path d="M13.73 21a2 2 0 01-3.46 0"/>
-        </svg>
-        <span class="notif-dot">1</span>
-      </div>
-      <div class="user-menu">
-        <div class="user-av">JS</div>
-        <span class="user-nome">João Silva</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#9e9890">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </div>
-    </div>
-  </nav>
- 
-  <div class="content">
- 
-    <!-- PAgina inicial do usuario -->
-    <div class="welcome-bar">
-      <div>
-        <h1>Olá, USER 👋</h1>
-        <p>Acompanhe aqui todas as suas solicitações de reparo.</p>
-      </div>
-      <button class="btn-nova">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        Nova Solicitação
-      </button>
-    </div>
- 
-    <!-- acompanhamento status / vai mudar para dashboard -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-total">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-          </svg>
-        </div>
-        <div>
-          <span class="stat-num">6</span>
-          <span class="stat-lbl">Total</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-open">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
-        <div>
-          <span class="stat-num">4</span>
-          <span class="stat-lbl">Em Andamento</span>
-        </div>
-      </div>
-      <div class="stat-card stat-card-alert">
-        <div class="stat-icon stat-icon-alert">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <div>
-          <span class="stat-num">1</span>
-          <span class="stat-lbl">Aguardando Resposta</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-icon-done">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <div>
-          <span class="stat-num">2</span>
-          <span class="stat-lbl">Finalizadas</span>
-        </div>
-      </div>
-    </div>
- 
-    <!-- pendência de orçamentos -->
-    <div class="alert-banner">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-      <span>Você tem <strong>1 orçamento</strong> aguardando sua aprovação ou rejeição.</span>
-    </div>
- 
-    <!-- tabela pricipal / também será dashboard -->
-    <div class="table-card">
-      <div class="table-card-header">
-        <h2>Minhas Solicitações</h2>
-        <span class="table-count">6 registros</span>
-      </div>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th>Nº OS</th>
-              <th>Data / Hora</th>
-              <th>Equipamento</th>
-              <th>Estado</th>
-              <th class="tc">Detalhes</th>
-              <th class="tc">Ação</th>
-            </tr>
-          </thead>
-          <tbody>
- 
-            <!-- base dos status do equipamento, a ideia -é se tornar dinamica depois -->
-            <!-- ORÇADA -->
-            <tr class="tbl-row" data-estado="ORÇADA">
-              <td class="td-id">OS-2025-001</td>
-              <td class="td-date">01/03/2025<br><span class="td-time">08:30</span></td>
-              <td class="td-equip">Notebook Dell Inspiron 15 300…</td>
-              <td><span class="badge" data-estado="ORÇADA">Orçada</span></td>
-              <td class="tc"><button class="btn-view" title="Visualizar">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button></td>
-              <td class="tc"><button class="btn-acao" data-tipo="orcamento">Ver Orçamento</button></td>
-            </tr>
- 
-            <!-- APROVADA -->
-            <tr class="tbl-row" data-estado="APROVADA">
-              <td class="td-id">OS-2025-002</td>
-              <td class="td-date">28/02/2025<br><span class="td-time">14:00</span></td>
-              <td class="td-equip">Impressora HP LaserJet Pro M4…</td>
-              <td><span class="badge" data-estado="APROVADA">Aprovada</span></td>
-              <td class="tc"><button class="btn-view" title="Visualizar">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button></td>
-              <td class="tc"><!-- sem ação para APROVADA --></td>
-            </tr>
- 
-            <!-- REJEITADA -->
-            <tr class="tbl-row" data-estado="REJEITADA">
-              <td class="td-id">OS-2025-003</td>
-              <td class="td-date">20/02/2025<br><span class="td-time">09:15</span></td>
-              <td class="td-equip">Monitor LG 27" UltraWide 34WN…</td>
-              <td><span class="badge" data-estado="REJEITADA">Rejeitada</span></td>
-              <td class="tc"><button class="btn-view" title="Visualizar">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button></td>
-              <td class="tc"><button class="btn-acao" data-tipo="resgatar">Resgatar Serviço</button></td>
-            </tr>
- 
-            <!-- ARRUMADA -->
-            <tr class="tbl-row" data-estado="ARRUMADA">
-              <td class="td-id">OS-2025-004</td>
-              <td class="td-date">10/02/2025<br><span class="td-time">11:00</span></td>
-              <td class="td-equip">Teclado Mecânico Keychron K8…</td>
-              <td><span class="badge" data-estado="ARRUMADA">Arrumada</span></td>
-              <td class="tc"><button class="btn-view" title="Visualizar">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button></td>
-              <td class="tc"><button class="btn-acao" data-tipo="pagar">Pagar Serviço</button></td>
-            </tr>
- 
-            <!-- PAGA -->
-            <tr class="tbl-row" data-estado="PAGA">
-              <td class="td-id">OS-2024-089</td>
-              <td class="td-date">05/12/2024<br><span class="td-time">13:45</span></td>
-              <td class="td-equip">Desktop Positivo Master D570</td>
-              <td><span class="badge" data-estado="PAGA">Paga</span></td>
-              <td class="tc"><button class="btn-view" title="Visualizar">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button></td>
-              <td class="tc"><button class="btn-acao" data-tipo="visualizar">Acompanhar</button></td>
-            </tr>
- 
-            <!-- FINALIZADA -->
-            <tr class="tbl-row" data-estado="FINALIZADA">
-              <td class="td-id">OS-2025-005</td>
-              <td class="td-date">15/01/2025<br><span class="td-time">10:30</span></td>
-              <td class="td-equip">Smartphone Samsung Galaxy A54…</td>
-              <td><span class="badge" data-estado="FINALIZADA">Finalizada</span></td>
-              <td class="tc"><button class="btn-view" title="Visualizar">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button></td>
-              <td class="tc"><button class="btn-acao" data-tipo="visualizar">Acompanhar</button></td>
-            </tr>
- 
-          </tbody>
-        </table>
-      </div>
-    </div>
- 
-  </div>
-</div>
- 
