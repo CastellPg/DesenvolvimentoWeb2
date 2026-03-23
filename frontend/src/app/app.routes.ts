@@ -4,7 +4,7 @@ import { LoginComponent } from './pages/login/login';
 import { RegistroComponent } from './pages/registro/registro';
 import { Client } from './pages/client/client';
 import { StaffDashboardComponent } from './pages/staff-dashboard/staff-dashboard';
-import { OrderListComponent } from './pages/order-list-component/order-list-component'
+import { ListaPedidoComponent } from './pages/lista-pedido/lista-pedido';
 export const routes: Routes = [
 
     {path: 'home', component: HomeComponent},
@@ -12,7 +12,7 @@ export const routes: Routes = [
     {path: 'registro', component: RegistroComponent},
     {path: 'client', component: Client},
     {path: 'staff-Dashboard', component: StaffDashboardComponent},
-    {path: 'funcionario/pedidos', component: OrderListComponent },
+    {path: 'funcionario/pedidos', component: ListaPedidoComponent },
     
     {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];
