@@ -6,6 +6,7 @@ import { Client } from './pages/client/client';
 import { StaffDashboardComponent } from './pages/staff-dashboard/staff-dashboard';
 import { ListaPedidoComponent } from './pages/lista-pedido/lista-pedido';
 import { ReceitasCategoriaComponent } from './pages/receitas-categorias/receitas-categorias';
+import { CategoriaEquipamentoComponent } from './pages/categoria-equipamento/categoria-equipamento';
 export const routes: Routes = [
 
     {path: 'home', component: HomeComponent},
@@ -15,6 +16,7 @@ export const routes: Routes = [
     {path: 'staff-dashboard', component: StaffDashboardComponent},
     {path: 'funcionario/pedidos', component: ListaPedidoComponent },
     {path: 'receitas-categorias', component: ReceitasCategoriaComponent },
+    {path: 'categorias', component: CategoriaEquipamentoComponent}, 
     
     {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];
