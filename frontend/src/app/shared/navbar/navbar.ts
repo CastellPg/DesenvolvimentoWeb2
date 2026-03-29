@@ -9,16 +9,14 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar implements OnInit {
-  
-  perfilUsuario: string | null = null;
-  nomeUsuario: string | null = null;
+export class NavbarComponent implements OnInit {
+perfilUsuario: string | null = 'CLIENTE';
+  nomeUsuario: string | null ='Zezinho';
 
   constructor(private router: Router) {}
 
   ngOnInit() {
     const userData = localStorage.getItem('usuarioLogado');
-
     if (userData) {
       try {
         const user = JSON.parse(userData);
@@ -35,7 +33,6 @@ export class Navbar implements OnInit {
     localStorage.removeItem('usuarioLogado');
     this.perfilUsuario = null;
     this.nomeUsuario = null;
-    
     this.router.navigate(['/login']);
   }
 }
