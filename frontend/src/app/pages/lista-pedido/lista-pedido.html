@@ -1,29 +1,106 @@
-<div class="continer-fluid p-4">
+<div class="container-fluid p-4">
 
-    <header class="mb-4">
-        <h1 class="h3 fw-bold">Visualização de Solicitações</h1>
-    </header>
+  <header class="mb-4">
+    <h1 class="h3 fw-bold">Visualização de Solicitações - RF013</h1>
+  </header>
 
-    <section class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-body p-4">
+  <section class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-funnel fs-4 me-2"></i>
+        <h2 class="h5 mb-0 fw-semibold">Filtros</h2>
+      </div>
 
-        <div class="d-flex align-items-center mb-4">
-            <i class="bi bi-funnel fs-4 me-2"></i> <h2 class="h5 mb-0 fw-semibold">Filtros</h2>
+      <div class="row">
+        <div class="col-md-4 col-lg-3">
+          <label for="tipoFiltro" class="form-label fw-medium text-secondary small mb-1">Tipo Filtro</label>
+          <div class="input-group">
+            <select class="form-select form-select-sm bg-light border-0 rounded-pill ps-3" id="tipoFiltro">
+              <option selected>Todas</option>
+              <option value="hoje">Hoje</option>
+              <option value="periodo">Período</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="card-body p-4">
+
+        <div class="mb-4">
+          <h2 class="h5 fw-semibold mb-1">Solicitações</h2>
+          <p class="text-muted small mb-0">X Solicitações Encontradas</p>
         </div>
 
-        <div class="row">
-            <div class="col-md-4 col-lg-3">
-                <label for="tipoFiltro" class="form-label fw-medium text-secondary small mb-1">Tipo Filtro</label>
-                <div class="input-group">
-                    <select class="form-select form-select-sm bg-light border-0 rounded-pill ps-3 " id="tipoFiltro">
-                        <option selected>Todas</option>
-                        <option value="hoje">Hoje</option>
-                        <option value="periodo">Período</option>
-                    </select>
-                </div>
+        <div class="solicitacoes-lista">
+
+          <div class="card mb-3 border-0 rounded-3 os-card-paga os-solicitacao-item p-3 shadow-none">
+            <div class="row align-items-center">
+              
+              <div class="col-12 mb-3 d-flex align-items-center gap-2">
+                <span class="badge os-badge-paga text-dark text-uppercase">Paga</span>
+                <span class="text-muted small">#5</span>
+                <span class="text-muted small">20/03/2026, 09:00</span>
+              </div>
+
+              <div class="col-md-3 mb-2 mb-md-0">
+                <label class="d-block text-secondary small">Cliente</label>
+                <span class="fw-medium">Maria Santos</span>
+              </div>
+              <div class="col-md-3 mb-2 mb-md-0">
+                <label class="d-block text-secondary small">Categoria</label>
+                <span class="fw-medium">Microfone</span>
+              </div>
+              <div class="col-md-4 mb-2 mb-md-0">
+                <label class="d-block text-secondary small">Produto</label>
+                <span class="fw-medium">Blue Yeti USB Microphone</span>
+              </div>
+
+              <div class="col-md-2 text-md-end mt-2 mt-md-0">
+                <button class="btn btn-dark w-100 fw-semibold btn-sm py-2 rounded-3">Finalizar Solicitação</button>
+              </div>
+
+              <div class="col-12 mt-3 pt-2 border-top os-border-problema dashed">
+                <label class="d-block text-secondary small">Problema</label>
+                <span class="fw-medium os-text-problema">Microfone não capta áudio</span>
+              </div>
+
             </div>
-        </div>
+          </div> <div class="card mb-3 border-0 rounded-3 os-card-aprovada os-solicitacao-item p-3 shadow-none">
+            <div class="row align-items-center">
+              
+              <div class="col-12 mb-3 d-flex align-items-center gap-2">
+                <span class="badge os-badge-aprovada text-dark text-uppercase">Aprovada</span>
+                <span class="text-muted small">#4</span>
+                <span class="text-muted small">21/03/2026, 11:00</span>
+              </div>
+              
+              <div class="col-md-3 mb-2 mb-md-0">
+                <label class="d-block text-secondary small">Cliente</label>
+                <span class="fw-medium">João Silva</span>
+              </div>
+              <div class="col-md-3 mb-2 mb-md-0">
+                <label class="d-block text-secondary small">Categoria</label>
+                <span class="fw-medium">Notebook</span>
+              </div>
+              <div class="col-md-4 mb-2 mb-md-0">
+                <label class="d-block text-secondary small">Produto</label>
+                <span class="fw-medium">Samsung Galaxy Book</span>
+              </div>
 
-        </div>
-    </section>
+              <div class="col-md-2 text-md-end mt-2 mt-md-0 align-self-end">
+                <button class="btn btn-dark w-100 fw-semibold btn-sm py-2 rounded-2">Efetuar Manutenção</button>
+              </div>
+
+              <div class="col-12 mt-3 pt-2 border-top os-border-problema dashed">
+                <label class="d-block text-secondary small">Problema</label>
+                <span class="fw-medium os-text-problema">Tela com manchas escuras</span>
+              </div>
+
+            </div>
+          </div> </div> </div> </div> </section>
+
 </div>

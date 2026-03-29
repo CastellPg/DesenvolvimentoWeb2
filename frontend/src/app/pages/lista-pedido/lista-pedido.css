@@ -1,0 +1,81 @@
+.os-solicitacao-item {
+    transition: transform 0.2s, box-shadow 0.2;
+    cursor: default;
+}
+
+.os-solicitacao-item:hover {
+    transform: translate(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+.os-solicitacao-item label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.os-text-problema{
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.os-border-problema{
+    border-top: 1px dashed rgba(0,0,0,0.1) !important;
+}
+
+.os-card-paga{
+    background-color: #f3dbbf !important;
+    border: 3px solid #ff9800 !important;
+}
+
+.os-badge-paga{
+    background-color: #ff9800;
+    color:#444;
+}
+
+.os-card-aprovada{
+    background-color: #f5f0ce;
+    border: 3px solid #fbc02d !important;
+}
+
+.os-badge-aprovada{
+    background-color: #fbc02d;
+    color: #000;
+}
+
+.os-card-orcada {
+    background-color: #3e2723 !important;
+    border: 3px solid #8d6e63 !important;
+    color: #fff;
+}
+
+.os-card-orcada .text-muted, 
+.os-card-orcada label {
+    color: rgba(255,255,255,0.7);
+}
+
+.os-badge-orcada{
+    background-color :#8d6e63 ;
+    color: #fff;
+}
+
+.os-card-redirecionada{
+    background-color: #f3e5f5 !important ;
+    border: 3px solid #7b1fa2 !important;
+}
+
+.os-badge-redirecionada{
+    background-color: #7b1fa2;
+    color: #fff;
+}
+
+.btn-dark{
+    background-color: #1a1c24;
+    border: none;
+    transition: background 0.2s;
+}
+
+.btn-dark:hover{
+    background-color: #2d303d !important;
+}
+
