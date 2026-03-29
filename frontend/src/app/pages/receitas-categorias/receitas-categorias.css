@@ -1,0 +1,39 @@
+.container-fluid {
+  background-color: #fdfdfd;
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 12px !important;
+  border: 1px solid #f0f0f0 !important;
+}
+
+.table thead th {
+  color: #6c757d;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table tbody td {
+  color: #444;
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.5em 0.8em;
+  border: 1px solid #eee;
+}
+
+.btn-dark {
+  border-radius: 8px;
+  font-weight: 500;
+  background-color: #1a1a1a;
+  transition: all 0.2s;
+}
+
+.btn-dark:hover {
+  background-color: #333;
+}
