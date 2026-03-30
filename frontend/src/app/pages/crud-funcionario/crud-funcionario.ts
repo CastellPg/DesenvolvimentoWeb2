@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { NavbarComponent } from '../../shared/navbar/navbar';
 
 declare var bootstrap: any;
 
@@ -11,6 +12,7 @@ declare var bootstrap: any;
     HttpClientModule,
     ReactiveFormsModule,
     CommonModule,
+    NavbarComponent,
   ],
   templateUrl: './crud-funcionario.html',
   styleUrl: './crud-funcionario.css',

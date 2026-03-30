@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router';
+import { NavbarComponent } from '../../shared/navbar/navbar';
 
 @Component({
   selector: 'app-staff-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, NavbarComponent],
   templateUrl: './staff-dashboard.html',
   styleUrl: './staff-dashboard.css',
 })

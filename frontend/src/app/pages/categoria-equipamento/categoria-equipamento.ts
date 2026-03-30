@@ -3,6 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'
+import { NavbarComponent } from '../../shared/navbar/navbar';
 
 declare var bootstrap: any;
 
@@ -10,7 +11,8 @@ declare var bootstrap: any;
   selector: 'app-categoria-equipamento',
   imports: [HttpClientModule,
             ReactiveFormsModule,
-            CommonModule,       
+            CommonModule,
+            NavbarComponent       
   ],
   templateUrl: './categoria-equipamento.html',
   styleUrl: './categoria-equipamento.css',
