@@ -1,49 +1,40 @@
-    <div class="d-flex" id="wrapper">
-        <aside id="sidebar-container" class="bg-white border-end vh-100 position-sticky top-0">
-            <div class="sidebar-heading p-4">
-                <h5 class="m-0 fw-bold text-dark">Sistema de Manutenção</h5>
-                <small class="text-secondary">Carlos Técnico</small>
-            </div>
-            
-            <nav class="p-2">
-                <ul class="nav nav-pills flex-column gap-2">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-dark py-3">
-                            <i class="fa-solid fa-house me-3 text-secondary"></i> indefinido
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active py-3">
-                            <i class="fa-solid fa-list-check me-3"></i> indefinido
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-dark py-3">
-                            <i class="fa-solid fa-tags me-3 text-secondary"></i> indefinido
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-dark py-3">
-                            <i class="fa-solid fa-user-gear me-3 text-secondary"></i> indefinido
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-dark py-3">
-                            <i class="fa-solid fa-file-invoice-dollar me-3 text-secondary"></i> indefinido
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-dark py-3">
-                            <i class="fa-solid fa-chart-pie me-3 text-secondary"></i> indefinido
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
+<div class="d-flex" style="min-height: 100vh;">
 
-        <main class="flex-grow-1 p-4 bg-light">
-            <div class="container-fluid">
-                <h2>Visualização de Solicitações</h2>
-            </div>
-        </main>
+  <div class="bg-dark text-white p-3 d-flex flex-column" style="width: 260px; background-color: #1a1c23 !important;">
+
+    <div class="mb-4 mt-2 px-2">
+      <h5 class="fw-bold mb-0">Sistema de</h5>
+      <h5 class="fw-bold">Manutenção</h5>
+      <small class="text-secondary">{{ nomeCliente }}</small>
     </div>
+
+    <ul class="nav flex-column gap-2 mt-3">
+      <li class="nav-item">
+        <a class="nav-link text-white d-flex align-items-center gap-3 p-2 rounded"
+           routerLink="/client/dashboard"
+           routerLinkActive="active-menu">
+           <i class="bi bi-house-door"></i> Página Inicial
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white d-flex align-items-center gap-3 p-2 rounded"
+           routerLink="/client/nova-solicitacao"
+           routerLinkActive="active-menu">
+           <i class="bi bi-plus-lg"></i> Nova Solicitação
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white d-flex align-items-center gap-3 p-2 rounded"
+           routerLink="/client/minhas-solicitacoes"
+           routerLinkActive="active-menu">
+           <i class="bi bi-card-list"></i> Minhas Solicitações
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="flex-grow-1 bg-light text-dark overflow-auto">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
