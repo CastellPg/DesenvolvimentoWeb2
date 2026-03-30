@@ -13,6 +13,6 @@ export const appConfig: ApplicationConfig = {
      provideRouter(routes),
       provideHttpClient(),
       provideNgxMask()
-      { provide: LOCALE_ID, useValue: 'pt-BR' }
+      //{ provide: LOCALE_ID, useValue: 'pt-BR' }
      ],
 };
