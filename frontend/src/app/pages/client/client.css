@@ -1,58 +1,15 @@
-#sidebar-container {
-    min-width: 280px;
-    max-width: 280px;
-    transition: all 0.3s;
+/* cor de fundo para o item de menu ativo */
+.active-menu {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  font-weight: 500;
 }
 
-.sidebar-heading h5 {
-    font-size: 1.1rem;
-    letter-spacing: -0.5px;
+/* hover na sidebar */
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease-in-out;
 }
 
-.nav-link {
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
-    border-radius: 12px;
-    margin: 0 8px; 
-} 
-
-.nav-link i {
-    width: 20px;
-    text-align: center;
+.bi {
+  font-size: 1.1rem;
 }
-
-.nav-pills .nav-link.active, 
-.nav-pills .show > .nav-link {
-    background-color: #0c0c1e !important; 
-    color: #ffffff !important;
-    border-radius: 50px !important; 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.nav-link:hover:not(.active) {
-    background-color: #f8f9fa;
-    color: #000;
-}
-
-.nav-link.active i {
-    color: #ffffff !important;
-}
-
-/*  a tabela vai começar assim, mas tem todo um trumbt, e to saindo do trampo então depois eu arrumo*/
-/* .table-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  box-shadow: var(--sh);
-  overflow: hidden;
-}
- 
-.table-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surf2);
-} */

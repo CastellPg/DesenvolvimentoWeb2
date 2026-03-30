@@ -18,7 +18,38 @@ export const routes: Routes = [
     {path: 'funcionario/pedidos', component: ListaPedidoComponent },
     {path: 'receitas-categorias', component: ReceitasCategoriaComponent },
     {path: 'categorias', component: CategoriaEquipamentoComponent},
-    {path: 'funcionarios', component: CrudFuncionarioComponent}, 
-    
+    {path: 'funcionarios', component: CrudFuncionarioComponent},
+    {
+        path: 'client',
+        component: Client,
+        children: [
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./pages/client/dashboard/dashboard').then(m => m.DashboardComponent)
+            },
+            {
+                path: 'nova-solicitacao',
+                loadComponent: () => import('./pages/client/nova-solicitacao/nova-solicitacao').then(m => m.NovaSolicitacaoComponent)
+            },
+            {
+                path: 'minhas-solicitacoes',
+                loadComponent: () => import('./pages/client/minhas-solicitacoes/minhas-solicitacoes').then(m => m.MinhasSolicitacoesComponent)
+            },
+            {
+                path: 'visualizar/:id',
+                loadComponent: () => import('./pages/client/visualizar-servico/visualizar-servico').then(m => m.VisualizarServicoComponent)
+            },
+            {
+                path: 'orcamento/:id',
+                loadComponent: () => import('./pages/client/orcamento/orcamento').then(m => m.OrcamentoComponent)
+            },
+            {
+                path: 'pagamento/:id',
+                loadComponent: () => import('./pages/client/pagamento/pagamento').then(m => m.PagamentoComponent)
+            }
+        ]
+    },
+
     {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];
