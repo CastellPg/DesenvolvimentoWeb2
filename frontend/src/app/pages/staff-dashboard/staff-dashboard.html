@@ -20,11 +20,7 @@
           <div class="col-12 mb-2">
             <span class="badge px-3 py-2 small me-2" 
                   [ngClass]="{
-                    'bg-secondary': item.status === 'ABERTA' || item.status === 'EM ANÁLISE',
-                    'bg-primary': item.status === 'APROVADA' || item.status === 'ORÇAMENTO GERADO',
-                    'bg-success': item.status === 'FINALIZADA' || item.status === 'PRONTO PARA RETIRADA',
-                    'bg-danger': item.status === 'REPROVADA' || item.status === 'CANCELADA',
-                    'bg-warning text-dark': item.status === 'AGUARDANDO PEÇA' || item.status === 'EM MANUTENÇÃO'
+                    'bg-secondary': item.status === 'ABERTA' || item.status === 'EM ANÁLISE'
                   }"
                   style="font-size: 0.7rem;">
               {{ item.status }}
@@ -39,13 +35,13 @@
 
           <div class="col-md-5">
             <label class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</label>
-            <span class="fw-medium text-dark">{{ item.produto }}</span>
+            <span class="fw-medium text-dark"> {{ item.produto.length > 30 ? (item.produto | slice:0:30) + '...' : item.produto }}</span>
           </div>
 
           <div class="col-md-3 text-end">
-            <button class="btn btn-dark fw-bold px-4 py-2 rounded-3" style="font-size: 0.85rem;">
-              Efetuar Orçamento
-            </button>
+              <a [routerLink]="['/orcamento', item.id]" 
+                 class="text-decoration-none text-white btn btn-dark px-4 py-2 rounded-3 shadow-sm">
+                 Efetuar Orçamento</a>
           </div>
 
         </div>
