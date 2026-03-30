@@ -1,42 +1,52 @@
-<div class="container-fluid py-4">
-  <app-navbar></app-navbar>
+<div class="container-fluid py-4 px-5">
+
   <div class="header mb-4">
-    <h1 class="h3 fw-bold">Página Inicial - Funcionários</h1>
-    <p class="text-secondary">Bem-vindo, Carlos Técnico</p>
+    <h1 class="h3 fw-bold">Página Inicial - Funcionário</h1>
+    <p class="text-secondary small">Bem-vindo, Carlos Técnico</p>
   </div>
 
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
+  <div class="card border-light shadow-sm rounded-4">
+    <div class="card-body p-4">
 
       <div class="d-flex align-items-center mb-1">
-        <i class="bi bi-exclamation-circle me-2 text-danger"></i>
-        <h2 class="h6 mb-0 fw-bold">Solicitações abertas - Atenção Imediata</h2>
+        <i class="bi bi-exclamation-circle text-danger me-2"></i>
+        <h2 class="h6 mb-0 fw-bold">Solicitações Abertas - Atenção Imediata</h2>
       </div>
-      <p class="text-muted small mb-4">Total de 3 solicitação(ões) aguardando orçamento</p>
+      <p class="text-muted small mb-4">Total de {{ solicitacoes.length }} solicitação(ões) aguardando orçamento</p>
 
-      <div class="card mb-3 border rounded-3 p-3 shadow-none">
+      <div *ngFor="let item of solicitacoes" class="card mb-3 border rounded-3 shadow-none p-3">
         <div class="row align-items-center">
           
-          <div class="col-12 mb-3">
-            <span class="badge bg-dark me-2">ABERTA</span>
-            <small class="text-muted">23/03/2026, 09:30</small>
+          <div class="col-12 mb-2">
+            <span class="badge px-3 py-2 small me-2" 
+                  [ngClass]="{
+                    'bg-secondary': item.status === 'ABERTA' || item.status === 'EM ANÁLISE'
+                  }"
+                  style="font-size: 0.7rem;">
+              {{ item.status }}
+            </span>
+            <small class="text-muted" style="font-size: 0.85rem;">{{ item.data }}</small>
           </div>
 
-          <div class="col-md-4 mb-3 mb-md-0">
-            <label class="text-muted d-block small">Cliente</label>
-            <span class="fw-semibold">João Silva</span>
+          <div class="col-md-4">
+            <label class="text-muted d-block" style="font-size: 0.75rem;">Cliente</label>
+            <span class="fw-medium text-dark">{{ item.cliente }}</span>
           </div>
 
-          <div class="col-md-5 mb-3 mb-md-0">
-            <label class="text-muted d-block small">Descrição do Produto</label>
-            <span class="fw-semibold text-truncate d-block">Dell Inspiron 15 3000</span>
+          <div class="col-md-5">
+            <label class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</label>
+            <span class="fw-medium text-dark"> {{ item.produto.length > 30 ? (item.produto | slice:0:30) + '...' : item.produto }}</span>
           </div>
 
-          <div class="col-md-3 text-md-end">
-            <button class="btn btn-dark w-100 fw-bold py-2">Efetuar Orçamento</button>
+          <div class="col-md-3 text-end">
+              <a [routerLink]="['/orcamento', item.id]" 
+                 class="text-decoration-none text-white btn btn-dark px-4 py-2 rounded-3 shadow-sm">
+                 Efetuar Orçamento</a>
           </div>
 
-        </div> </div> </div>
+        </div>
+      </div> 
+      </div>
   </div>
 
 </div>
