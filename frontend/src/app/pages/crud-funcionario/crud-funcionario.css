@@ -1,0 +1,42 @@
+.custom-table thead th {
+    font-weight: 600;
+    color: #6c757d;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.custom-table tbody td {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #f0f0f0 !important;
+    font-size: 0.95rem;
+}
+
+.btn-outline-secondary {
+    color: #555;
+    border-color: #dee2e6;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+.btn-danger {
+    background-color: #e91e63;
+    border-color: #e91e63;
+}
+
+.btn-danger:hover {
+    background-color: #d81b60;
+    border-color: #d81b60;
+}
+
+.btn-dark {
+    background-color: #0d1117;
+    border-color: #0d1117;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #fafafa;
+}
