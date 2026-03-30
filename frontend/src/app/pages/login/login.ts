@@ -1,5 +1,5 @@
 import { Component, WritableSignal, Signal, signal, inject } from '@angular/core';
-import { RouterLink} from "@angular/router";
+import { RouterLink, Router} from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { HttpClient } from "@angular/common/http";
 
@@ -13,6 +13,8 @@ import { HttpClient } from "@angular/common/http";
 export class LoginComponent {
   hidePassword: WritableSignal<boolean> = signal(true);
 
+  mensagemErro: string = '';
+
   togglePassword() {
     this.hidePassword.update(value => !value);
   }
@@ -24,8 +26,9 @@ export class LoginComponent {
   };
 
   private http = inject(HttpClient);
-
+  private router = inject(Router);
   fazerLogin() {
+    this.mensagemErro = '';
     console.log('Pegando os dados do form', this.loginUsuario);
 
     if (!this.loginUsuario.email || !this.loginUsuario.senha) {
@@ -38,10 +41,17 @@ export class LoginComponent {
       return;
     }
 
-    //falta fazer a parte do backend, mas aqui faz a requisição (alterar a URL para o endpoint do backend quando feito)
-    this.http.post('http://localhost:8080/login', this.loginUsuario).subscribe({
+    this.http.post<any>('http://localhost:8080/login', this.loginUsuario).subscribe({
       next: (response) => {
-        console.log('Resposta do servidor:', response);
+        localStorage.setItem('perfil', response.perfil);
+        localStorage.setItem('nomeUsuario', response.nome);
+
+        if (response.perfil === 'CLIENTE') {
+          this.router.navigate(['/client']);
+        } else if (response.perfil === 'FUNCIONARIO') {
+          this.router.navigate(['/staff-dashboard']);
+        }
+        
       },
       error: (error) => {
         console.error('Erro ao fazer login:', error);

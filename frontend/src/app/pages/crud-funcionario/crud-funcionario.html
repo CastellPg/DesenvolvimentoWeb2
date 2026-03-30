@@ -1,0 +1,274 @@
+<div class="container-fluid p-4">
+
+  <header>
+    <h1 class="h3 fw-bold">Controle de Funcionários</h1>
+  </header>
+
+  <section>
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="h5 fw-semibold mb-1">Funcionários</h2>
+            <p class="text-muted small mb-0 me-3">Gerenciar funcionários com acesso ao sistema</p>
+          </div>
+
+          <button
+            class="btn btn-dark px-4 py-2 fw-semibold btn-sm rounded-3 mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#modalNovoFuncionario">
+            <i class="bi bi-plus-lg me-2"></i> Novo Funcionário
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle custom-table">
+            <thead>
+              <tr class="text-secondary small">
+                <th class="border-0 ps-0" style="width: 30%;">Nome</th>
+                <th class="border-0" style="width: 30%;">Email</th>
+                <th class="border-0" style="width: 25%;">Data de Nascimento</th>
+                <th class="border-0 text-end" style="width: 15%;">Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let funcionario of funcionarios">
+                <td class="ps-0 fw-medium text-dark">
+                  {{ funcionario.nome }}
+                  <span *ngIf="funcionario.voce" class="badge bg-primary-subtle text-primary ms-2">Você</span>
+                </td>
+
+                <td class="text-dark">{{ funcionario.email }}</td>
+
+                <td class="text-dark">{{ funcionario.dataNascimento | date:'dd/MM/yyyy' }}</td>
+
+                <td class="text-end pe-0">
+                  <div class="d-flex justify-content-end gap-2">
+                    <button
+                      class="btn btn-outline-secondary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalEditarFuncionario"
+                      (click)="prepararEdicao(funcionario)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button
+                      class="btn btn-danger"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalExcluirFuncionario"
+                      (click)="prepararExclusao(funcionario.id)">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal fade" id="modalNovoFuncionario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow rounded-4">
+
+        <form [formGroup]="formFuncionario" (ngSubmit)="criarFuncionario()">
+
+          <div class="modal-header border-0 px-4 pt-4 d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="modal-title fw-bold">Novo Funcionário</h5>
+              <p class="text-muted small mb-0">Preencha as informações do novo funcionário</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body px-4">
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Nome *</label>
+              <input
+                type="text"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="nome"
+                placeholder="Ex: Carlos Técnico">
+
+              <div *ngIf="formFuncionario.get('nome')?.invalid && formFuncionario.get('nome')?.touched"
+                   class="text-danger small mt-1">
+                Nome é obrigatório
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Email *</label>
+              <input
+                type="email"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="email"
+                placeholder="Ex: funcionario@empresa.com">
+
+              <div *ngIf="formFuncionario.get('email')?.invalid && formFuncionario.get('email')?.touched"
+                   class="text-danger small mt-1">
+                Email válido é obrigatório
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Data de Nascimento *</label>
+              <input
+                type="date"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="dataNascimento">
+
+              <div *ngIf="formFuncionario.get('dataNascimento')?.invalid && formFuncionario.get('dataNascimento')?.touched"
+                   class="text-danger small mt-1">
+                Data de nascimento é obrigatória
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 px-4 pb-4 mt-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary border-secondary-subtle px-4 fw-medium rounded-3"
+              data-bs-dismiss="modal">
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              class="btn btn-dark px-4 fw-medium rounded-3"
+              [disabled]="formFuncionario.invalid"
+              data-bs-dismiss="modal">
+              Criar
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalEditarFuncionario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow rounded-4 p-3">
+
+        <form [formGroup]="formEditarFuncionario" (ngSubmit)="atualizarFuncionario()">
+
+          <div class="modal-header border-0 flex-column align-items-center position-relative">
+            <h4 class="modal-title fw-bold">Editar Funcionário</h4>
+            <p class="text-muted small mb-0">Atualize as informações do funcionário</p>
+            <button type="button" class="btn-close position-absolute end-0 top-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body px-4 pt-4">
+            <div class="mb-3">
+              <label class="form-label fw-bold small mb-1">Nome *</label>
+              <input
+                type="text"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="nome">
+
+              <div *ngIf="formEditarFuncionario.get('nome')?.invalid && formEditarFuncionario.get('nome')?.touched"
+                   class="text-danger small mt-1">
+                Nome obrigatório.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small mb-1">Email *</label>
+              <input
+                type="email"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="email">
+
+              <div *ngIf="formEditarFuncionario.get('email')?.invalid && formEditarFuncionario.get('email')?.touched"
+                   class="text-danger small mt-1">
+                Email válido obrigatório.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small mb-1">Data de Nascimento *</label>
+              <input
+                type="date"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="dataNascimento">
+
+              <div *ngIf="formEditarFuncionario.get('dataNascimento')?.invalid && formEditarFuncionario.get('dataNascimento')?.touched"
+                   class="text-danger small mt-1">
+                Data obrigatória.
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button
+                type="submit"
+                class="btn btn-dark py-2 fw-semibold rounded-3"
+                data-bs-dismiss="modal"
+                [disabled]="formEditarFuncionario.invalid">
+                Atualizar
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary py-2 fw-semibold rounded-3 border-secondary-subtle text-dark"
+                data-bs-dismiss="modal">
+                Cancelar
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalExcluirFuncionario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0 shadow rounded-4 p-3">
+        <div class="modal-body text-center">
+          <div class="text-danger mb-3">
+            <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+          </div>
+
+          <h5 class="fw-bold">Tem certeza?</h5>
+          <p class="text-muted small">Esta ação não poderá ser desfeita e o funcionário será removido permanentemente.</p>
+
+          <div class="d-grid gap-2 mt-4">
+            <button
+              type="button"
+              class="btn btn-danger py-2 fw-semibold rounded-3 border"
+              (click)="confirmarExclusao()"
+              data-bs-dismiss="modal">
+              Sim, excluir
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-light py-2 fw-semibold rounded-3 border"
+              data-bs-dismiss="modal">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="avisoSucesso" class="toast align-items-center text-white bg-dark border-0 rounded-4 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex p-2">
+        <div class="toast-body d-flex align-items-center">
+          <i class="bi bi-check-circle-fill me-2 text-success"></i>
+          <p id="textoAviso" class="mb-0"></p>
+        </div>
+
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+</div>

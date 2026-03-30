@@ -5,7 +5,9 @@ import { RegistroComponent } from './pages/registro/registro';
 import { Client } from './pages/client/client';
 import { StaffDashboardComponent } from './pages/staff-dashboard/staff-dashboard';
 import { ListaPedidoComponent } from './pages/lista-pedido/lista-pedido';
+import { ReceitasCategoriaComponent } from './pages/receitas-categorias/receitas-categorias';
 import { CategoriaEquipamentoComponent } from './pages/categoria-equipamento/categoria-equipamento';
+import { CrudFuncionarioComponent } from './pages/crud-funcionario/crud-funcionario';
 export const routes: Routes = [
 
     {path: 'home', component: HomeComponent},
@@ -14,7 +16,9 @@ export const routes: Routes = [
     {path: 'client', component: Client},
     {path: 'staff-dashboard', component: StaffDashboardComponent},
     {path: 'funcionario/pedidos', component: ListaPedidoComponent },
-    {path: 'categorias', component: CategoriaEquipamentoComponent}, 
+    {path: 'receitas-categorias', component: ReceitasCategoriaComponent },
+    {path: 'categorias', component: CategoriaEquipamentoComponent},
+    {path: 'funcionarios', component: CrudFuncionarioComponent}, 
     
     {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];
