@@ -9,6 +9,7 @@ import { ReceitasCategoriaComponent } from './pages/receitas-categorias/receitas
 import { CategoriaEquipamentoComponent } from './pages/categoria-equipamento/categoria-equipamento';
 import { CrudFuncionarioComponent } from './pages/crud-funcionario/crud-funcionario';
 import { EfetuarOrcamentoComponent } from './pages/efetuar-orcamento/efetuar-orcamento'
+import { ReceitasComponent } from './pages/receitas/receitas';
 
 export const routes: Routes = [
 
@@ -20,6 +21,7 @@ export const routes: Routes = [
     {path: 'funcionario/pedidos', component: ListaPedidoComponent },
     {path: 'receitas-categorias', component: ReceitasCategoriaComponent },
     {path: 'categorias', component: CategoriaEquipamentoComponent},
+    {path: 'receitas', component: ReceitasComponent},
     {path: 'funcionarios', component: CrudFuncionarioComponent},
    /* {
         path: 'client',

@@ -1,0 +1,61 @@
+<div class="container-fluid p-4">
+  <h3 class="mb-4 fw-bold text-dark">Relatório de Receitas - RF019</h3>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-center mb-1">
+        <i class="bi bi-file-earmark-text me-2 fs-5"></i>
+        <h6 class="card-title m-0 fw-bold">Filtros do Relatório</h6>
+      </div>
+      <p class="text-muted small mb-4">Data inicial e final podem ser vazias</p>
+      
+      <div class="row align-items-end g-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-medium small mb-1">Data Início</label>
+          <input type="date" class="form-control px-3 py-2 custom-input" [(ngModel)]="dataInicio" placeholder="dd/mm/aaaa">
+        </div>
+        
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-medium small mb-1">Data Fim</label>
+          <input type="date" class="form-control px-3 py-2 custom-input" [(ngModel)]="dataFim" placeholder="dd/mm/aaaa">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <h6 class="fw-bold mb-1">Receitas por Dia</h6>
+      <p class="text-muted small mb-4">Dados agrupados por dia de abertura da solicitação</p>
+      
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th class="border-0 fw-bold pb-3">Data</th>
+              <th class="border-0 fw-bold pb-3">Quantidade de Solicitações</th>
+              <th class="border-0 fw-bold pb-3 text-end">Valor Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (receitas.length > 0) {
+              @for (item of receitas; track item.data) {
+                <tr>
+                  <td>{{ item.data | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ item.quantidade }}</td>
+                  <td class="text-end">{{ item.valorTotal | currency:'BRL':'symbol':'1.2-2' }}</td>
+                </tr>
+              }
+            } @else {
+              <tr>
+                <td colspan="3" class="text-center py-4 text-muted small">
+                  Nenhuma receita encontrada no período
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
