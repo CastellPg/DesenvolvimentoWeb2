@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../../shared/navbar/navbar';
 
 @Component({
   selector: 'app-receitas-categoria',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule],
   templateUrl: './receitas-categorias.html',
   styleUrl: './receitas-categorias.css'
 })
