@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empresa</title>
-</head>
-<body>
-</body>
+<div class="d-flex min-vh-100">
+  <aside class="sidebar bg-white border-end shadow-sm" style="width: 280px;">
+     <app-navbar></app-navbar> 
+  </aside>
 
-<router-outlet></router-outlet>
-</html>
+  <main class="flex-grow-1 bg-light overflow-auto">
+    <router-outlet></router-outlet>
+  </main>
+</div>

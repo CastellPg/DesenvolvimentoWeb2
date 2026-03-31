@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '../../shared/navbar/navbar';
 
 type StatusSolicitacao =
   | 'PAGA'
@@ -24,7 +23,7 @@ interface Solicitacao {
 
 @Component({
   selector: 'app-lista-pedido',
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './lista-pedido.html',
   styleUrl: './lista-pedido.css',
 })
