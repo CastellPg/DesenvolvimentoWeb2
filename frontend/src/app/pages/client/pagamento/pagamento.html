@@ -1,0 +1,70 @@
+<div class="container-fluid p-4">
+
+  <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2 hover-dark">
+    <i class="bi bi-arrow-left"></i> Voltar
+  </a>
+
+  <div class="mb-4">
+    <h3 class="fw-bold mb-1">Serviço Concluído</h3>
+    <p class="text-muted">Revise os detalhes e confirme o pagamento do serviço</p>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 col-12 col-xl-8">
+    <div class="card-body p-4 p-md-5">
+
+      <div class="row mb-4">
+        <div class="col-md-8 mb-3 mb-md-0">
+          <small class="text-muted d-block mb-1">Data/Hora da Solicitação</small>
+          <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ servico.dataHora | date:'dd/MM/yyyy, HH:mm' }}</span>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted d-block mb-1">Status</small>
+          <span class="badge badge-arrumada px-3 py-2 fs-6">{{ servico.estado }}</span>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-8 mb-3 mb-md-0">
+          <small class="text-muted d-block mb-1">Descrição do Equipamento</small>
+          <h5 class="fw-bold mb-0">{{ servico.equipamento }}</h5>
+        </div>
+        <div class="col-md-4">
+          <small class="text-muted d-block mb-1">Categoria</small>
+          <span class="fw-medium">{{ servico.categoria }}</span>
+        </div>
+      </div>
+
+      <div class="mb-5 border-bottom pb-4">
+        <small class="text-muted d-block mb-1">Descrição do Defeito Resolvido</small>
+        <p class="mb-0">{{ servico.descricaoDefeito }}</p>
+      </div>
+
+      <div class="bg-light p-4 rounded-4 mb-4">
+        <h5 class="fw-bold mb-4">Resumo do Pagamento</h5>
+
+        <div class="d-flex justify-content-between mb-3">
+          <span class="text-muted">Valor do Serviço</span>
+          <span class="fw-medium">{{ servico.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-2">
+          <h5 class="fw-bold mb-0">Total a Pagar</h5>
+          <h3 class="text-success fw-bold mb-0">{{ servico.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h3>
+        </div>
+      </div>
+
+      <div class="alert bg-warning-subtle text-dark border-0 rounded-3 mb-4 p-3 d-flex align-items-center gap-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+        <small><strong>Atenção:</strong> Ao confirmar o pagamento, você atesta o recebimento do equipamento e o pleno funcionamento do mesmo.</small>
+      </div>
+
+      <div class="d-grid">
+        <button (click)="confirmarPagamento()" class="btn btn-dark btn-lg py-3 rounded-pill fw-medium d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-credit-card-fill"></i> Confirmar Pagamento
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

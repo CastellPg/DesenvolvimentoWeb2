@@ -1,0 +1,62 @@
+<div class="container-fluid p-4">
+
+  <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2 hover-dark">
+    <i class="bi bi-arrow-left"></i> Voltar
+  </a>
+
+  <div class="mb-4">
+    <h3 class="fw-bold mb-1">Solicitação de Manutenção</h3>
+    <p class="text-muted">Preencha os dados do equipamento que necessita de manutenção</p>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 col-12 col-lg-8">
+    <div class="card-body p-4 p-md-5">
+
+      <form [formGroup]="solicitacaoForm" (ngSubmit)="onSubmit()">
+
+        <div class="mb-4">
+          <label for="descricao" class="form-label fw-medium text-muted small">Descrição do Equipamento</label>
+          <input type="text" id="descricao" class="form-control form-control-lg bg-light border-0"
+                 formControlName="descricaoEquipamento"
+                 placeholder="Ex: Notebook Dell Inspiron 15 3000"
+                 [ngClass]="{'is-invalid': solicitacaoForm.get('descricaoEquipamento')?.invalid && solicitacaoForm.get('descricaoEquipamento')?.touched}">
+
+          <div class="invalid-feedback">A descrição do equipamento é obrigatória.</div>
+        </div>
+
+        <div class="mb-4">
+          <label for="categoria" class="form-label fw-medium text-muted small">Categoria de Equipamento</label>
+          <select id="categoria" class="form-select form-select-lg bg-light border-0"
+                  formControlName="categoria"
+                  [ngClass]="{'is-invalid': solicitacaoForm.get('categoria')?.invalid && solicitacaoForm.get('categoria')?.touched}">
+            <option value="" disabled selected>Selecione...</option>
+            <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+          </select>
+
+          <div class="invalid-feedback">Por favor, selecione uma categoria válida.</div>
+        </div>
+
+        <div class="mb-5">
+          <label for="defeito" class="form-label fw-medium text-muted small">Descrição do Defeito</label>
+          <textarea id="defeito" rows="4" class="form-control form-control-lg bg-light border-0"
+                    formControlName="descricaoDefeito"
+                    placeholder="Descreva o problema detalhadamente..."
+                    [ngClass]="{'is-invalid': solicitacaoForm.get('descricaoDefeito')?.invalid && solicitacaoForm.get('descricaoDefeito')?.touched}"></textarea>
+
+          <div class="invalid-feedback">A descrição do defeito é obrigatória.</div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
+          <button type="submit" class="btn btn-dark btn-lg px-4 rounded-pill fw-medium text-white">
+            Enviar Solicitação
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-lg px-4 rounded-pill fw-medium" routerLink="/client/dashboard">
+            Cancelar
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>

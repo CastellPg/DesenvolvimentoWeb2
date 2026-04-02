@@ -2,8 +2,9 @@
   <div class="header-section mb-4">
     <h4 class="fw-bold mb-0">Techmaint <br> Solutions</h4>
     <p class="user-name mt-2 mb-0">
-      {{ nomeUsuario ? nomeUsuario : 'Visitante' }} 
+      {{ nomeUsuario ? nomeUsuario : 'Visitante' }}
     </p>
+    <p style="color: red; font-weight: bold;"> PERFIL ATUAL: {{ perfilUsuario }}</p>
   </div>
 
   <nav class="nav flex-column gap-1">
@@ -11,27 +12,27 @@
     <!-- region funcionário -->
 
     <ng-container *ngIf="perfilUsuario === 'FUNCIONARIO'">
-      
+
       <a class="nav-link" routerLink="/staff" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="bi bi-house-door"></i> Página Inicial
       </a>
-      
+
       <a class="nav-link" routerLink="/funcionario/pedidos" routerLinkActive="active">
         <i class="bi bi-list-ul"></i> Solicitações
       </a>
-  
+
       <a class="nav-link" routerLink="/categorias" routerLinkActive="active">
         <i class="bi bi-diagram-2"></i> Categorias
       </a>
-      
+
       <a class="nav-link" routerLink="/funcionarios" routerLinkActive="active">
         <i class="bi bi-people"></i> Funcionários
       </a>
-      
+
       <a class="nav-link" routerLink="/receitas" routerLinkActive="active">
         <i class="bi bi-bar-chart"></i> Receitas
       </a>
-      
+
       <a class="nav-link" routerLink="/receitas-categorias" routerLinkActive="active">
         <i class="bi bi-pie-chart"></i> Receitas/Categoria
       </a>
@@ -39,14 +40,19 @@
     </ng-container>
 
     <!-- region cliente -->
-     
+
     <ng-container *ngIf="perfilUsuario === 'CLIENTE'">
-      <a class="nav-link" routerLink="/meus-reparos" routerLinkActive="active">
-        <i class="bi bi-tools"></i> Meus Reparos
+
+      <a class="nav-link" routerLink="/client/dashboard" routerLinkActive="active">
+        <i class="bi bi-house-door"></i> Dashboard Cliente
+    </a>
+      <a class="nav-link" routerLink="/client/minhas-solicitacoes" routerLinkActive="active">
+        <i class="bi bi-tools"></i> Minhas solicitações
       </a>
-      <a class="nav-link" routerLink="/solicitar" routerLinkActive="active">
-        <i class="bi bi-plus-lg"></i> Novo Orçamento
+      <a class="nav-link" routerLink="/client/nova-solicitacao" routerLinkActive="active">
+        <i class="bi bi-plus-lg"></i> Nova Solicitação
       </a>
+
     </ng-container>
 
     <ng-container *ngIf="!perfilUsuario">

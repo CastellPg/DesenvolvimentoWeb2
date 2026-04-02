@@ -6,13 +6,15 @@ import { provideNgxMask } from 'ngx-mask';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 
+registerLocaleData(localePt);
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
      provideRouter(routes),
       provideHttpClient(),
-      provideNgxMask()
-      //{ provide: LOCALE_ID, useValue: 'pt-BR' }
+      provideNgxMask(),
+      { provide: LOCALE_ID, useValue: 'pt-BR' }
      ],
 };
