@@ -1,0 +1,74 @@
+<div class="container-fluid p-4">
+
+  <div class="mb-4">
+    <h2 class="fw-bold mb-0">Dashboard - Cliente</h2>
+    <p class="text-muted">Bem-vindo, {{ nomeCliente }}</p>
+  </div>
+
+  <div class="alert alert-danger d-flex align-items-center border-0 bg-danger-subtle text-danger p-3 mb-4 rounded-3" role="alert">
+    <i class="bi bi-exclamation-circle me-2 fs-5"></i>
+    <div>
+      <h6 class="mb-0 fw-bold">Solicitações Abertas - Atenção Imediata</h6>
+      <small>Existem solicitações aguardando sua ação.</small>
+    </div>
+  </div>
+
+ <div class="d-flex flex-column gap-3">
+
+    <div class="card border-0 shadow-sm rounded-4" *ngFor="let req of solicitacoes">
+      <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+
+        <div class="flex-grow-1 row align-items-center w-100">
+
+          <div class="col-12 col-md-6 mb-3 mb-md-0">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge {{ getBadgeClass(req.estado) }} px-2 py-1">{{ req.estado }}</span>
+              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
+            </div>
+            <small class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</small>
+            <h6 class="fw-bold mb-0">{{ req.equipamento | slice:0:30 }}{{ req.equipamento.length > 30 ? '...' : '' }}</h6>
+
+            <div *ngIf="req.valor" class="mt-2">
+              <small class="text-muted d-block" style="font-size: 0.75rem;">Valor Orçado</small>
+              <h6 class="text-success fw-bold mb-0">{{ req.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h6>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-center justify-content-center">
+            <small class="text-muted d-block" style="font-size: 0.75rem;">Categoria</small>
+            <span class="fw-medium">{{ req.categoria }}</span>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column align-items-end justify-content-center" style="min-width: 180px;">
+
+          <a [routerLink]="['/client/visualizar', req.id]" class="text-decoration-none text-muted mb-2 small d-flex align-items-center gap-1 hover-dark">
+            <i class="bi bi-eye"></i> Visualizar
+          </a>
+
+          <ng-container [ngSwitch]="req.estado">
+
+            <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-sm w-100">
+              Aprovar/Rejeitar Serviço
+            </button>
+
+            <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100">
+              <i class="bi bi-arrow-counterclockwise"></i> Resgatar Serviço
+            </button>
+
+            <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100">
+              <i class="bi bi-credit-card"></i> Pagar Serviço
+            </button>
+
+            <button *ngSwitchCase="'ABERTA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-medium btn-sm w-100">
+              Visualizar Serviço
+            </button>
+
+          </ng-container>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

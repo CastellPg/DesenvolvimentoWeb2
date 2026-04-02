@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
@@ -10,7 +10,7 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './navbar.css',
 })
 export class NavbarComponent implements OnInit {
-perfilUsuario: string | null = "FUNCIONARIO";
+perfilUsuario: string | null = "CLIENTE";
   nomeUsuario: string | null = "Corno Da Silva";
 
   constructor(private router: Router) {}
@@ -20,11 +20,11 @@ perfilUsuario: string | null = "FUNCIONARIO";
     if (userData) {
       try {
         const user = JSON.parse(userData);
-        this.perfilUsuario = user.perfil; 
+        this.perfilUsuario = user.perfil;
         this.nomeUsuario = user.nome;
       } catch (e) {
         console.error("Erro ao ler dados do usuário", e);
-        this.logout(); 
+        this.logout();
       }
     }
   }

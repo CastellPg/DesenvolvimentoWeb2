@@ -23,9 +23,9 @@ export const routes: Routes = [
     {path: 'categorias', component: CategoriaEquipamentoComponent},
     {path: 'receitas', component: ReceitasComponent},
     {path: 'funcionarios', component: CrudFuncionarioComponent},
-   /* {
+    {
         path: 'client',
-        component: Client,
+        component: ClientComponent,
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             {
@@ -56,7 +56,7 @@ export const routes: Routes = [
     },
 
     {path: 'funcionarios', component: CrudFuncionarioComponent},
-    {path: 'orcamento/:id', component: EfetuarOrcamentoComponent},*/
+    {path: 'orcamento/:id', component: EfetuarOrcamentoComponent},
 
     {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];
