@@ -4,12 +4,15 @@ import { LoginComponent } from './pages/login/login';
 import { RegistroComponent } from './pages/registro/registro';
 import { ClientComponent } from './pages/client/client';
 import { StaffDashboardComponent } from './pages/staff-dashboard/staff-dashboard';
-import { ListaPedidoComponent } from './pages/lista-pedido/lista-pedido';
-import { ReceitasCategoriaComponent } from './pages/receitas-categorias/receitas-categorias';
-import { CategoriaEquipamentoComponent } from './pages/categoria-equipamento/categoria-equipamento';
-import { CrudFuncionarioComponent } from './pages/crud-funcionario/crud-funcionario';
-import { EfetuarOrcamentoComponent } from './pages/efetuar-orcamento/efetuar-orcamento'
-import { ReceitasComponent } from './pages/receitas/receitas';
+import { ListaPedidoComponent } from './pages/staff-dashboard/lista-pedido/lista-pedido';
+import { ReceitasCategoriaComponent } from './pages/staff-dashboard/receitas-categorias/receitas-categorias';
+import { CategoriaEquipamentoComponent } from './pages/staff-dashboard/categoria-equipamento/categoria-equipamento';
+import { CrudFuncionarioComponent } from './pages/staff-dashboard/crud-funcionario/crud-funcionario';
+import { EfetuarOrcamentoComponent } from './pages/staff-dashboard/efetuar-orcamento/efetuar-orcamento'
+import { ReceitasComponent } from './pages/staff-dashboard/receitas/receitas';
+import { EfetuarManutencaoComponent } from './pages/staff-dashboard/efetuar-manutencao/efetuar-manutencao';
+import { FinalizarSolicitacaoComponent } from './pages/staff-dashboard/finalizar-solicitacao/finalizar-solicitacao';
+import { RedirecionarManutencaoComponent } from './pages/staff-dashboard/redirecionar-manutencao/redirecionar-manutencao';
 
 export const routes: Routes = [
 
@@ -23,6 +26,11 @@ export const routes: Routes = [
     {path: 'categorias', component: CategoriaEquipamentoComponent},
     {path: 'receitas', component: ReceitasComponent},
     {path: 'funcionarios', component: CrudFuncionarioComponent},
+    {path: 'efetuar-orcamento/:id', component: EfetuarOrcamentoComponent },
+    {path: 'efetuar-manutencao/:id', component: EfetuarManutencaoComponent },
+    {path: 'finalizar-solicitacao/:id', component: FinalizarSolicitacaoComponent },
+    {path: 'solicitacoes', component: ListaPedidoComponent },
+    { path: 'redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent },
     {
         path: 'client',
         component: ClientComponent,

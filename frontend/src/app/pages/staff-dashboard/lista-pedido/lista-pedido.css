@@ -23,6 +23,16 @@
     border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
 }
 
+.os-card-aberta {
+    background-color: #e5e7eb !important;
+    border: 2px solid #b8bec8 !important;
+}
+
+.os-badge-aberta {
+    background-color: #7b8594;
+    color: #fff;
+}
+
 .os-card-paga {
     background-color: #f7e1c7 !important;
     border: 2px solid #ff9800 !important;
@@ -54,13 +64,40 @@
 }
 
 .os-card-orcada {
-    background-color: #ede3df !important;
-    border: 2px solid #8d6e63 !important;
+    background-color: #8a3b00 !important;
+    border: 2px solid #5f2500 !important;
 }
 
 .os-badge-orcada {
-    background-color: #8d6e63;
+    background-color: #8a3b00;
     color: #fff;
+}
+
+.os-card-orcada label,
+.os-card-orcada .fw-semibold,
+.os-card-orcada .fw-medium,
+.os-card-orcada .text-muted,
+.os-card-orcada .os-text-problema,
+.os-card-orcada small,
+.os-card-orcada .col-md-3 span,
+.os-card-orcada .col-md-4 span,
+.os-card-orcada .col-12 span {
+    color: #f3f4f6 !important;
+}
+
+.os-card-orcada .badge {
+    background-color: #8a3b00 !important;
+    color: #ffffff !important;
+}
+
+.os-card-orcada .os-botao-status {
+    background-color: #e5e7eb;
+    color: #4b5563 !important;
+    border: 1px solid #cbd5e1;
+}
+
+.os-card-orcada .os-border-problema {
+    border-top: 1px dashed rgba(255, 255, 255, 0.18) !important;
 }
 
 .os-card-redirecionada {
@@ -105,12 +142,6 @@
     border: 1px solid transparent;
 }
 
-.os-indicador-orcada {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border-color: #d1d5db;
-}
-
 .os-indicador-finalizada {
     background-color: #ecfdf5;
     color: #166534;
@@ -123,9 +154,25 @@
     border-color: #d1d5db;
 }
 
+.os-botao-status {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    cursor: not-allowed;
+    font-size: 0.85rem;
+}
+
+.os-card-orcada .os-botao-status {
+    background-color: #e5e7eb;
+    color: #4b5563 !important;
+    border: 1px solid #cbd5e1;
+}
+
 .form-select:focus,
+.form-control:focus,
 .btn:focus {
     box-shadow: none;
+    outline: none;
 }
 
 .card {
