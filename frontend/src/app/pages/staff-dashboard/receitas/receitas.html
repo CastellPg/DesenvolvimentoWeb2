@@ -19,6 +19,12 @@
           <label class="form-label fw-medium small mb-1">Data Fim</label>
           <input type="date" class="form-control px-3 py-2 custom-input" [(ngModel)]="dataFim" placeholder="dd/mm/aaaa">
         </div>
+
+        <div class="col-12 col-md-4 text-md-end">
+          <button class="btn btn-dark px-4 py-2" (click)="gerarPdf()">
+            <i class="bi bi-download me-2"></i> Gerar PDF
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -38,8 +44,8 @@
             </tr>
           </thead>
           <tbody>
-            @if (receitas.length > 0) {
-              @for (item of receitas; track item.data) {
+            @if (receitasFiltradas.length > 0) {
+              @for (item of receitasFiltradas; track item.data) {
                 <tr>
                   <td>{{ item.data | date:'dd/MM/yyyy' }}</td>
                   <td>{{ item.quantidade }}</td>
