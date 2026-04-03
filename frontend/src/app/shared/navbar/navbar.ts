@@ -11,7 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 perfilUsuario: string | null = "FUNCIONARIO";
-  nomeUsuario: string | null = "Corno Da Silva";
+  nomeUsuario: string | null = "Silvio Soares";
 
   constructor(private router: Router) {}
 
@@ -28,7 +28,20 @@ perfilUsuario: string | null = "FUNCIONARIO";
       }
     }
   }
+  alternarPerfil() {
+    if (this.perfilUsuario === 'FUNCIONARIO') {
+      this.perfilUsuario = 'CLIENTE';
+      this.nomeUsuario = 'Marquinhos Lima';
+      this.router.navigate(['/client/dashboard']);
+    } else {
+      this.perfilUsuario = 'FUNCIONARIO';
+      this.nomeUsuario = 'Silvio Soares';
+      this.router.navigate(['/staff']);
+    }
 
+    const novoUsuario = { nome: this.nomeUsuario, perfil: this.perfilUsuario };
+    localStorage.setItem('usuarioLogado', JSON.stringify(novoUsuario));
+  }
   logout() {
     localStorage.removeItem('usuarioLogado');
     this.perfilUsuario = null;

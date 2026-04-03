@@ -62,8 +62,10 @@
     </ng-container>
 
   </nav>
-
   <div class="mt-auto" *ngIf="perfilUsuario">
+    <button (click)="alternarPerfil()" class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2">
+      <i class="bi bi-box-arrow-left"></i> Trocar Conta
+    </button>
     <button (click)="logout()" class="btn btn-outline-danger w-100 mt-4 d-flex align-items-center justify-content-center gap-2">
       <i class="bi bi-box-arrow-left"></i> Sair
     </button>
