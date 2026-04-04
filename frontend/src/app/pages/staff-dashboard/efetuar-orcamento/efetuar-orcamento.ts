@@ -36,10 +36,14 @@ export class EfetuarOrcamentoComponent implements OnInit {
   }
 
   carregarDadosSimulados(id: string | null) {
-    const listaSalva = JSON.parse(localStorage.getItem('listaSolicitacoes') || '[]');
-    const encontrada = listaSalva.find((item: any) => item.id.toString() === id);
-    this.solicitacao = encontrada || listaSalva[0];
-  }
+   const listaSalva = JSON.parse(localStorage.getItem('listaSolicitacoes') || '[]');
+   const encontrada = listaSalva.find((item: any) => item.id.toString() === id);
+   this.solicitacao = encontrada || listaSalva[0];
+
+   if (this.solicitacao && !this.solicitacao.dataAbertura) {
+    this.solicitacao.dataAbertura = this.solicitacao.data;
+   }
+ }
 
   confirmarOrcamento() {
     if (this.formOrcamento.valid) {

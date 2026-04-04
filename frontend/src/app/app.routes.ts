@@ -29,7 +29,7 @@ export const routes: Routes = [
     {path: 'efetuar-manutencao/:id', component: EfetuarManutencaoComponent },
     {path: 'finalizar-solicitacao/:id', component: FinalizarSolicitacaoComponent },
     {path: 'solicitacoes', component: ListaPedidoComponent },
-    { path: 'redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent },
+    {path: 'redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent },
     {
         path: 'client',
         component: ClientComponent,

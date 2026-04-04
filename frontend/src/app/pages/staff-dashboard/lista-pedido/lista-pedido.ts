@@ -10,6 +10,7 @@ type StatusSolicitacao =
   | 'EM MANUTENÇÃO'
   | 'ORÇADA'
   | 'REDIRECIONADA'
+  | 'ARRUMADA'
   | 'FINALIZADA';
 
 type TipoFiltroData = 'todas' | 'hoje' | 'periodo';
@@ -36,6 +37,7 @@ interface Solicitacao {
   manutencaoRealizada?: string;
   dataManutencao?: string;
   orientacoesCliente?: string;
+  funcionarioDestino?: string;
 }
 
 @Component({
@@ -73,32 +75,32 @@ export class ListaPedidoComponent implements OnInit {
       id: 2,
       status: 'ABERTA',
       data: '23/03/2026, 10:45',
-      categoria: 'Console',
-      produto: 'PlayStation 5 - Barulho no Cooler',
-      problema: 'Barulho excessivo no cooler ao iniciar jogos',
+      categoria: 'Impressora',
+      produto: 'HP LaserJet Pro M404dn',
+      problema: 'Impressora com erro de papel atolado',
       acao: 'Efetuar Orçamento',
       cliente: {
-        nome: 'Carlos Alberto',
-        email: 'carlos@email.com',
-        cpf: '222.333.444-55',
-        telefone: '(41) 99988-7766',
-        endereco: 'Av. Sete de Setembro, 500 - Curitiba, PR'
+        nome: 'Maria Santos',
+        email: 'maria@email.com',
+        cpf: '987.654.321-00',
+        telefone: '(11) 91234-5678',
+        endereco: 'Rua das Flores, 120 - São Paulo, SP'
       }
     },
     {
       id: 3,
-      status: 'ABERTA',
-      data: '22/03/2026, 11:00',
-      categoria: 'Placa Mãe',
-      produto: 'Placa Mãe Asus B450',
-      problema: 'Não reconhece memória no slot 2',
-      acao: 'Efetuar Orçamento',
+      status: 'ORÇADA',
+      data: '22/03/2026, 14:20',
+      categoria: 'Desktop',
+      produto: 'Lenovo ThinkCentre M720',
+      problema: 'Desktop reiniciando sozinho',
+      acao: 'Aguardando Resposta',
       cliente: {
-        nome: 'Lucas Lima',
-        email: 'lucas@email.com',
-        cpf: '999.888.777-11',
-        telefone: '(41) 91122-3344',
-        endereco: 'Rua XV de Novembro, 20 - Curitiba, PR'
+        nome: 'Pedro Oliveira',
+        email: 'pedro@email.com',
+        cpf: '111.222.333-44',
+        telefone: '(41) 99999-1111',
+        endereco: 'Av. Brasil, 50 - Curitiba, PR'
       }
     },
     {
@@ -109,13 +111,13 @@ export class ListaPedidoComponent implements OnInit {
       produto: 'Samsung Galaxy Book',
       problema: 'Tela com manchas escuras',
       acao: 'Efetuar Manutenção',
-      valorOrcamento: 'R$ 350,00',
+      valorOrcamento: 'R$ 300,00',
       cliente: {
         nome: 'João Silva',
         email: 'joao@email.com',
-        cpf: '222.333.444-55',
-        telefone: '(41) 98888-2222',
-        endereco: 'Rua Marechal Deodoro, 50 - Curitiba, PR'
+        cpf: '123.456.789-00',
+        telefone: '(11) 98765-4321',
+        endereco: 'Rua A, 123 - São Paulo, SP'
       }
     },
     {
@@ -140,19 +142,36 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
+      id: 6,
+      status: 'ABERTA',
+      data: '23/03/2026, 08:00',
+      categoria: 'Notebook',
+      produto: 'Acer Aspire 5',
+      problema: 'Teclado com teclas travadas',
+      acao: 'Efetuar Orçamento',
+      cliente: {
+        nome: 'Pedro Oliveira',
+        email: 'pedro@email.com',
+        cpf: '111.222.333-44',
+        telefone: '(41) 99999-1111',
+        endereco: 'Av. Brasil, 50 - Curitiba, PR'
+      }
+    },
+    {
       id: 7,
       status: 'REDIRECIONADA',
       data: '22/03/2026, 16:00',
       categoria: 'Impressora',
       produto: 'Epson EcoTank L3150',
       problema: 'Impressora não imprime preto',
-      acao: 'Ver Detalhes',
+      acao: 'Efetuar Manutenção',
+      valorOrcamento: 'R$ 120,00',
       cliente: {
         nome: 'João Silva',
         email: 'joao@email.com',
-        cpf: '123.123.123-12',
-        telefone: '(41) 95555-1122',
-        endereco: 'Rua Chile, 44 - Curitiba, PR'
+        cpf: '123.456.789-00',
+        telefone: '(11) 98765-4321',
+        endereco: 'Rua A, 123 - São Paulo, SP'
       }
     }
   ];
@@ -259,6 +278,8 @@ export class ListaPedidoComponent implements OnInit {
         return 'os-card-orcada';
       case 'REDIRECIONADA':
         return 'os-card-redirecionada';
+      case 'ARRUMADA':
+        return 'os-card-arrumada';
       case 'FINALIZADA':
         return 'os-card-finalizada';
       default:
@@ -280,6 +301,8 @@ export class ListaPedidoComponent implements OnInit {
         return 'os-badge-orcada';
       case 'REDIRECIONADA':
         return 'os-badge-redirecionada';
+      case 'ARRUMADA':
+        return 'os-badge-arrumada';
       case 'FINALIZADA':
         return 'os-badge-finalizada';
       default:
@@ -289,6 +312,8 @@ export class ListaPedidoComponent implements OnInit {
 
   getClasseIndicador(status: StatusSolicitacao): string {
     switch (status) {
+      case 'ARRUMADA':
+        return 'os-indicador-arrumada';
       case 'FINALIZADA':
         return 'os-indicador-finalizada';
       default:
