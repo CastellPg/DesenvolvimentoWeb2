@@ -119,15 +119,20 @@
             </a>
 
             <a *ngIf="solicitacao.status === 'REDIRECIONADA'"
-               [routerLink]="['/detalhe-solicitacao', solicitacao.id]"
+            [routerLink]="['/efetuar-manutencao', solicitacao.id]"
                class="text-decoration-none text-white btn btn-dark px-3 py-2 rounded-3 shadow-sm w-100">
-              Ver Detalhes
+             Efetuar Manutenção
             </a>
 
             <span *ngIf="solicitacao.status === 'ORÇADA'"
                   class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-botao-status">
               Aguardando Resposta
             </span>
+
+            <span *ngIf="solicitacao.status === 'ARRUMADA'"
+      class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-botao-status">
+  Aguardando Pagamento do Cliente
+</span>
 
             <span *ngIf="solicitacao.status === 'FINALIZADA'"
                   class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-indicador-acao"
