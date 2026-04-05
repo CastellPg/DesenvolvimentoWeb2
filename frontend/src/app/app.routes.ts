@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home';
 import { LoginComponent } from './pages/login/login';
 import { RegistroComponent } from './pages/registro/registro';
 import { ClientComponent } from './pages/client/client';
@@ -16,7 +15,6 @@ import { RedirecionarManutencaoComponent } from './pages/staff-dashboard/redirec
 
 export const routes: Routes = [
 
-    {path: 'home', component: HomeComponent},
     {path: 'login', component: LoginComponent},
     {path: 'registro', component: RegistroComponent},
     {path: 'staff', component: StaffDashboardComponent},
