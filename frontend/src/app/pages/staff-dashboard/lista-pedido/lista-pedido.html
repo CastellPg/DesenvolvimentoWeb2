@@ -95,7 +95,7 @@
           <div class="col-md-4">
             <label class="text-muted d-block">Produto</label>
             <span class="fw-medium">
-              {{ solicitacao.produto.length > 30 ? (solicitacao.produto | slice:0:30) + '...' : solicitacao.produto }}
+              {{ solicitacao.produto.length > 30 ? (solicitacao.produto | slice:0:30) + '.' : solicitacao.produto }}
             </span>
           </div>
 
@@ -106,22 +106,16 @@
               Efetuar Orçamento
             </a>
 
-            <a *ngIf="solicitacao.status === 'APROVADA'"
+            <a *ngIf="solicitacao.status === 'APROVADA' || solicitacao.status === 'REDIRECIONADA'"
                [routerLink]="['/efetuar-manutencao', solicitacao.id]"
                class="text-decoration-none text-white btn btn-dark px-3 py-2 rounded-3 shadow-sm w-100">
               Efetuar Manutenção
             </a>
 
-            <a *ngIf="solicitacao.status === 'PAGA' || solicitacao.status === 'EM MANUTENÇÃO'"
+            <a *ngIf="solicitacao.status === 'PAGA'"
                [routerLink]="['/finalizar-solicitacao', solicitacao.id]"
                class="text-decoration-none text-white btn btn-dark px-3 py-2 rounded-3 shadow-sm w-100">
               Finalizar Solicitação
-            </a>
-
-            <a *ngIf="solicitacao.status === 'REDIRECIONADA'"
-            [routerLink]="['/efetuar-manutencao', solicitacao.id]"
-               class="text-decoration-none text-white btn btn-dark px-3 py-2 rounded-3 shadow-sm w-100">
-             Efetuar Manutenção
             </a>
 
             <span *ngIf="solicitacao.status === 'ORÇADA'"
@@ -130,9 +124,9 @@
             </span>
 
             <span *ngIf="solicitacao.status === 'ARRUMADA'"
-      class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-botao-status">
-  Aguardando Pagamento do Cliente
-</span>
+                  class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-botao-status">
+              Aguardando Pagamento do Cliente
+            </span>
 
             <span *ngIf="solicitacao.status === 'FINALIZADA'"
                   class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-indicador-acao"
