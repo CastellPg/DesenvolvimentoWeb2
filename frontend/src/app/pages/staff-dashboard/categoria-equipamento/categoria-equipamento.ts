@@ -77,7 +77,9 @@ export class CategoriaEquipamentoComponent implements OnInit {
     categorias = [
       { id: 1, nome: 'Notebook' },
       { id: 2, nome: 'Impressora' },
-      { id: 3, nome: 'Monitor' }
+      { id: 3, nome: 'Monitor' },
+      { id: 4, nome: 'teclado' },
+      { id: 5, nome: 'Desktop' }
     ];
 
     criarCategoria() {
