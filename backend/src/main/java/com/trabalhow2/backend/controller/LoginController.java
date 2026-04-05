@@ -30,17 +30,14 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<?> fazerLogin(@Valid @RequestBody LoginRequest request) {
-        try {
+
             Usuario usuarioAutenticado = loginService.autenticar(request.getEmail(), request.getSenha());
             
             LoginResponse response = new LoginResponse(
                 usuarioAutenticado.getNome(),
                 usuarioAutenticado.getPerfil().name()
             );
-            
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+
     }
 }
