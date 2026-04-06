@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Optional;
 
+import com.trabalhow2.backend.exception.LoginErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +23,20 @@ public class LoginService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public Usuario autenticar(String email, String senhaPlana) throws Exception {
+    public Usuario autenticar(String email, String senhaPlana){
     
         String emailNormalizado = email.trim().toLowerCase();
         
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(emailNormalizado);
 
         if (usuarioOpt.isEmpty()) {
-            throw new Exception("E-mail ou senha inválidos.");
+            throw new LoginErrorException();
         }
 
         Usuario usuario = usuarioOpt.get();
 
         if (!usuario.isAtivo()) {
-            throw new Exception("Usuário desativado.");
+            throw new LoginErrorException("Usuário desativado.");
         }
 
         String hashCalculado = gerarHash(senhaPlana, usuario.getSalt());
@@ -43,7 +44,7 @@ public class LoginService {
         if (hashCalculado.equals(usuario.getSenha())) {
             return usuario;
         } else {
-            throw new Exception("E-mail ou senha inválidos.");
+            throw new LoginErrorException();
         }
     }
 
