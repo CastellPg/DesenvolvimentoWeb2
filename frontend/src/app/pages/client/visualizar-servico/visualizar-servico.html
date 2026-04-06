@@ -9,7 +9,7 @@
     <p class="text-muted">Visualize os dados e o histórico da sua solicitação</p>
   </div>
 
-  <div class="row g-4">
+  <div class="row g-4" *ngIf="solicitacao">
 
     <div class="col-12 col-lg-8">
       <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -24,8 +24,7 @@
             </div>
             <div class="text-end">
               <small class="text-muted d-block mb-1">Status Atual</small>
-              <span class="badge {{ getBadgeClass(solicitacao.estado) }} px-3 py-2 fs-6">{{ solicitacao.estado }}</span>
-            </div>
+              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(solicitacao.estado)">{{ solicitacao.estado }}</span>            </div>
           </div>
 
           <div class="row mb-4">
@@ -49,17 +48,21 @@
             <h4 class="text-success fw-bold mb-0 mt-1">{{ solicitacao.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h4>
           </div>
 
-          <div class="mt-5 pt-3 border-top d-flex flex-wrap gap-3">
+         <div class="mt-5 pt-3 border-top d-flex flex-wrap gap-3">
             <ng-container [ngSwitch]="solicitacao.estado">
+
               <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', solicitacao.id]" class="btn btn-dark btn-lg rounded-pill px-4 fw-medium">
                 Avaliar Orçamento
               </button>
+
               <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', solicitacao.id]" class="btn btn-dark btn-lg rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
                 <i class="bi bi-arrow-counterclockwise"></i> Resgatar Serviço
               </button>
+
               <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', solicitacao.id]" class="btn btn-dark btn-lg rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
                 <i class="bi bi-credit-card"></i> Pagar Serviço
               </button>
+
             </ng-container>
           </div>
 
@@ -77,8 +80,7 @@
               <div class="d-flex flex-column">
                 <small class="text-muted fw-bold mb-1">{{ item.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
                 <div class="bg-white p-3 rounded-3 shadow-sm border">
-                  <span class="badge bg-secondary mb-2">{{ item.estadoNovo }}</span>
-                  <p class="mb-1 small fw-medium">{{ item.descricao }}</p>
+                  <span class="badge mb-2" [ngClass]="getBadgeClass(item.estadoNovo)">{{ item.estadoNovo }}</span>                  <p class="mb-1 small fw-medium">{{ item.descricao }}</p>
                   <small class="text-muted" style="font-size: 0.70rem;">
                     <i class="bi bi-person me-1"></i> Por: {{ item.funcionario }}
                   </small>
@@ -92,4 +94,13 @@
     </div>
 
   </div>
+
+  <div *ngIf="!solicitacao" class="text-center p-5 mt-4 card border-0 shadow-sm rounded-4">
+    <h4 class="text-muted mb-3">Solicitação não encontrada.</h4>
+    <p class="text-muted mb-4">O código da solicitação que você tentou acessar não existe ou foi removido.</p>
+    <div>
+      <button routerLink="/client/dashboard" class="btn btn-dark rounded-pill px-4 py-2">Voltar ao Início</button>
+    </div>
+  </div>
+
 </div>
