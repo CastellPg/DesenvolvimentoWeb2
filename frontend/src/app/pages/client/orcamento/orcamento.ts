@@ -65,6 +65,12 @@ export class OrcamentoComponent implements OnInit {
       if (index !== -1) {
         banco[index].estado = novoEstado;
 
+        // Se for rejeição, salva o motivo
+        if (novoEstado === 'REJEITADA') {
+          const motivo = motivoHistorico.replace('Orçamento rejeitado. Motivo: ', '');
+          banco[index].motivoRejeicao = motivo;
+        }
+
         if (!banco[index].historico) banco[index].historico = [];
         banco[index].historico.push({
           dataHora: new Date().toISOString(),

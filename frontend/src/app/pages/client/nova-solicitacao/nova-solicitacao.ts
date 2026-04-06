@@ -23,9 +23,9 @@ export class NovaSolicitacaoComponent implements OnInit {
     'Tablets',
     'Notebooks'
   ];
-    mensagemToast: string = '';
+  mensagemToast: string = '';
 
-    mostrarToast(mensagem: string) {
+  mostrarToast(mensagem: string) {
       this.mensagemToast = mensagem;
       const toastElement = document.getElementById('avisoSucesso')!;
       if (toastElement) {
@@ -36,13 +36,7 @@ export class NovaSolicitacaoComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private router: Router) {}
 
-  salvarNovaSolicitacao() {
-    console.log ('Salvando dados...');
-    this.mostrarToast('Solicitação enviada com sucesso!');
-  }
-
   ngOnInit(): void {
-    // formulário com validações
     this.solicitacaoForm = this.fb.group({
       descricaoEquipamento: ['', [Validators.required, Validators.maxLength(100)]],
       categoria: ['', Validators.required],
@@ -52,20 +46,35 @@ export class NovaSolicitacaoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.solicitacaoForm.valid) {
-      // cria o objeto simulando o envio pro Back
+      const dados = localStorage.getItem('banco_dados_v1');
+      const banco = dados ? JSON.parse(dados) : [];
+      const novoId = banco.length > 0 ? Math.max(...banco.map((s: any) => s.id)) + 1 : 1;
+
       const novaSolicitacao = {
-        ...this.solicitacaoForm.value,
+        id: novoId,
+        equipamento: this.solicitacaoForm.value.descricaoEquipamento,
+        categoria: this.solicitacaoForm.value.categoria,
+        descricaoDefeito: this.solicitacaoForm.value.descricaoDefeito,
         dataHora: new Date().toISOString(),
-        estado: 'ABERTA'
+        estado: 'ABERTA',
+        historico: [
+          {
+            dataHora: new Date().toISOString(),
+            estadoNovo: 'ABERTA',
+            descricao: 'Solicitação criada pelo cliente',
+            funcionario: 'Cliente'
+          }
+        ]
       };
 
-      console.log('Enviando para o Spring Boot:', novaSolicitacao);
-      this.mostrarToast('Solicitação enviada com sucesso!');
+      banco.push(novaSolicitacao);
+      localStorage.setItem('banco_dados_v1', JSON.stringify(banco));
+      this.mostrarToast('Solicitação criada com sucesso!');
+      
       setTimeout(() => {
-      this.router.navigate(['/client/dashboard']);
-    }, 2000);
+        this.router.navigate(['/client/dashboard']);
+      }, 2000);
     } else {
-      // erro ao usuario tentar enviar em branco
       this.solicitacaoForm.markAllAsTouched();
     }
   }
