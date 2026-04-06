@@ -392,7 +392,7 @@ export class ListaPedidoComponent implements OnInit {
     {
       id: 20,
       status: 'FINALIZADA',
-      data: '18/03/2026, 14:00',
+      data: '13/03/2026, 14:00',
       categoria: 'Teclado',
       produto: 'Teclado Mecânico',
       problema: 'Leds não acendem',
