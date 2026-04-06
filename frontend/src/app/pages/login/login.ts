@@ -49,7 +49,7 @@ export class LoginComponent {
         if (response.perfil === 'CLIENTE') {
           this.router.navigate(['/client']);
         } else if (response.perfil === 'FUNCIONARIO') {
-          this.router.navigate(['/staff-dashboard']);
+          this.router.navigate(['/staff']);
         }
         
       },
