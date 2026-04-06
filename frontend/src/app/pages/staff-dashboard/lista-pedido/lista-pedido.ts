@@ -7,7 +7,6 @@ type StatusSolicitacao =
   | 'ABERTA'
   | 'PAGA'
   | 'APROVADA'
-  | 'EM MANUTENÇÃO'
   | 'ORÇADA'
   | 'REDIRECIONADA'
   | 'ARRUMADA'
@@ -58,21 +57,41 @@ export class ListaPedidoComponent implements OnInit {
     {
       id: 1,
       status: 'ABERTA',
-      data: '23/03/2026, 09:30',
-      categoria: 'Notebook',
-      produto: 'Dell Inspiron 15',
-      problema: 'Notebook não liga, led piscando',
-      acao: 'Efetuar Orçamento',
+      data: '23/03/2026, 12:00',
+      categoria: 'Impressora',
+      produto: 'Canon Pixma',
+      problema: 'Ejetando folha branca',
+      acao: 'Avaliar Cabeçote',
       cliente: {
-        nome: 'João',
-        email: 'joao@email.com',
-        cpf: '123.456.789-00',
-        telefone: '(41) 98765-4321',
-        endereco: 'Rua das Flores, 100 - Curitiba, PR'
+        nome: 'Joana',
+        email: 'joana@email.com',
+        cpf: '111.222.333-44',
+        telefone: '(11) 93322-1100',
+        endereco: 'Rua Oscar Freire, 20 - São Paulo, SP'
       }
     },
     {
       id: 2,
+      status: 'ARRUMADA',
+      data: '23/03/2026, 11:30',
+      categoria: 'Teclado',
+      produto: 'Teclado Gamer RGB',
+      problema: 'Teclas presas',
+      acao: 'Aguardando Pagamento',
+      valorOrcamento: 'R$ 60,00',
+      manutencaoRealizada: 'Limpeza Química',
+      orientacoesCliente: 'Evitar contato com líquidos',
+      dataManutencao: '23/03/2026, 11:30',
+      cliente: {
+        nome: 'Joana',
+        email: 'joana@email.com',
+        cpf: '111.222.333-44',
+        telefone: '(41) 98877-6655',
+        endereco: 'Rua Batel, 450 - Curitiba, PR'
+      }
+    },
+    {
+      id: 3,
       status: 'ABERTA',
       data: '23/03/2026, 10:45',
       categoria: 'Impressora',
@@ -88,7 +107,56 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 3,
+      id: 4,
+      status: 'ABERTA',
+      data: '23/03/2026, 09:30',
+      categoria: 'Notebook',
+      produto: 'Dell Inspiron 15',
+      problema: 'Notebook não liga, led piscando',
+      acao: 'Efetuar Orçamento',
+      cliente: {
+        nome: 'João',
+        email: 'joao@email.com',
+        cpf: '123.456.789-00',
+        telefone: '(41) 98765-4321',
+        endereco: 'Rua das Flores, 100 - Curitiba, PR'
+      }
+    },
+    {
+      id: 5,
+      status: 'ABERTA',
+      data: '23/03/2026, 08:00',
+      categoria: 'Mouse',
+      produto: 'Mouse Office Wireless',
+      problema: 'Não reconhece no USB',
+      acao: 'Efetuar Orçamento',
+      cliente: {
+        nome: 'José',
+        email: 'jose@email.com',
+        cpf: '987.654.321-00',
+        telefone: '(41) 99999-1111',
+        endereco: 'Av. Brasil, 50 - Curitiba, PR'
+      }
+    },
+    {
+      id: 6,
+      status: 'REDIRECIONADA',
+      data: '22/03/2026, 16:00',
+      categoria: 'Impressora',
+      produto: 'Epson EcoTank',
+      problema: 'Impressora não imprime preto',
+      acao: 'Transferir Unidade',
+      funcionarioDestino: 'Técnica Maria',
+      cliente: {
+        nome: 'Joaquina',
+        email: 'joaquina@email.com',
+        cpf: '444.555.666-77',
+        telefone: '(11) 98765-4321',
+        endereco: 'Rua A, 123 - São Paulo, SP'
+      }
+    },
+    {
+      id: 7,
       status: 'ORÇADA',
       data: '22/03/2026, 14:20',
       categoria: 'Desktop',
@@ -106,7 +174,7 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 4,
+      id: 8,
       status: 'APROVADA',
       data: '21/03/2026, 11:00',
       categoria: 'Notebook',
@@ -123,13 +191,13 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 5,
-      status: 'EM MANUTENÇÃO',
+      id: 9,
+      status: 'APROVADA',
       data: '21/03/2026, 08:30',
       categoria: 'Desktop',
       produto: 'PC Gamer Custom',
       problema: 'Superaquecimento em jogos',
-      acao: 'Realizar Reparo',
+      acao: 'Efetuar Manutenção',
       valorOrcamento: 'R$ 250,00',
       cliente: {
         nome: 'João',
@@ -140,13 +208,13 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 6,
+      id: 10,
       status: 'ARRUMADA',
       data: '20/03/2026, 10:00',
       categoria: 'Notebook',
       produto: 'Acer Aspire 5',
       problema: 'Teclado falhando',
-      acao: 'Aguardar Pagamento',
+      acao: 'Aguardando Pagamento',
       valorOrcamento: 'R$ 350,00',
       manutencaoRealizada: 'Troca do módulo de teclado',
       dataManutencao: '21/03/2026, 15:30',
@@ -159,7 +227,7 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 7,
+      id: 11,
       status: 'PAGA',
       data: '20/03/2026, 09:00',
       categoria: 'Mouse',
@@ -180,76 +248,24 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 8,
-      status: 'REDIRECIONADA',
-      data: '22/03/2026, 16:00',
-      categoria: 'Impressora',
-      produto: 'Epson EcoTank',
-      problema: 'Impressora não imprime preto',
-      acao: 'Transferir Unidade',
-      funcionarioDestino: 'Técnica Maria',
-      cliente: {
-        nome: 'Joaquina',
-        email: 'joaquina@email.com',
-        cpf: '444.555.666-77',
-        telefone: '(11) 98765-4321',
-        endereco: 'Rua A, 123 - São Paulo, SP'
-      }
-    },
-    {
-      id: 9,
-      status: 'FINALIZADA',
-      data: '18/03/2026, 14:00',
-      categoria: 'Teclado',
-      produto: 'Teclado Mecânico',
-      problema: 'Leds não acendem',
-      acao: 'Arquivar Solicitação',
-      valorOrcamento: 'R$ 100,00',
-      manutencaoRealizada: 'Reparo na trilha da controladora',
-      dataManutencao: '19/03/2026, 11:00',
+      id: 12,
+      status: 'APROVADA',
+      data: '19/03/2026, 14:00',
+      categoria: 'Desktop',
+      produto: 'Workstation Dell',
+      problema: 'Formatação e Backup',
+      acao: 'Efetuar Manutenção',
+      valorOrcamento: 'R$ 150,00',
       cliente: {
         nome: 'João',
         email: 'joao@email.com',
         cpf: '123.456.789-00',
-        telefone: '(41) 95555-4444',
-        endereco: 'Rua Itupava, 800 - Curitiba, PR'
+        telefone: '(41) 99911-2233',
+        endereco: 'Rua Chile, 200 - Curitiba, PR'
       }
     },
     {
-      id: 10,
-      status: 'ABERTA',
-      data: '23/03/2026, 08:00',
-      categoria: 'Mouse',
-      produto: 'Mouse Office Wireless',
-      problema: 'Não reconhece no USB',
-      acao: 'Efetuar Orçamento',
-      cliente: {
-        nome: 'José',
-        email: 'jose@email.com',
-        cpf: '987.654.321-00',
-        telefone: '(41) 99999-1111',
-        endereco: 'Av. Brasil, 50 - Curitiba, PR'
-      }
-    },
-    {
-      id: 11,
-      status: 'EM MANUTENÇÃO',
-      data: '23/03/2026, 11:30',
-      categoria: 'Teclado',
-      produto: 'Teclado Gamer RGB',
-      problema: 'Teclas presas',
-      acao: 'Limpeza Química',
-      valorOrcamento: 'R$ 60,00',
-      cliente: {
-        nome: 'Joana',
-        email: 'joana@email.com',
-        cpf: '111.222.333-44',
-        telefone: '(41) 98877-6655',
-        endereco: 'Rua Batel, 450 - Curitiba, PR'
-      }
-    },
-    {
-      id: 12,
+      id: 13,
       status: 'ORÇADA',
       data: '19/03/2026, 10:00',
       categoria: 'Notebook',
@@ -266,30 +282,13 @@ export class ListaPedidoComponent implements OnInit {
       }
     },
     {
-      id: 13,
-      status: 'APROVADA',
-      data: '19/03/2026, 14:00',
-      categoria: 'Desktop',
-      produto: 'Workstation Dell',
-      problema: 'Formatação e Backup',
-      acao: 'Executar Serviço',
-      valorOrcamento: 'R$ 150,00',
-      cliente: {
-        nome: 'João',
-        email: 'joao@email.com',
-        cpf: '123.456.789-00',
-        telefone: '(41) 99911-2233',
-        endereco: 'Rua Chile, 200 - Curitiba, PR'
-      }
-    },
-    {
       id: 14,
-      status: 'EM MANUTENÇÃO',
+      status: 'APROVADA',
       data: '18/03/2026, 09:00',
       categoria: 'Impressora',
       produto: 'Brother Mono',
       problema: 'Barulho estranho ao imprimir',
-      acao: 'Trocar Engrenagens',
+      acao: 'Efetuar Manutenção',
       valorOrcamento: 'R$ 180,00',
       cliente: {
         nome: 'José',
@@ -306,7 +305,7 @@ export class ListaPedidoComponent implements OnInit {
       categoria: 'Mouse',
       produto: 'Razer Deathadder',
       problema: 'Scroll solto',
-      acao: 'Aguardar Retirada',
+      acao: 'Aguardando Pagamento',
       valorOrcamento: 'R$ 90,00',
       manutencaoRealizada: 'Substituição do eixo do scroll',
       cliente: {
@@ -360,7 +359,7 @@ export class ListaPedidoComponent implements OnInit {
       categoria: 'Desktop',
       produto: 'PC Positivo',
       problema: 'Vírus e lentidão',
-      acao: 'Arquivar Solicitação',
+      acao: 'Concluída',
       valorOrcamento: 'R$ 100,00',
       manutencaoRealizada: 'Limpeza de software e otimização',
       dataManutencao: '16/03/2026, 09:00',
@@ -374,22 +373,6 @@ export class ListaPedidoComponent implements OnInit {
     },
     {
       id: 19,
-      status: 'ABERTA',
-      data: '23/03/2026, 12:00',
-      categoria: 'Impressora',
-      produto: 'Canon Pixma',
-      problema: 'Ejetando folha branca',
-      acao: 'Avaliar Cabeçote',
-      cliente: {
-        nome: 'Joana',
-        email: 'joana@email.com',
-        cpf: '111.222.333-44',
-        telefone: '(11) 93322-1100',
-        endereco: 'Rua Oscar Freire, 20 - São Paulo, SP'
-      }
-    },
-    {
-      id: 20,
       status: 'ORÇADA',
       data: '14/03/2026, 09:00',
       categoria: 'Notebook',
@@ -405,18 +388,33 @@ export class ListaPedidoComponent implements OnInit {
         telefone: '(41) 96677-8899',
         endereco: 'Rua Brigadeiro, 150 - Curitiba, PR'
       }
+    },
+    {
+      id: 20,
+      status: 'FINALIZADA',
+      data: '13/03/2026, 14:00',
+      categoria: 'Teclado',
+      produto: 'Teclado Mecânico',
+      problema: 'Leds não acendem',
+      acao: 'Concluída',
+      valorOrcamento: 'R$ 100,00',
+      manutencaoRealizada: 'Reparo na trilha da controladora',
+      dataManutencao: '19/03/2026, 11:00',
+      cliente: {
+        nome: 'João',
+        email: 'joao@email.com',
+        cpf: '123.456.789-00',
+        telefone: '(41) 95555-4444',
+        endereco: 'Rua Itupava, 800 - Curitiba, PR'
+      }
     }
   ];
 
   ngOnInit(): void {
-    this.carregarSolicitacoes();
-  }
+    const salvo = localStorage.getItem('listaSolicitacoes');
 
-  carregarSolicitacoes(): void {
-    const salvas = localStorage.getItem('listaSolicitacoes');
-
-    if (salvas) {
-      this.solicitacoes = JSON.parse(salvas);
+    if (salvo) {
+      this.solicitacoes = JSON.parse(salvo);
     } else {
       this.solicitacoes = [...this.baseSolicitacoes];
       this.salvarSolicitacoes();
@@ -504,8 +502,6 @@ export class ListaPedidoComponent implements OnInit {
         return 'os-card-paga';
       case 'APROVADA':
         return 'os-card-aprovada';
-      case 'EM MANUTENÇÃO':
-        return 'os-card-manutencao';
       case 'ORÇADA':
         return 'os-card-orcada';
       case 'REDIRECIONADA':
@@ -527,8 +523,6 @@ export class ListaPedidoComponent implements OnInit {
         return 'os-badge-paga';
       case 'APROVADA':
         return 'os-badge-aprovada';
-      case 'EM MANUTENÇÃO':
-        return 'os-badge-manutencao';
       case 'ORÇADA':
         return 'os-badge-orcada';
       case 'REDIRECIONADA':

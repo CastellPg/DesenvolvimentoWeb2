@@ -10,7 +10,7 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './navbar.css',
 })
 export class NavbarComponent implements OnInit {
-perfilUsuario: string | null = "FUNCIONARIO";
+perfilUsuario: string | null = "CLIENTE";
   nomeUsuario: string | null = "Silvio Soares";
 
   constructor(private router: Router) {}

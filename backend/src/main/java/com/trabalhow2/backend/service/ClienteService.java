@@ -196,6 +196,9 @@ public class ClienteService {
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
 
         Usuario usuario = cliente.getUsuario();
+        if (usuario == null) {
+            throw new RuntimeException("Usuário do cliente não encontrado.");
+        }
 
         if (request.getNome() == null || request.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
@@ -232,6 +235,9 @@ public class ClienteService {
     public void deletarCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado com esse id." + id));
         Usuario usuario = cliente.getUsuario();
+        if (usuario == null) {
+            throw new RuntimeException("Usuário do cliente não encontrado.");
+        }
 
         clienteRepository.delete(cliente);
         usuarioRepository.delete(usuario);

@@ -55,7 +55,7 @@ export class EfetuarManutencaoComponent implements OnInit {
           return {
             ...item,
             status: 'ARRUMADA',
-            acao: 'Aguardando Pagamento',
+            acao: 'Aguardando Pagamento do Cliente',
             manutencaoRealizada: this.formManutencao.value.descricaoManutencao,
             orientacoesCliente: this.formManutencao.value.orientacoesCliente,
             dataManutencao: this.dataHoraAtual

@@ -2,9 +2,7 @@ package com.trabalhow2.backend.exception;
 
 import com.trabalhow2.backend.controller.response.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.LogFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
