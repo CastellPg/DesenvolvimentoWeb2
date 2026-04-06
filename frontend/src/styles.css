@@ -1,6 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
+
+/* Marrom (ORÇADA) */
+.bg-marrom { background-color: #8B4513 !important; color: white; }
+.btn-marrom { background-color: #8B4513; color: white; border: none; }
+.btn-marrom:hover { background-color: #6b340e; color: white; }
+
+/* Roxo (REDIRECIONADA) */
+.bg-roxo { background-color: #6f42c1 !important; color: white; }
+.btn-roxo { background-color: #6f42c1; color: white; border: none; }
+.btn-roxo:hover { background-color: #59339d; color: white; }
+
+/* Alaranjado (PAGA) */
+.bg-laranja { background-color: #fd7e14 !important; color: white; }
+.btn-laranja { background-color: #fd7e14; color: white; border: none; }
+.btn-laranja:hover { background-color: #e0690c; color: white; }

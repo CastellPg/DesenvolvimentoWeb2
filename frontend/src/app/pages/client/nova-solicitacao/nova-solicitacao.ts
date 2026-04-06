@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-nova-solicitacao',
   standalone: true,
@@ -21,8 +23,23 @@ export class NovaSolicitacaoComponent implements OnInit {
     'Tablets',
     'Notebooks'
   ];
+    mensagemToast: string = '';
+
+    mostrarToast(mensagem: string) {
+      this.mensagemToast = mensagem;
+      const toastElement = document.getElementById('avisoSucesso')!;
+      if (toastElement) {
+        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        toast.show();
+      }
+    }
 
   constructor(private fb: FormBuilder, private router: Router) {}
+
+  salvarNovaSolicitacao() {
+    console.log ('Salvando dados...');
+    this.mostrarToast('Solicitação enviada com sucesso!');
+  }
 
   ngOnInit(): void {
     // formulário com validações
@@ -35,7 +52,7 @@ export class NovaSolicitacaoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.solicitacaoForm.valid) {
-      // Cria o objeto simulando o envio pro Back-end
+      // cria o objeto simulando o envio pro Back
       const novaSolicitacao = {
         ...this.solicitacaoForm.value,
         dataHora: new Date().toISOString(),
@@ -43,10 +60,10 @@ export class NovaSolicitacaoComponent implements OnInit {
       };
 
       console.log('Enviando para o Spring Boot:', novaSolicitacao);
-
-      // pop-up e redirecionamento, provisorio
-      alert('Solicitação registrada com sucesso!');
+      this.mostrarToast('Solicitação enviada com sucesso!');
+      setTimeout(() => {
       this.router.navigate(['/client/dashboard']);
+    }, 2000);
     } else {
       // erro ao usuario tentar enviar em branco
       this.solicitacaoForm.markAllAsTouched();
