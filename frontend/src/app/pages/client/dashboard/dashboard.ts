@@ -10,6 +10,7 @@ export interface Solicitacao {
   estado: string;
   valor?: number;
   descricaoDefeito?: string;
+  motivoRejeicao?: string;
   historico?: any[];
 }
 
@@ -49,7 +50,14 @@ export class DashboardComponent implements OnInit {
       equipamento: 'Monitor LG UltraWide 29"',
       categoria: 'Monitores',
       estado: 'REJEITADA',
-      historico: [{ dataHora: '2026-03-15T14:45:00', estadoNovo: 'REJEITADA', descricao: 'Rejeitada', funcionario: 'Sistema' }]
+      valor: 800.00,
+      descricaoDefeito: 'Sem imagem, LED acende mas tela permanece preta',
+      motivoRejeicao: 'Valor muito alto para o equipamento',
+      historico: [
+        { dataHora: '2026-03-15T14:45:00', estadoNovo: 'ABERTA', descricao: 'Solicitação criada', funcionario: 'Cliente registrou solicitação de manutenção' },
+        { dataHora: '2026-03-26T09:00', estadoNovo: 'ORÇADA', descricao: 'Orçamento apresentado', funcionario: 'Pedro Silva', valor: 'R$ 800,00' },
+        { dataHora: '2026-03-26T14:30', estadoNovo: 'REJEITADA', descricao: 'Serviço rejeitado', funcionario: 'Motivo: Valor muito alto para o equipamento' }
+      ]
     },
     {
       id: 4,
@@ -133,9 +141,14 @@ export class DashboardComponent implements OnInit {
 
   resetarSistema() {
     if (confirm('Isso vai apagar as suas criações e voltar para os 9 itens iniciais (incluindo os novos orçados). Continuar?')) {
-      localStorage.setItem('banco_dados_v1', JSON.stringify(this.dadosIniciais));
+      
+      localStorage.removeItem('banco_dados_v1');
+      
+      const dadosLimpos = JSON.parse(JSON.stringify(this.dadosIniciais));
+      localStorage.setItem('banco_dados_v1', JSON.stringify(dadosLimpos));
+      
       this.carregarSistema();
-       location.reload();
+      location.reload();
     }
   }
 
