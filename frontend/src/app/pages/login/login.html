@@ -1,42 +1,56 @@
 <div class="login-container">
-
   <div class="login-card">
-    <form [(ngModel)]="fazerLogin" class="login-form">
-      <div class="icon-box"> <i class="bi bi-tools"></i> 
+    <form (ngSubmit)="fazerLogin()" class="login-form" novalidate>
+      <div class="icon-box">
+        <i class="bi bi-tools"></i>
       </div>
+
       <h1>Bem-Vindo</h1>
       <h2>Login</h2>
 
       <div class="input-group">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" [(ngModel)]="loginUsuario.email" required />
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Digite seu e-mail"
+          [(ngModel)]="loginUsuario.email"
+          required
+        />
       </div>
 
       <div class="input-group">
         <label for="password">Senha</label>
         <div class="password-container">
-          <!-- -> vai servir p arrumar o olho dps -->
-           
           <input
-            [type]="hidePassword() ? 'password' : 'text'" [(ngModel)]="loginUsuario.senha"
+            [type]="hidePassword() ? 'password' : 'text'"
+            [(ngModel)]="loginUsuario.senha"
             id="password"
             name="password"
             placeholder="Digite sua senha"
             minlength="4"
-            #SenhaValida = "ngModel"
             required
           />
-          <button (click)="togglePassword()" type="button">
-          <i [class]="hidePassword() ? 'fi-rs-crossed-eye' : 'fi fi-rs-eye'" ></i> </button>
+
+          <button type="button" (click)="togglePassword()">
+            <i [class]="hidePassword() ? 'fi-rs-crossed-eye' : 'fi fi-rs-eye'"></i>
+          </button>
         </div>
       </div>
 
-      <button (click)="fazerLogin()" type="submit" class="btn-entrar">ENTRAR</button>
+      <div *ngIf="mensagemErro()" class="mensagem-erro">
+        {{ mensagemErro() }}
+      </div>
+
+      <button type="submit" class="btn-entrar">
+        ENTRAR
+      </button>
 
       <div class="form-footer">
         <p>
-          Ainda não tem conta? <a routerLink="/registro" class="link-registro">Registre-se aqui</a>
-          <!-- -> Ter certeza dessa rota -->
+          Ainda não tem conta?
+          <a routerLink="/registro" class="link-registro">Registre-se aqui</a>
         </p>
       </div>
     </form>
