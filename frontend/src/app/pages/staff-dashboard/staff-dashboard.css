@@ -1,0 +1,42 @@
+.card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0; 
+}
+
+.card.mb-3 {
+    background-color: #fff;
+    transition: transform 0.2s;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.5em 1em;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-dark {
+    background-color: #0c0d12;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.85rem;
+    transition: opacity 0.2s;
+}
+
+.btn-dark:hover {
+    opacity: 0.9;
+    background-color: #0c0d12;
+}
+
+label {
+    font-size: 0.75rem;
+    color: #6c757d; 
+    margin-bottom: 0;
+    display: block;
+}
+
+.fw-medium {
+    font-size: 0.95rem;
+    color: #212529;
+}

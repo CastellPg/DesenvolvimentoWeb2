@@ -1,0 +1,163 @@
+<div class="container-fluid py-4 px-5">
+
+  <div class="d-flex align-items-center mb-4">
+    <a routerLink="/funcionario/pedidos" class="text-decoration-none text-dark d-flex align-items-center me-3">
+      <i class="bi bi-arrow-left me-2"></i>
+      Voltar
+    </a>
+  </div>
+
+  <div class="header mb-4">
+    <h1 class="h3 fw-bold">Efetuar Manutenção</h1>
+  </div>
+
+  <div class="card border-light shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4">
+      <h2 class="h6 fw-bold mb-4">Dados do Cliente</h2>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="text-muted d-block small mb-1">Nome</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.cliente.nome }}</span>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="text-muted d-block small mb-1">Email</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.cliente.email }}</span>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-md-6 mb-3">
+          <label class="text-muted d-block small mb-1">CPF</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.cliente.cpf }}</span>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="text-muted d-block small mb-1">Telefone</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.cliente.telefone }}</span>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-12">
+          <label class="text-muted d-block small mb-1">Endereço</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.cliente.endereco }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-light shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4">
+      <h2 class="h6 fw-bold mb-4">Dados da Solicitação</h2>
+
+      <div class="mb-3">
+        <span class="fw-bold">Solicitação #{{ solicitacao?.id }}</span>
+        <span class="badge bg-warning text-dark px-3 py-1 small ms-3" style="font-size: 0.7rem;">
+          {{ solicitacao?.status }}
+        </span>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 mb-3">
+          <label class="text-muted d-block small mb-1">Data/Hora de Abertura</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.data }}</span>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-12 mb-3">
+          <label class="text-muted d-block small mb-1">Descrição do Produto</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.produto }}</span>
+        </div>
+        <div class="col-12 mb-3">
+          <label class="text-muted d-block small mb-1">Descrição do Problema</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.problema }}</span>
+        </div>
+        <div class="col-12">
+          <label class="text-muted d-block small mb-1">Valor do Orçamento</label>
+          <span class="fw-medium text-dark">{{ solicitacao?.valorOrcamento }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-light shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4">
+      <h2 class="h6 fw-bold mb-4">Registrar Manutenção</h2>
+
+      <form [formGroup]="formManutencao">
+        <div class="mb-4">
+          <label class="form-label fw-medium">Descrição da Manutenção *</label>
+          <textarea
+            class="form-control rounded-3"
+            rows="4"
+            formControlName="descricaoManutencao"
+            placeholder="Descreva detalhadamente a manutenção realizada..."></textarea>
+
+          <div
+            class="text-danger small mt-1"
+            *ngIf="formManutencao.get('descricaoManutencao')?.touched && formManutencao.get('descricaoManutencao')?.invalid">
+            A descrição da manutenção é obrigatória.
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-medium">Orientações para o Cliente *</label>
+          <textarea
+            class="form-control rounded-3"
+            rows="3"
+            formControlName="orientacoesCliente"
+            placeholder="Forneça orientações de uso e cuidados..."></textarea>
+
+          <div
+            class="text-danger small mt-1"
+            *ngIf="formManutencao.get('orientacoesCliente')?.touched && formManutencao.get('orientacoesCliente')?.invalid">
+            As orientações para o cliente são obrigatórias.
+          </div>
+        </div>
+
+        <div class="mb-4 bg-light p-3 rounded-3 text-muted" style="font-size: 0.85rem;">
+          <p class="mb-1">Informações do Registro</p>
+          <p class="mb-1">Funcionário: {{ tecnicoLogado }}</p>
+          <p class="mb-0">Data/Hora: {{ dataHoraAtual }}</p>
+        </div>
+
+        <div class="d-flex justify-content-between gap-2">
+          <button
+            type="button"
+            class="btn btn-dark fw-bold px-4 py-2 rounded-3"
+            [disabled]="formManutencao.invalid"
+            (click)="confirmarManutencao()">
+            Confirmar Manutenção
+          </button>
+
+          <a
+            [routerLink]="['/redirecionar-manutencao', solicitacao?.id]"
+            class="btn btn-outline-dark px-4 py-2 rounded-3">
+            Redirecionar Manutenção
+          </a>
+
+          <a
+            routerLink="/funcionario/pedidos"
+            class="btn btn-outline-secondary px-4 py-2 rounded-3">
+            Voltar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="avisoSucesso" class="toast align-items-center text-white bg-dark border-0 rounded-4 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex p-2">
+      <div class="toast-body d-flex align-items-center">
+        <i class="bi bi-check-circle-fill me-2 text-success"></i>
+        <p id="textoAviso" class="mb-0"></p>
+      </div>
+
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>

@@ -1,19 +1,73 @@
-<header class="tudo">
-    <div class="logo">
-        <img src="assets/logoplaceholderquevaitarnosassets.png" alt="Logo">
-    </div>
+<div class="sidebar d-flex flex-column p-3">
+  <div class="header-section mb-4">
+    <h4 class="fw-bold mb-0">Techmaint <br> Solutions</h4>
+    <p class="user-name mt-2 mb-0">
+      {{ nomeUsuario ? nomeUsuario : 'Visitante' }}
+    </p>
+    <p style="color: red; font-weight: bold;"> PERFIL ATUAL: {{ perfilUsuario }}</p>
+  </div>
 
-    <nav>
-        <ul class="navbar">
-            <li><a routerLink = "/">Inicio</a></li>
-            <li><a routerLink = "/">Serviços</a></li>
-            <li><a routerLink = "/">Sobre</a></li>
-            <li><a routerLink = "/">Contato</a></li>
-        </ul>
-    </nav>
+  <nav class="nav flex-column gap-1">
 
-    <div class="botoes">
-        <button routerLink="/login" id="btn-login">Login</button>
-        <button id="btn-cadastro">Criar Conta</button>
-    </div>
-</header>
+    <!-- region funcionário -->
+
+    <ng-container *ngIf="perfilUsuario === 'FUNCIONARIO'">
+
+      <a class="nav-link" routerLink="/staff" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="bi bi-house-door"></i> Página Inicial
+      </a>
+
+      <a class="nav-link" routerLink="/funcionario/pedidos" routerLinkActive="active">
+        <i class="bi bi-list-ul"></i> Solicitações
+      </a>
+
+      <a class="nav-link" routerLink="/categorias" routerLinkActive="active">
+        <i class="bi bi-diagram-2"></i> Categorias
+      </a>
+
+      <a class="nav-link" routerLink="/funcionarios" routerLinkActive="active">
+        <i class="bi bi-people"></i> Funcionários
+      </a>
+
+      <a class="nav-link" routerLink="/receitas" routerLinkActive="active">
+        <i class="bi bi-bar-chart"></i> Receitas
+      </a>
+
+      <a class="nav-link" routerLink="/receitas-categorias" routerLinkActive="active">
+        <i class="bi bi-pie-chart"></i> Receitas/Categoria
+      </a>
+
+    </ng-container>
+
+    <!-- region cliente -->
+
+    <ng-container *ngIf="perfilUsuario === 'CLIENTE'">
+
+      <a class="nav-link" routerLink="/client/dashboard" routerLinkActive="active">
+        <i class="bi bi-house-door"></i> Dashboard Cliente
+    </a>
+      <a class="nav-link" routerLink="/client/minhas-solicitacoes" routerLinkActive="active">
+        <i class="bi bi-tools"></i> Minhas solicitações
+      </a>
+      <a class="nav-link" routerLink="/client/nova-solicitacao" routerLinkActive="active">
+        <i class="bi bi-plus-lg"></i> Nova Solicitação
+      </a>
+
+    </ng-container>
+
+    <ng-container *ngIf="!perfilUsuario">
+      <a class="nav-link" routerLink="/login" routerLinkActive="active">
+        <i class="bi bi-box-arrow-in-right"></i> Login
+      </a>
+    </ng-container>
+
+  </nav>
+  <div class="mt-auto" *ngIf="perfilUsuario">
+    <button (click)="alternarPerfil()" class="btn btn-outline-secondary w-100 mt-2 d-flex align-items-center justify-content-center gap-2">
+      <i class="bi bi-box-arrow-left"></i> Trocar Conta
+    </button>
+    <button (click)="logout()" class="btn btn-outline-danger w-100 mt-4 d-flex align-items-center justify-content-center gap-2">
+      <i class="bi bi-box-arrow-left"></i> Sair
+    </button>
+  </div>
+</div>

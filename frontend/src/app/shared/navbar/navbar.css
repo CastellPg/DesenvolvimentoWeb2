@@ -1,69 +1,55 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:host {
+  display: block;
+  height: 100vh;
 }
 
-.tudo {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: sans-serif;
-    padding: 15px 40px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.sidebar {
+  width: 280px;
+  height: 100%;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  color: #000000;
+  position: fixed;
 }
 
-.logo img {
-    height: 45px;
-    width: auto;
+.header-section {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 15px;
 }
 
-.navbar {
-    display: flex;
-    list-style: none;
-    gap: 40px;
+.header-section h4 {
+  color: #000000;
+  font-size: 1.15rem;
 }
 
-.navbar a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: 0.2s;
-    cursor: pointer;
+.user-name {
+  color: #64748b; 
+  font-size: 0.9rem;
 }
 
-.navbar a:hover {
-    color: #0056b3;
+.nav-link {
+  color: #000000;
+  border-radius: 8px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 0.95rem;
 }
 
-.botoes {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+.nav-link i {
+  margin-right: 12px;
+  font-size: 1.2rem;
 }
 
-#btn-login {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-weight: bold;
-    color: #333;
-    font-size: 15px;
+.nav-link:hover {
+  background-color: #c7ccd1;
+  color: #000000;
 }
 
-#btn-cadastro {
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    border-radius: 20px;
-    padding: 10px 24px;
-    background-color: #0056b3;
-    color: white;
-    transition: 0.2s;
-}
-
-#btn-cadastro:hover {
-    background-color: #004494;
+.nav-link.active {
+  color: #ffffff;
+  background-color: #0b0f19; 
 }

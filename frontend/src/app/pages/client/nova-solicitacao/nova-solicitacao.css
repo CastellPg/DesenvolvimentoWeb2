@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.shadow-sm {
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.05) !important;
+}
+
+/* para não ficarem com borda azul padrão */
+.form-control:focus, .form-select:focus {
+  box-shadow: none;
+  border: 1px solid #ced4da !important;
+  background-color: #fff !important;
+}
+
+.hover-dark:hover {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.btn-dark {
+  background-color: #1a1c23;
+  border-color: #1a1c23;
+}
+
+.btn-dark:hover {
+  background-color: #2c2f3b;
+}

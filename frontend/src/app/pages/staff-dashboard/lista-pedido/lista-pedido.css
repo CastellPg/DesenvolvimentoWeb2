@@ -1,0 +1,205 @@
+.os-solicitacao-item {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+}
+
+.os-solicitacao-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
+}
+
+.os-solicitacao-item label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.os-text-problema {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.os-border-problema {
+    border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
+}
+
+.os-card-aberta {
+    background-color: #e5e7eb !important;
+    border: 2px solid #b8bec8 !important;
+}
+
+.os-badge-aberta {
+    background-color: #7b8594;
+    color: #fff;
+}
+
+.os-card-paga {
+    background-color: #f7e1c7 !important;
+    border: 2px solid #ff9800 !important;
+}
+
+.os-badge-paga {
+    background-color: #ff9800;
+    color: #1f1f1f;
+}
+
+.os-card-aprovada {
+    background-color: #f3edc9 !important;
+    border: 2px solid #fbc02d !important;
+}
+
+.os-badge-aprovada {
+    background-color: #fbc02d;
+    color: #111;
+}
+
+.os-card-manutencao {
+    background-color: #dbeafe !important;
+    border: 2px solid #3b82f6 !important;
+}
+
+.os-badge-manutencao {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.os-card-arrumada {
+    background-color: #dbeafe !important;
+    border: 2px solid #60a5fa !important;
+}
+
+.os-badge-arrumada {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.os-indicador-arrumada {
+    display: inline-block;
+    background-color: #f8fbff;
+    color: #2563eb;
+    border: 1px solid #60a5fa;
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.4;
+    min-width: 200px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+}
+
+.os-card-orcada {
+    background-color: #8a3b00 !important;
+    border: 2px solid #5f2500 !important;
+}
+
+.os-badge-orcada {
+    background-color: #8a3b00;
+    color: #fff;
+}
+
+.os-card-orcada label,
+.os-card-orcada .fw-semibold,
+.os-card-orcada .fw-medium,
+.os-card-orcada .text-muted,
+.os-card-orcada .os-text-problema,
+.os-card-orcada small,
+.os-card-orcada .col-md-3 span,
+.os-card-orcada .col-md-4 span,
+.os-card-orcada .col-12 span {
+    color: #f3f4f6 !important;
+}
+
+.os-card-orcada .badge {
+    background-color: #8a3b00 !important;
+    color: #ffffff !important;
+}
+
+.os-card-orcada .os-botao-status {
+    background-color: #e5e7eb;
+    color: #4b5563 !important;
+    border: 1px solid #cbd5e1;
+}
+
+.os-card-orcada .os-border-problema {
+    border-top: 1px dashed rgba(255, 255, 255, 0.18) !important;
+}
+
+.os-card-redirecionada {
+    background-color: #f2e4f8 !important;
+    border: 2px solid #8e24aa !important;
+}
+
+.os-badge-redirecionada {
+    background-color: #8e24aa;
+    color: #fff;
+}
+
+.os-card-finalizada {
+    background-color: #dcfce7 !important;
+    border: 2px solid #22c55e !important;
+}
+
+.os-badge-finalizada {
+    background-color: #22c55e;
+    color: #fff;
+}
+
+.badge {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 0.45rem;
+}
+
+.btn-dark {
+    background-color: #111827;
+    border: none;
+    transition: background 0.2s ease;
+}
+
+.btn-dark:hover {
+    background-color: #1f2937 !important;
+}
+
+.os-indicador-acao {
+    font-size: 0.85rem;
+    border: 1px solid transparent;
+}
+
+.os-indicador-finalizada {
+    background-color: #ecfdf5;
+    color: #166534;
+    border-color: #86efac;
+}
+
+.os-indicador-neutro {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+
+.os-botao-status {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    cursor: not-allowed;
+    font-size: 0.85rem;
+}
+
+.os-card-orcada .os-botao-status {
+    background-color: #e5e7eb;
+    color: #4b5563 !important;
+    border: 1px solid #cbd5e1;
+}
+
+.form-select:focus,
+.form-control:focus,
+.btn:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.card {
+    background-color: #fff;
+}

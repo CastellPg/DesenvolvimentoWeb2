@@ -1,0 +1,35 @@
+.container-fluid {
+  background-color: #fdfdfd;
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 12px !important;
+  border: 1px solid #f0f0f0 !important;
+}
+
+.table thead th {
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.table tbody td {
+  color: #555;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.custom-input {
+  background-color: #f4f5f8;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #333;
+}
+
+.custom-input:focus {
+  background-color: #fff;
+  border: 1px solid #d0d0d0;
+  box-shadow: none;
+}

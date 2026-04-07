@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.badge-arrumada {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.shadow-sm {
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.05) !important;
+}
+
+.hover-dark:hover {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.bg-warning-subtle {
+  background-color: #fff3cd !important;
+}
+
+.btn-dark {
+  background-color: #1a1c23;
+  border-color: #1a1c23;
+}
+
+.btn-dark:hover {
+  background-color: #2c2f3b;
+}

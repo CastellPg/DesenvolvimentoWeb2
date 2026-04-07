@@ -24,7 +24,6 @@ public class CadastroClienteRequest {
     private String logradouro;
     @NotBlank
     private String numero;
-    @NotBlank
     private String complemento;
     @NotBlank
     private String bairro;

@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.badge-orcada { background-color: #0d6efd; color: white; }
+.badge-aprovada { background-color: #198754; color: white; }
+.badge-rejeitada { background-color: #dc3545; color: white; }
+.badge-arrumada { background-color: #6f42c1; color: white; }
+
+.shadow-sm {
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.05) !important;
+}
+
+.btn-outline-dark {
+  border-color: #1a1c23;
+  color: #1a1c23;
+}
+
+.btn-outline-dark:hover {
+  background-color: #1a1c23;
+  color: white;
+}

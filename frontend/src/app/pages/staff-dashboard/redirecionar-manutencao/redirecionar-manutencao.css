@@ -1,0 +1,17 @@
+.card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    background-color: #fff;
+}
+
+label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 0;
+    display: block;
+}
+
+.fw-medium {
+    font-size: 0.95rem;
+    color: #212529;
+}

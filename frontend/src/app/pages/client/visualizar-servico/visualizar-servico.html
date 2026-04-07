@@ -1,0 +1,95 @@
+<div class="container-fluid p-4">
+
+  <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2 hover-dark">
+    <i class="bi bi-arrow-left"></i> Voltar
+  </a>
+
+  <div class="mb-4">
+    <h3 class="fw-bold mb-1">Detalhes da Solicitação</h3>
+    <p class="text-muted">Visualize os dados e o histórico da sua solicitação</p>
+  </div>
+
+  <div class="row g-4">
+
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4 p-md-5">
+
+          <h5 class="fw-bold mb-4 border-bottom pb-3">Informações da Solicitação</h5>
+
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <small class="text-muted d-block mb-1">Data/Hora da Solicitação</small>
+              <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ solicitacao.dataHora | date:'dd/MM/yyyy, HH:mm' }}</span>
+            </div>
+            <div class="text-end">
+              <small class="text-muted d-block mb-1">Status Atual</small>
+              <span class="badge {{ getBadgeClass(solicitacao.estado) }} px-3 py-2 fs-6">{{ solicitacao.estado }}</span>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-8 mb-3 mb-md-0">
+              <small class="text-muted d-block mb-1">Descrição do Equipamento</small>
+              <h6 class="fw-bold fs-5 mb-0">{{ solicitacao.equipamento }}</h6>
+            </div>
+            <div class="col-md-4">
+              <small class="text-muted d-block mb-1">Categoria</small>
+              <span class="fw-medium">{{ solicitacao.categoria }}</span>
+            </div>
+          </div>
+
+          <div class="mb-4 p-3 bg-light rounded-3">
+            <small class="text-muted d-block mb-1">Descrição do Defeito relatado</small>
+            <p class="mb-0">{{ solicitacao.descricaoDefeito }}</p>
+          </div>
+
+          <div *ngIf="solicitacao.valor" class="mt-4 p-3 bg-success-subtle rounded-3 border border-success-subtle">
+            <small class="text-success text-opacity-75 d-block fw-bold text-uppercase" style="font-size: 0.75rem;">Valor do Serviço</small>
+            <h4 class="text-success fw-bold mb-0 mt-1">{{ solicitacao.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h4>
+          </div>
+
+          <div class="mt-5 pt-3 border-top d-flex flex-wrap gap-3">
+            <ng-container [ngSwitch]="solicitacao.estado">
+              <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', solicitacao.id]" class="btn btn-dark btn-lg rounded-pill px-4 fw-medium">
+                Avaliar Orçamento
+              </button>
+              <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', solicitacao.id]" class="btn btn-dark btn-lg rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
+                <i class="bi bi-arrow-counterclockwise"></i> Resgatar Serviço
+              </button>
+              <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', solicitacao.id]" class="btn btn-dark btn-lg rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
+                <i class="bi bi-credit-card"></i> Pagar Serviço
+              </button>
+            </ng-container>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 h-100 bg-light">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-4"><i class="bi bi-clock-history me-2"></i>Histórico</h5>
+
+          <div class="timeline d-flex flex-column gap-4 position-relative px-2">
+            <div *ngFor="let item of solicitacao.historico" class="timeline-item">
+              <div class="d-flex flex-column">
+                <small class="text-muted fw-bold mb-1">{{ item.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
+                <div class="bg-white p-3 rounded-3 shadow-sm border">
+                  <span class="badge bg-secondary mb-2">{{ item.estadoNovo }}</span>
+                  <p class="mb-1 small fw-medium">{{ item.descricao }}</p>
+                  <small class="text-muted" style="font-size: 0.70rem;">
+                    <i class="bi bi-person me-1"></i> Por: {{ item.funcionario }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

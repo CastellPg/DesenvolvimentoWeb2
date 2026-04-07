@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.badge-orcada {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.shadow-sm {
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.05) !important;
+}
+
+.hover-dark:hover {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.bg-warning-subtle {
+  background-color: #fff3cd !important;
+}

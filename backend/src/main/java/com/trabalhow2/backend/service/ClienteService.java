@@ -1,5 +1,18 @@
 package com.trabalhow2.backend.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.List;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
@@ -8,19 +21,6 @@ import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.model.enums.Perfil;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.UsuarioRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
 
 @Service
 public class ClienteService {
@@ -196,6 +196,9 @@ public class ClienteService {
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
 
         Usuario usuario = cliente.getUsuario();
+        if (usuario == null) {
+            throw new RuntimeException("Usuário do cliente não encontrado.");
+        }
 
         if (request.getNome() == null || request.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
@@ -232,6 +235,9 @@ public class ClienteService {
     public void deletarCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado com esse id." + id));
         Usuario usuario = cliente.getUsuario();
+        if (usuario == null) {
+            throw new RuntimeException("Usuário do cliente não encontrado.");
+        }
 
         clienteRepository.delete(cliente);
         usuarioRepository.delete(usuario);

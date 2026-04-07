@@ -1,0 +1,15 @@
+/* cor de fundo para o item de menu ativo */
+.active-menu {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  font-weight: 500;
+}
+
+/* hover na sidebar */
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.bi {
+  font-size: 1.1rem;
+}
