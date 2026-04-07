@@ -1,25 +1,20 @@
-import { Component, WritableSignal, Signal, signal, inject } from '@angular/core';
-import { RouterLink, Router} from "@angular/router";
-import { FormsModule } from "@angular/forms";
-import { HttpClient } from "@angular/common/http";
+import { Component, WritableSignal, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink, FormsModule],
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-
 export class LoginComponent {
   hidePassword: WritableSignal<boolean> = signal(true);
+  mensagemErro: WritableSignal<string> = signal('');
 
-  mensagemErro: string = '';
-
-  togglePassword() {
-    this.hidePassword.update(value => !value);
-  }
-
-//teste usando ngModele
   loginUsuario = {
     email: '',
     senha: ''
@@ -27,17 +22,22 @@ export class LoginComponent {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+
+  togglePassword() {
+    this.hidePassword.update(value => !value);
+  }
+
   fazerLogin() {
-    this.mensagemErro = '';
+    this.mensagemErro.set('');
     console.log('Pegando os dados do form', this.loginUsuario);
 
     if (!this.loginUsuario.email || !this.loginUsuario.senha) {
-      alert('Email e senha são obrigatórios!');
+      this.mensagemErro.set('Email e senha são obrigatórios!');
       return;
     }
 
-    if (this.loginUsuario.senha.length < 4){
-      alert('Senha precisa ter 4 digitos')
+    if (this.loginUsuario.senha.length < 4) {
+      this.mensagemErro.set('Senha precisa ter pelo menos 4 dígitos!');
       return;
     }
 
@@ -49,15 +49,22 @@ export class LoginComponent {
         if (response.perfil === 'CLIENTE') {
           this.router.navigate(['/client']);
         } else if (response.perfil === 'FUNCIONARIO') {
-          this.router.navigate(['/staff-dashboard']);
+          this.router.navigate(['/staff']);
         }
-        
       },
       error: (error) => {
         console.error('Erro ao fazer login:', error);
+
+        if (error.status === 401) {
+          this.mensagemErro.set('Email ou senha inválidos.');
+        } else if (error.status === 400) {
+          this.mensagemErro.set('Dados enviados inválidos.');
+        } else if (error.status === 0) {
+          this.mensagemErro.set('Não foi possível conectar ao servidor.');
+        } else {
+          this.mensagemErro.set('Erro ao fazer login. Tente novamente.');
+        }
       }
     });
   }
-
-
 }

@@ -1,8 +1,14 @@
-<div class="container-fluid p-4">
+ <div class="container-fluid p-4">
 
-  <div class="mb-4">
-    <h2 class="fw-bold mb-0">Dashboard - Cliente</h2>
-    <p class="text-muted">Bem-vindo, {{ nomeCliente }}</p>
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold mb-0">Dashboard - Cliente</h2>
+      <p class="text-muted">Bem-vindo, {{ nomeCliente }}</p>
+    </div>
+
+    <button (click)="resetarSistema()" class="btn btn-outline-danger rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2">
+      <i class="bi bi-arrow-clockwise"></i> Resetar para 8 Itens
+    </button>
   </div>
 
   <div class="alert alert-danger d-flex align-items-center border-0 bg-danger-subtle text-danger p-3 mb-4 rounded-3" role="alert">
@@ -13,7 +19,7 @@
     </div>
   </div>
 
- <div class="d-flex flex-column gap-3">
+  <div class="d-flex flex-column gap-3">
 
     <div class="card border-0 shadow-sm rounded-4" *ngFor="let req of solicitacoes">
       <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
@@ -22,7 +28,7 @@
 
           <div class="col-12 col-md-6 mb-3 mb-md-0">
             <div class="d-flex align-items-center gap-2 mb-2">
-              <span class="badge {{ getBadgeClass(req.estado) }} px-2 py-1">{{ req.estado }}</span>
+              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.estado)">{{ req.estado }}</span>
               <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
             </div>
             <small class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</small>
@@ -40,28 +46,24 @@
           </div>
         </div>
 
-        <div class="d-flex flex-column align-items-end justify-content-center" style="min-width: 180px;">
+        <div class="d-flex flex-column align-items-end justify-content-center gap-2 align-self-stretch" style="min-width: 180px;">
 
-          <a [routerLink]="['/client/visualizar', req.id]" class="text-decoration-none text-muted mb-2 small d-flex align-items-center gap-1 hover-dark">
-            <i class="bi bi-eye"></i> Visualizar
+          <a [routerLink]="['/client/visualizar', req.id]" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
+            <i class="bi bi-eye fs-6"></i> Ver Detalhes
           </a>
 
           <ng-container [ngSwitch]="req.estado">
 
-            <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-sm w-100">
+            <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100 text-nowrap">
               Aprovar/Rejeitar Serviço
             </button>
 
-            <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100">
+            <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
               <i class="bi bi-arrow-counterclockwise"></i> Resgatar Serviço
             </button>
 
-            <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-4 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100">
+            <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
               <i class="bi bi-credit-card"></i> Pagar Serviço
-            </button>
-
-            <button *ngSwitchCase="'ABERTA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-medium btn-sm w-100">
-              Visualizar Serviço
             </button>
 
           </ng-container>

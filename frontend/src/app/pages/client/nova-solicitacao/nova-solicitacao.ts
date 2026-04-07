@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-nova-solicitacao',
   standalone: true,
@@ -21,11 +23,20 @@ export class NovaSolicitacaoComponent implements OnInit {
     'Tablets',
     'Notebooks'
   ];
+  mensagemToast: string = '';
+
+  mostrarToast(mensagem: string) {
+      this.mensagemToast = mensagem;
+      const toastElement = document.getElementById('avisoSucesso')!;
+      if (toastElement) {
+        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        toast.show();
+      }
+    }
 
   constructor(private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
-    // formulário com validações
     this.solicitacaoForm = this.fb.group({
       descricaoEquipamento: ['', [Validators.required, Validators.maxLength(100)]],
       categoria: ['', Validators.required],
@@ -35,20 +46,35 @@ export class NovaSolicitacaoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.solicitacaoForm.valid) {
-      // Cria o objeto simulando o envio pro Back-end
+      const dados = localStorage.getItem('banco_dados_v1');
+      const banco = dados ? JSON.parse(dados) : [];
+      const novoId = banco.length > 0 ? Math.max(...banco.map((s: any) => s.id)) + 1 : 1;
+
       const novaSolicitacao = {
-        ...this.solicitacaoForm.value,
+        id: novoId,
+        equipamento: this.solicitacaoForm.value.descricaoEquipamento,
+        categoria: this.solicitacaoForm.value.categoria,
+        descricaoDefeito: this.solicitacaoForm.value.descricaoDefeito,
         dataHora: new Date().toISOString(),
-        estado: 'ABERTA'
+        estado: 'ABERTA',
+        historico: [
+          {
+            dataHora: new Date().toISOString(),
+            estadoNovo: 'ABERTA',
+            descricao: 'Solicitação criada pelo cliente',
+            funcionario: 'Cliente'
+          }
+        ]
       };
 
-      console.log('Enviando para o Spring Boot:', novaSolicitacao);
-
-      // pop-up e redirecionamento, provisorio
-      alert('Solicitação registrada com sucesso!');
-      this.router.navigate(['/client/dashboard']);
+      banco.push(novaSolicitacao);
+      localStorage.setItem('banco_dados_v1', JSON.stringify(banco));
+      this.mostrarToast('Solicitação criada com sucesso!');
+      
+      setTimeout(() => {
+        this.router.navigate(['/client/dashboard']);
+      }, 2000);
     } else {
-      // erro ao usuario tentar enviar em branco
       this.solicitacaoForm.markAllAsTouched();
     }
   }

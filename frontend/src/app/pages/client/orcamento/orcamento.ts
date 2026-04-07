@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 
+declare var bootstrap: any;
+
 export interface SolicitacaoOrcamento {
   id: number;
   dataHora: string;
@@ -10,6 +12,7 @@ export interface SolicitacaoOrcamento {
   descricaoDefeito: string;
   estado: string;
   valor: number;
+  historico?: any[];
 }
 
 @Component({
@@ -22,6 +25,7 @@ export interface SolicitacaoOrcamento {
 export class OrcamentoComponent implements OnInit {
   solicitacaoId!: number;
   orcamento!: SolicitacaoOrcamento;
+  mensagemToast: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -33,49 +37,84 @@ export class OrcamentoComponent implements OnInit {
     this.buscarOrcamento(this.solicitacaoId);
   }
 
-  // Simulação da busca de dados
-  buscarOrcamento(id: number) {
-    this.orcamento = {
-      id: id,
-      dataHora: '2026-03-20T14:30:00',
-      equipamento: 'Notebook Dell Inspiron 15 3000',
-      categoria: 'Informática',
-      descricaoDefeito: 'Tela não liga, provável problema no display ou cabo flat.',
-      estado: 'ORÇADA',
-      valor: 450.00
-    };
+  mostrarToast(mensagem: string) {
+    this.mensagemToast = mensagem;
+    const toastElement = document.getElementById('avisoSucesso');
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+      toast.show();
+    }
   }
 
-  // RF006
+  //LocalStorage
+  buscarOrcamento(id: number) {
+    const dados = localStorage.getItem('banco_dados_v1');
+    if (dados) {
+      const banco = JSON.parse(dados);
+      this.orcamento = banco.find((item: any) => Number(item.id) === id);
+    }
+  }
+
+  private atualizarLocalStorage(novoEstado: string, motivoHistorico: string) {
+    const dados = localStorage.getItem('banco_dados_v1');
+    if (dados) {
+      let banco = JSON.parse(dados);
+
+      const index = banco.findIndex((item: any) => String(item.id) === String(this.solicitacaoId));
+
+      if (index !== -1) {
+        banco[index].estado = novoEstado;
+
+        // Se for rejeição, salva o motivo
+        if (novoEstado === 'REJEITADA') {
+          const motivo = motivoHistorico.replace('Orçamento rejeitado. Motivo: ', '');
+          banco[index].motivoRejeicao = motivo;
+        }
+
+        if (!banco[index].historico) banco[index].historico = [];
+        banco[index].historico.push({
+          dataHora: new Date().toISOString(),
+          estadoNovo: novoEstado,
+          descricao: motivoHistorico,
+          funcionario: 'Cliente (João)'
+        });
+
+        localStorage.setItem('banco_dados_v1', JSON.stringify(banco));
+
+        if (this.orcamento) this.orcamento.estado = novoEstado;
+
+        console.log("SUCESSO: Salvo no LocalStorage!", banco[index]);
+      } else {
+        console.error("ERRO: ID não encontrado no banco:", this.solicitacaoId);
+      }
+    }
+  }
+
+  // RF006 - APROVAÇÃO
   aprovarServico(): void {
     const confirmacao = window.confirm(`Deseja realmente aprovar este serviço no valor de R$ ${this.orcamento.valor.toFixed(2).replace('.', ',')}?`);
 
     if (confirmacao) {
-      console.log('Serviço Aprovado! ID:', this.orcamento.id);
-      // Feedback RF006
-      alert(`Serviço Aprovado no Valor de R$ ${this.orcamento.valor.toFixed(2).replace('.', ',')}`);
+      this.atualizarLocalStorage('APROVADA', 'Orçamento aprovado pelo cliente via painel.');
 
-      // Simulação da mudança de estado e redirecionamento
-      this.orcamento.estado = 'APROVADA';
-      this.router.navigate(['/client/dashboard']);
+      this.mostrarToast(`Serviço Aprovado no Valor de R$ ${this.orcamento.valor.toFixed(2).replace('.', ',')}`);
+
+      setTimeout(() => {
+        this.router.navigate(['/client/dashboard']);
+      }, 2000);
     }
   }
 
+  // RF007 - REJEIÇÃO
   rejeitarServico(): void {
-    // RNF08 e RF007
     const motivo = window.prompt('Por favor, informe o motivo da rejeição:');
 
     if (motivo !== null && motivo.trim() !== '') {
-      console.log('Serviço Rejeitado. Motivo:', motivo);
+      this.atualizarLocalStorage('REJEITADA', `Orçamento rejeitado. Motivo: ${motivo}`);
 
-      // feedback RF007
       alert('Serviço Rejeitado com sucesso.');
-
-      // Simulação da mudança de estado e redirecionamento
-      this.orcamento.estado = 'REJEITADA';
       this.router.navigate(['/client/dashboard']);
     } else if (motivo !== null) {
-      // OK mas deixou em branco
       alert('É obrigatório informar um motivo para rejeitar o orçamento.');
     }
   }
