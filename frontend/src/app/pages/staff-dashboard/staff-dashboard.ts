@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './staff-dashboard.css',
 })
 export class StaffDashboardComponent implements OnInit {
-
+  nomeFuncionario: string | null = null;
   solicitacoes: any[] = [];
 
   private solicitacoesBase = [
@@ -118,6 +118,8 @@ export class StaffDashboardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    // pega o nome do usuário logado do localStorage do login 
+    this.nomeFuncionario = localStorage.getItem('nomeUsuario');
     this.carregarSolicitacoes();
   }
 

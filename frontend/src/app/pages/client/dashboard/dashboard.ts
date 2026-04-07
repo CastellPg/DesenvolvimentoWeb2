@@ -22,7 +22,7 @@ export interface Solicitacao {
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
-  nomeCliente: string = 'João Silva';
+  nomeCliente: string | null = null;
   solicitacoes: Solicitacao[] = [];
 
   private dadosIniciais: Solicitacao[] = [
@@ -121,6 +121,8 @@ export class DashboardComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+    // Lê o nome do usuário logado do localStorage 
+    this.nomeCliente = localStorage.getItem('nomeUsuario');
     this.carregarSistema();
   }
 
