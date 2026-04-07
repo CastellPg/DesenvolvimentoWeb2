@@ -27,6 +27,8 @@ export class PagamentoComponent implements OnInit {
   servico!: SolicitacaoPagamento;
   mensagemToast: string = '';
 
+  mostrarModal: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router
@@ -35,6 +37,14 @@ export class PagamentoComponent implements OnInit {
   ngOnInit(): void {
     this.solicitacaoId = Number(this.route.snapshot.paramMap.get('id'));
     this.buscarServicoArrumado(this.solicitacaoId);
+  }
+
+  abrirModal() {
+    this.mostrarModal = true;
+  }
+
+  fecharModal() {
+    this.mostrarModal = false;
   }
 
   mostrarToast(mensagem: string) {
@@ -55,38 +65,35 @@ export class PagamentoComponent implements OnInit {
     }
   }
 
-  // RF010
   confirmarPagamento(): void {
-    const valorFormatado = this.servico.valor.toFixed(2).replace('.', ',');
-    const confirmacao = window.confirm(`Deseja confirmar o pagamento de R$ ${valorFormatado} para este serviço?`);
+    const dados = localStorage.getItem('banco_dados_v1');
 
-    if (confirmacao) {
-      const dados = localStorage.getItem('banco_dados_v1');
+    if (dados) {
+      let banco = JSON.parse(dados);
+      const index = banco.findIndex((item: any) => Number(item.id) === this.solicitacaoId);
 
-      if (dados) {
-        let banco = JSON.parse(dados);
-        const index = banco.findIndex((item: any) => Number(item.id) === this.solicitacaoId);
+      if (index !== -1) {
+        banco[index].estado = 'PAGA';
 
-        if (index !== -1) {
-          banco[index].estado = 'PAGA';
+        if (!banco[index].historico) banco[index].historico = [];
+        banco[index].historico.push({
+          dataHora: new Date().toISOString(),
+          estadoNovo: 'PAGA',
+          descricao: 'Pagamento confirmado pelo cliente via painel.',
+          funcionario: 'Sistema (Financeiro)'
+        });
 
-          if (!banco[index].historico) banco[index].historico = [];
-          banco[index].historico.push({
-            dataHora: new Date().toISOString(),
-            estadoNovo: 'PAGA',
-            descricao: 'Pagamento confirmado pelo cliente via painel.',
-            funcionario: 'Sistema (Financeiro)'
-          });
+        localStorage.setItem('banco_dados_v1', JSON.stringify(banco));
 
-          localStorage.setItem('banco_dados_v1', JSON.stringify(banco));
-        }
+        this.servico.estado = 'PAGA';
       }
-
-      this.mostrarToast('Pagamento confirmado com sucesso! O serviço agora consta como PAGO.');
-
-      setTimeout(() => {
-        this.router.navigate(['/client/dashboard']);
-      }, 2000);
     }
+
+    this.fecharModal();
+    this.mostrarToast('Pagamento confirmado com sucesso! O serviço agora consta como PAGO.');
+
+    setTimeout(() => {
+      this.router.navigate(['/client/dashboard']);
+    }, 2000);
   }
 }
