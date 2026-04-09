@@ -36,6 +36,11 @@ export class LoginComponent {
       return;
     }
 
+    if (this.loginUsuario.email.length > 100) {
+      this.mensagemErro.set('Email é muito longo!');
+      return;
+    }
+
     if (this.loginUsuario.senha.length < 4) {
       this.mensagemErro.set('Senha precisa ter pelo menos 4 dígitos!');
       return;
