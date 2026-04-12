@@ -33,6 +33,7 @@ public class LoginController {
             Usuario usuarioAutenticado = loginService.autenticar(request.getEmail(), request.getSenha());
             
             LoginResponse response = new LoginResponse(
+                usuarioAutenticado.getId(),
                 usuarioAutenticado.getNome(),
                 usuarioAutenticado.getPerfil().name()
             );
