@@ -149,13 +149,12 @@ public class ClienteService {
         clienteRepository.save(cliente);
 
         try {
-            emailService.sendEmail(
+            emailService.sendWelcomeEmail(
                     normalizarEmail(request.getEmail()),
-                    "Cadastro realizado!",
-                    "Seu cadastro foi realizado com sucesso. Sua senha temporária é: " + senhaTemporaria
+                    request.getNome(),
+                    senhaTemporaria
             );
-        } catch (MailException e) {
-            System.err.println("Erro ao enviar senha para o e-mail: " + e.getMessage());
+        } catch (RuntimeException e) {
             throw new RuntimeException("Falha ao enviar e-mail. Cadastro cancelado.", e);
         }
     }

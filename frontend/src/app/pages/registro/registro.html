@@ -1,163 +1,185 @@
 <div class="register-container">
-  
-
   <div class="register-card w-100">
     <div class="header">
       <div class="icon-box"><i class="bi bi-tools"></i></div>
       <div class="title-text-group">
-        <h2>Criar nova conta</h2>
-        <p>Preencha os dados abaixo para acessar o sistema TecMaint</p>
-      </div>
+  <h2>Criar nova conta</h2>
+  <p>Preencha os dados abaixo para acessar o sistema TecMaint</p>
+  <p style="color: red; font-weight: bold;">{{ mensagemErro }}</p>
+</div>
     </div>
 
-    <form (ngSubmit) = "registrar()" class="register-form row g-3 p-3">
-      
-        <div class="col-md-3 col-12">
-          <label for="cpf">CPF</label>
-          <input
-            type="text"
-            class="form-control rounded"
-            id="cpf"
-            name="cpf"
-            mask="000.000.000-00"
-            [validation]="true"
-            [(ngModel)]="dados.cpf"
-            placeholder="000.000.000-00"
-            maxlength="14"
-          />
+    <form (ngSubmit)="registrar()" class="register-form row g-3 p-3">
+
+      <div *ngIf="mensagemErro" class="col-12">
+        <div class="mensagem-erro">
+          {{ mensagemErro }}
         </div>
+      </div>
 
-        <div class="col-md-7 ms-5 col-12">
-          <label for="nome">Nome completo</label>
-          <input
-            type="text"
-            class="form-control rounded"
-            id="nome"
-            name="nome"
-            [(ngModel)]="dados.nomeCompleto"
-            placeholder="Digite seu nome"
-            required
-          />
+      <div *ngIf="mensagemSucesso" class="col-12">
+        <div class="mensagem-sucesso">
+          {{ mensagemSucesso }}
         </div>
+      </div>
 
-        <div class="col-md-11 col-12">
-          <label for="email">E-mail</label>
-          <input
-            type="email"
-            class="form-control rounded"
-            id="email"
-            name="email"
-            [(ngModel)]="dados.email"
-            placeholder="exemplo@gmail.com"
-            required
-          />
-        </div>
+      <div class="col-md-3 col-12">
+        <label for="cpf">CPF</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="cpf"
+          name="cpf"
+          mask="000.000.000-00"
+          [validation]="true"
+          [(ngModel)]="dados.cpf"
+          placeholder="000.000.000-00"
+          maxlength="14"
+        />
+      </div>
 
-        <div class="col-md-4 col-12">
-          <label for="telefone">Telefone</label>
-          <input
-            type="text"
-            class="form-control rounded"
-            id="telefone"
-            name="telefone"
-            mask="(00) 00000-0000"
-            [validation]="true"
-            [(ngModel)]="dados.telefone"
-            placeholder="(00) 00000-0000"
-          />
-        </div>
+      <div class="col-md-7 ms-5 col-12">
+        <label for="nome">Nome completo</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="nome"
+          name="nome"
+          [(ngModel)]="dados.nomeCompleto"
+          placeholder="Digite seu nome"
+          required
+        />
+      </div>
 
-        <div class="col-12 mt-3 mb-3"><hr class="divider" /></div>
+      <div class="col-md-11 col-12">
+        <label for="email">E-mail</label>
+        <input
+          type="email"
+          class="form-control rounded"
+          id="email"
+          name="email"
+          [(ngModel)]="dados.email"
+          placeholder="exemplo@gmail.com"
+          required
+        />
+      </div>
 
-        <div class="col-12">
-          <h3>Endereço</h3>
-        </div>
+      <div class="col-md-4 col-12">
+        <label for="telefone">Telefone</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="telefone"
+          name="telefone"
+          mask="(00) 00000-0000"
+          [validation]="true"
+          [(ngModel)]="dados.telefone"
+          placeholder="(00) 00000-0000"
+        />
+      </div>
 
-          <div class="col-md-3 col-12">
-            <label for="cep">CEP</label>
-            <input
-              type="text"
-              class="form-control rounded"
-              id="cep"
-              name="cep"
-              mask="00000-000"
-              [validation]="true"
-              [(ngModel)]="endereco.cep"
-              (input)="buscarCep()"
-              placeholder="00000-000"
-              maxlength="9"
-            />
-          </div>
+      <div class="col-12 mt-3 mb-3"><hr class="divider" /></div>
 
-          <div class="col-md-8 ms-3 col-12">
-            <label for="logradouro">Rua / Logradouro</label>
-            <input
-              type="text"
-              class="form-control rounded"
-              id="logradouro"
-              name="logradouro"
-              [(ngModel)]="endereco.logradouro"
-              required
-              readonly
-            />
-          </div>
+      <div class="col-12">
+        <h3>Endereço</h3>
+      </div>
 
-         
-            <div class="col-md-3 col-5">
-              <label for="numero">Número</label>
-              <input type="text" #inputNumero class="form-control rounded" id="numero" name="numero" [(ngModel)]="endereco.numero" required />
-            </div>
-            <div class="col-md-8 ms-3 col-7">
-              <label for="complemento">Complemento</label>
-              <input type="text" class="form-control rounded" id="complemento" name="complemento" [(ngModel)]="endereco.complemento" />
-            </div>
-          
+      <div class="col-md-3 col-12">
+        <label for="cep">CEP</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="cep"
+          name="cep"
+          mask="00000-000"
+          [validation]="true"
+          [(ngModel)]="endereco.cep"
+          (input)="buscarCep()"
+          placeholder="00000-000"
+          maxlength="9"
+        />
+      </div>
 
-         
-            <div class="col-md-8 col-9">
-              <label for="cidade">Cidade</label>
-              <input
-                type="text"
-                class="form-control rounded"
-                id="cidade"
-                name="cidade"
-                [(ngModel)]="endereco.cidade"
-                required
-                readonly
-              />
-            </div>
+      <div class="col-md-8 ms-3 col-12">
+        <label for="logradouro">Rua / Logradouro</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="logradouro"
+          name="logradouro"
+          [(ngModel)]="endereco.logradouro"
+          required
+          readonly
+        />
+      </div>
 
-            <div class="col-md-8 col-9">
-              <label for="bairro">Bairro</label>
-              <input
-                type="text"
-                class="form-control rounded"
-                id="bairro"
-                name="bairro"
-                [(ngModel)]="endereco.bairro"
-                required
-                readonly
-              />
-            </div>
-           
-            <div class="col-md-2 ms-3 col-4">
-              <label for="estado">Estado (UF)</label>
-              <input
-                type="text"
-                class="form-control rounded"
-                id="estado"
-                name="estado"
-                [(ngModel)]="endereco.estado"
-                required
-                readonly
-              />
-            </div>
+      <div class="col-md-3 col-5">
+        <label for="numero">Número</label>
+        <input
+          type="text"
+          #inputNumero
+          class="form-control rounded"
+          id="numero"
+          name="numero"
+          [(ngModel)]="endereco.numero"
+          required
+        />
+      </div>
 
-        <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end mt-4 ">
-          <button type="submit" class="btn btn-primary">CADASTRAR</button>
-          <button type="button" class="btn btn-secondary" routerLink="/login">CANCELAR</button>
-        </div>
-      
+      <div class="col-md-8 ms-3 col-7">
+        <label for="complemento">Complemento</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="complemento"
+          name="complemento"
+          [(ngModel)]="endereco.complemento"
+        />
+      </div>
+
+      <div class="col-md-8 col-9">
+        <label for="cidade">Cidade</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="cidade"
+          name="cidade"
+          [(ngModel)]="endereco.cidade"
+          required
+          readonly
+        />
+      </div>
+
+      <div class="col-md-8 col-9">
+        <label for="bairro">Bairro</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="bairro"
+          name="bairro"
+          [(ngModel)]="endereco.bairro"
+          required
+          readonly
+        />
+      </div>
+
+      <div class="col-md-2 ms-3 col-4">
+        <label for="estado">Estado (UF)</label>
+        <input
+          type="text"
+          class="form-control rounded"
+          id="estado"
+          name="estado"
+          [(ngModel)]="endereco.estado"
+          required
+          readonly
+        />
+      </div>
+
+      <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+        <button type="submit" class="btn btn-primary">CADASTRAR</button>
+        <button type="button" class="btn btn-secondary" routerLink="/login">CANCELAR</button>
+      </div>
     </form>
   </div>
 </div>
