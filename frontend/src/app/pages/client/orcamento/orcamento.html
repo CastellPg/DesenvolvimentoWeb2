@@ -59,71 +59,13 @@
             <span class="small fw-medium">Ao aprovar o serviço, você concorda com o valor orçado e autoriza o início da manutenção.</span>
           </div>
 
-          <div class="d-flex flex-wrap gap-3" *ngIf="orcamento.status === 'ORCADA'">
-            <button class="btn btn-success rounded-pill px-4 fw-medium d-flex align-items-center gap-2" (click)="abrirModalAprovar()">
-              <i class="bi bi-check-circle"></i> Aprovar Serviço
-            </button>
-            <button class="btn btn-danger rounded-pill px-4 fw-medium d-flex align-items-center gap-2" (click)="abrirModalRejeitar()">
-              <i class="bi bi-x-circle"></i> Rejeitar Serviço
-            </button>
-          </div>
+
 
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6); z-index: 1050;" *ngIf="mostrarModalAprovar">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg rounded-4">
-        <div class="modal-header border-bottom-0 pb-0 mt-3 px-4">
-          <h5 class="modal-title fw-bold text-success"><i class="bi bi-check-circle-fill me-2"></i>Confirmar Aprovação</h5>
-          <button type="button" class="btn-close" (click)="fecharModalAprovar()"></button>
-        </div>
-        <div class="modal-body px-4 py-4">
-          <p class="mb-0 fs-5 text-secondary">
-            Deseja realmente aprovar este serviço no valor de <strong class="text-success fs-4">{{ orcamento.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>?
-          </p>
-        </div>
-        <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-          <button type="button" class="btn btn-light btn-lg rounded-pill px-4" (click)="fecharModalAprovar()">Cancelar</button>
-          <button type="button" class="btn btn-success btn-lg rounded-pill px-4 fw-bold" (click)="confirmarAprovacao()">Sim, Aprovar</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6); z-index: 1050;" *ngIf="mostrarModalRejeitar">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg rounded-4">
-        <div class="modal-header border-bottom-0 pb-0 mt-3 px-4">
-          <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-octagon-fill me-2"></i>Rejeitar Serviço</h5>
-          <button type="button" class="btn-close" (click)="fecharModalRejeitar()"></button>
-        </div>
-        <div class="modal-body px-4 py-4">
-          <p class="mb-3 text-secondary">Por favor, informe o motivo da rejeição do orçamento:</p>
-          <textarea #motivoInput class="form-control form-control-lg rounded-3 bg-light" rows="3" placeholder="Digite o motivo aqui... (Obrigatório)"></textarea>
-        </div>
-        <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-          <button type="button" class="btn btn-light btn-lg rounded-pill px-4" (click)="fecharModalRejeitar()">Cancelar</button>
-          <button type="button" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold" (click)="confirmarRejeicao(motivoInput.value)">Confirmar Rejeição</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 2000;">
-    <div class="toast align-items-center text-white border-0 shadow-lg rounded-3"
-         [ngClass]="{'show': toastVisivel, 'bg-success': toastTipo === 'success', 'bg-danger': toastTipo === 'danger'}"
-         style="transition: opacity 0.3s ease;" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex p-2">
-        <div class="toast-body fw-medium fs-6 d-flex align-items-center gap-2">
-          <i class="bi fs-4" [ngClass]="{'bi-check-circle-fill': toastTipo === 'success', 'bi-exclamation-triangle-fill': toastTipo === 'danger'}"></i>
-          {{ toastMensagem }}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastVisivel = false" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
 
 </div>
