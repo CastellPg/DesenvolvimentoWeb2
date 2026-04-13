@@ -21,7 +21,7 @@ import com.trabalhow2.backend.service.ClienteService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
