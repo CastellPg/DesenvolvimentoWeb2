@@ -34,6 +34,7 @@ public class LoginController {
             session.setAttribute("usuarioPerfil", usuarioAutenticado.getPerfil().name());
             
             LoginResponse response = new LoginResponse(
+                usuarioAutenticado.getId(),
                 usuarioAutenticado.getNome(),
                 usuarioAutenticado.getPerfil().name()
             );

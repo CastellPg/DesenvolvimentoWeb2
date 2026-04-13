@@ -27,10 +27,10 @@
         <div class="mb-4">
           <label for="categoria" class="form-label fw-medium text-muted small">Categoria de Equipamento</label>
           <select id="categoria" class="form-select form-select-lg bg-light border-0"
-                  formControlName="categoria"
-                  [ngClass]="{'is-invalid': solicitacaoForm.get('categoria')?.invalid && solicitacaoForm.get('categoria')?.touched}">
+                  formControlName="categoriaId"
+                  [ngClass]="{'is-invalid': solicitacaoForm.get('categoriaId')?.invalid && solicitacaoForm.get('categoriaId')?.touched}">
             <option value="" disabled selected>Selecione...</option>
-            <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+            <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</option>
           </select>
 
           <div class="invalid-feedback">Por favor, selecione uma categoria válida.</div>
