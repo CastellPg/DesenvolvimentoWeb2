@@ -1,11 +1,27 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 export interface CategoriaResponse {
   id: number;
   nome: string;
-  ativa: boolean;
+}
+
+export interface SolicitacaoResponse {
+  id: number;
+  descricaoEquipamento: string;
+  categoria: string;
+  descricaoDefeito: string;
+  status: string;
+  dataCriacao: string;
+  valorOrcado: number | null;
+  motivoRejeicao: string | null;
+}
+
+export interface AbrirSolicitacaoRequest {
+  clienteId: number;
+  descricaoEquipamento: string;
+  categoriaId: number;
+  descricaoDefeito: string;
 }
 
 @Injectable({
@@ -13,17 +29,22 @@ export interface CategoriaResponse {
 })
 export class SolicitacaoService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/solicitacoes';
-  private categoriasUrl = 'http://localhost:8080/api/categorias';
+  private apiUrl = 'http://localhost:8080/solicitacoes';
+  private categoriasUrl = 'http://localhost:8080/categorias';
 
   //Busca a lista do cliente
-  listarPorCliente(clienteId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cliente/${clienteId}`);
+  listarPorCliente(clienteId: number): Observable<SolicitacaoResponse[]> {
+    return this.http.get<SolicitacaoResponse[]>(`${this.apiUrl}/cliente/${clienteId}`);
   }
 
   //Busca os detalhes de apenas uma solicitação
-  buscarPorId(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  buscarPorId(id: string | number): Observable<SolicitacaoResponse> {
+    return this.http.get<SolicitacaoResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  // RF004
+  abrirSolicitacao(request: AbrirSolicitacaoRequest): Observable<SolicitacaoResponse> {
+    return this.http.post<SolicitacaoResponse>(this.apiUrl, request);
   }
 
   //Busca categorias ativas

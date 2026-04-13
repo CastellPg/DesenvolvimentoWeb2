@@ -22,16 +22,16 @@
         <div class="flex-grow-1 row align-items-center w-100">
           <div class="col-12 col-md-6 mb-3 mb-md-0">
             <div class="d-flex align-items-center gap-2 mb-2">
-              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.estado)">{{ req.estado }}</span>
-              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataHora | date:'dd/MM/yyyy' }}</small>
+              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.status)">{{ req.status }}</span>
+              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataCriacao | date:'dd/MM/yyyy' }}</small>
             </div>
             
             <small class="text-muted d-block" style="font-size: 0.75rem;">Equipamento</small>
-            <h6 class="fw-bold mb-0">{{ req.equipamento || 'Não informado' }}</h6>
+            <h6 class="fw-bold mb-0">{{ req.descricaoEquipamento || 'Não informado' }}</h6>
 
-            <div *ngIf="req.valor" class="mt-2">
+            <div *ngIf="req.valorOrcado" class="mt-2">
               <small class="text-muted d-block" style="font-size: 0.75rem;">Valor Orçado</small>
-              <h6 class="text-success fw-bold mb-0">{{ req.valor | currency:'BRL' }}</h6>
+              <h6 class="text-success fw-bold mb-0">{{ req.valorOrcado | currency:'BRL' }}</h6>
             </div>
           </div>
 
@@ -46,7 +46,7 @@
             <i class="bi bi-eye fs-6"></i> Ver Detalhes
           </a>
 
-          <ng-container [ngSwitch]="req.estado">
+          <ng-container [ngSwitch]="req.status">
             <button *ngSwitchCase="'ORCADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100">
               Aprovar/Rejeitar
             </button>
