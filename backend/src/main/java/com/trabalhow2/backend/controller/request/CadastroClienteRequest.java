@@ -11,27 +11,27 @@ import lombok.Setter;
 
 public class CadastroClienteRequest {
 
-    @NotBlank
+    @NotBlank(message = "CPF é obrigatório")
     private String cpf;
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email é obrigatório")
+    @Email(message = "Email inválido")
     private String email;
-    @NotBlank
+    @NotBlank(message = "Nome é obrigatório")
     private String nome;
-    @NotBlank
+    @NotBlank(message = "CEP é obrigatório")
     private String cep;
-    @NotBlank
+    @NotBlank(message = "Logradouro é obrigatório")
     private String logradouro;
-    @NotBlank
+    @NotBlank(message = "Número é obrigatório")
     private String numero;
     private String complemento;
-    @NotBlank
+    @NotBlank(message = "Bairro é obrigatório")
     private String bairro;
-    @NotBlank
+    @NotBlank(message = "Cidade é obrigatório")
     private String cidade;
-    @NotBlank
+    @NotBlank(message = "Estado é obrigatório")
     private String estado;
-    @NotBlank
+    @NotBlank(message = "Telefone é obrigatório")
     private String telefone;
 
 }
