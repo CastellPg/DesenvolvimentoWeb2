@@ -1,9 +1,5 @@
 package com.trabalhow2.backend.model.enums;
 
-/**
- * Ciclo de vida de uma Ordem de Serviço.
- * A escala de cores correspondente é definida no RF013.
- */
 public enum StatusSolicitacao {
     ABERTA,         // Cinza   — aguardando triagem
     ORCADA,         // Marrom  — orçamento realizado pelo funcionário
