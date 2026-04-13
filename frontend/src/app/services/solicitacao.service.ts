@@ -49,18 +49,4 @@ export class SolicitacaoService {
   buscarPorId(id: string | number): Observable<SolicitacaoResponse> {
     return this.http.get<SolicitacaoResponse>(`${this.baseUrl}/${id}`);
   }
-
-  listarPorCliente(clienteId: number): Observable<SolicitacaoResponse[]> {
-    return this.http.get<SolicitacaoResponse[]>(`${this.baseUrl}/cliente/${clienteId}`);
-  }
-
-  // RF005 — cliente aprova orçamento
-  aprovarSolicitacao(id: string | number): Observable<SolicitacaoResponse> {
-    return this.http.patch<SolicitacaoResponse>(`${this.baseUrl}/${id}/aprovar`, {});
-  }
-
-  // RF005 — cliente rejeita orçamento com motivo obrigatório
-  rejeitarSolicitacao(id: string | number, motivo: string): Observable<SolicitacaoResponse> {
-    return this.http.patch<SolicitacaoResponse>(`${this.baseUrl}/${id}/rejeitar`, { motivo });
-  }
 }

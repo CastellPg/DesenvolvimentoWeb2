@@ -1,7 +1,6 @@
 package com.trabalhow2.backend.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,45 +54,6 @@ public class SolicitacaoService {
         Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new SolicitacaoNaoEncontradaException(id));
         return paraResponse(solicitacao);
-    }
-
-    @Transactional(readOnly = true)
-    public List<SolicitacaoResponse> listarPorCliente(Long clienteId) {
-        return solicitacaoRepository.findByClienteIdAndAtivoTrue(clienteId)
-                .stream()
-                .map(this::paraResponse)
-                .toList();
-    }
-
-    // Cliente aprova o orçamento — transição ORCADA → APROVADA
-    @Transactional
-    public SolicitacaoResponse aprovarSolicitacao(Long id) {
-        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(id)
-                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(id));
-
-        if (solicitacao.getStatus() != StatusSolicitacao.ORCADA) {
-            throw new IllegalStateException(
-                    "Não é possível aprovar: status atual é " + solicitacao.getStatus());
-        }
-
-        solicitacao.setStatus(StatusSolicitacao.APROVADA);
-        return paraResponse(solicitacaoRepository.save(solicitacao));
-    }
-
-    // Cliente rejeita o orçamento — transição ORCADA → REJEITADA
-    @Transactional
-    public SolicitacaoResponse rejeitarSolicitacao(Long id, String motivo) {
-        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(id)
-                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(id));
-
-        if (solicitacao.getStatus() != StatusSolicitacao.ORCADA) {
-            throw new IllegalStateException(
-                    "Não é possível rejeitar: status atual é " + solicitacao.getStatus());
-        }
-
-        solicitacao.setStatus(StatusSolicitacao.REJEITADA);
-        solicitacao.setMotivoRejeicao(motivo);
-        return paraResponse(solicitacaoRepository.save(solicitacao));
     }
 
     // Converte entidade → DTO; o Controller nunca deve tocar na entidade

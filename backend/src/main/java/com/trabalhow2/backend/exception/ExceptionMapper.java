@@ -39,15 +39,6 @@ public class ExceptionMapper {
         return pd;
     }
 
-    // transição de estado inválida 
-    @ExceptionHandler(IllegalStateException.class)
-    public ProblemDetail handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
-        pd.setTitle("Operação não permitida");
-        pd.setInstance(URI.create(request.getRequestURI()));
-        return pd;
-    }
-
     // falha de Bean Validation 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {
