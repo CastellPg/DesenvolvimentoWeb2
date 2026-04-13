@@ -1,19 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { SolicitacaoService } from '../../../services/solicitacao.service';
-
-export interface Solicitacao {
-  id: number;
-  dataHora: string | Date;
-  equipamento: string;
-  categoria: string;
-  estado: string;
-  valor?: number;
-  descricaoDefeito?: string;
-  motivoRejeicao?: string;
-  historico?: any[];
-}
+import { SolicitacaoService, SolicitacaoResponse } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +12,7 @@ export interface Solicitacao {
 })
 export class DashboardComponent implements OnInit {
   nomeCliente: string | null = null;
-  solicitacoes: Solicitacao[] = [];
+  solicitacoes: SolicitacaoResponse[] = [];
 
   private solicitacaoService = inject(SolicitacaoService);
 
@@ -35,7 +23,7 @@ export class DashboardComponent implements OnInit {
   }
 
   carregarSistema(): void {
-    //Dado pronto só pq ainda n tem dados no BD
+    
     const clienteIdLogado = 1;
 
     this.solicitacaoService.listarPorCliente(clienteIdLogado).subscribe({
