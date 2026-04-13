@@ -1,14 +1,17 @@
 package com.trabalhow2.backend.repository;
 
-import com.trabalhow2.backend.model.Solicitacao;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.List;
 
+import com.trabalhow2.backend.model.Solicitacao;
 
 @Repository
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
 
-    List<Solicitacao> findByClienteIdOrderByDataHoraDesc(Long cliente_id);
- 
+    Optional<Solicitacao> findByIdAndAtivoTrue(Long id);
+
+    List<Solicitacao> findByClienteIdAndAtivoTrue(Long clienteId);
 } 
