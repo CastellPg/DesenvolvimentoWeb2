@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,14 +29,37 @@ public class ExceptionMapper {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
 
-    // recurso não encontrado
-    @ExceptionHandler({SolicitacaoNaoEncontradaException.class, EntityNotFoundException.class})
-    public ProblemDetail handleNotFound(RuntimeException ex, HttpServletRequest request) {
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        pd.setTitle("Recurso não encontrado");
-        pd.setInstance(URI.create(request.getRequestURI()));
-        return pd;
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> illegalArgumentException(IllegalArgumentException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(exception.getMessage());
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        String mensagem = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(erro -> erro.getDefaultMessage())
+                .orElse("Dados inválidos.");
+
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(mensagem);
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorMessage> runtimeException(RuntimeException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(exception.getMessage());
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+    }
+
 
     // falha de Bean Validation 
     @ExceptionHandler(MethodArgumentNotValidException.class)

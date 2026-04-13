@@ -94,3 +94,23 @@ form label {
   color: white;
   font-size: 24px;
 }
+
+.mensagem-erro {
+  background-color: #fdeaea;
+  color: #b42318;
+  border: 1px solid #f5c2c7;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mensagem-sucesso {
+  background-color: #eafaf1;
+  color: #067647;
+  border: 1px solid #a6f4c5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}

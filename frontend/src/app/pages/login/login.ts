@@ -46,7 +46,7 @@ export class LoginComponent {
       return;
     }
 
-    this.http.post<any>('http://localhost:8080/login', this.loginUsuario).subscribe({
+    this.http.post<any>('http://localhost:8080/login', this.loginUsuario, {withCredentials: true}).subscribe({
       next: (response) => {
         localStorage.setItem('usuarioId', response.id);
         localStorage.setItem('perfil', response.perfil);
