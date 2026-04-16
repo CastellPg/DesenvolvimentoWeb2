@@ -1,5 +1,11 @@
 <div class="container-fluid p-4">
 
+  <div *ngIf="carregando" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div *ngIf="erroCarregamento" class="alert alert-danger rounded-3">{{ erroCarregamento }}</div>
+
   <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2">
     <i class="bi bi-arrow-left"></i> Voltar
   </a>
@@ -9,7 +15,7 @@
     <p class="text-muted">Analise os detalhes e decida sobre a aprovação do serviço</p>
   </div>
 
-  <div class="row g-4" *ngIf="orcamento">
+  <div class="row g-4" *ngIf="orcamento && !carregando">
     <div class="col-12 col-lg-8">
       <div class="card border-0 shadow-sm rounded-4 h-100">
         <div class="card-body p-4 p-md-5">
@@ -17,12 +23,12 @@
           <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
               <small class="text-muted d-block mb-1">Data/Hora da Solicitação</small>
-              <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ orcamento.dataHora | date:'dd/MM/yyyy, HH:mm' }}</span>
+              <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ orcamento.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</span>
             </div>
             <div class="text-end">
               <small class="text-muted d-block mb-1">Status</small>
-              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(orcamento.estado)">
-                {{ orcamento.estado }}
+              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(orcamento.status)">
+                {{ orcamento.status }}
               </span>
             </div>
           </div>
@@ -30,7 +36,7 @@
           <div class="row mb-5">
             <div class="col-md-8 mb-3 mb-md-0">
               <small class="text-muted d-block mb-1">Descrição do Equipamento</small>
-              <h5 class="fw-bold mb-0">{{ orcamento.equipamento }}</h5>
+              <h5 class="fw-bold mb-0">{{ orcamento.descricaoEquipamento }}</h5>
             </div>
             <div class="col-md-4">
               <small class="text-muted d-block mb-1">Categoria</small>
@@ -43,9 +49,9 @@
             <p class="mb-0">{{ orcamento.descricaoDefeito }}</p>
           </div>
 
-          <div *ngIf="orcamento.valor" class="mb-5">
+          <div *ngIf="orcamento.valorOrcado" class="mb-5">
             <small class="text-muted d-block mb-1">Valor Orçado</small>
-            <h2 class="text-success fw-bold mb-0">{{ orcamento.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h2>
+            <h2 class="text-success fw-bold mb-0">{{ orcamento.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h2>
           </div>
 
           <div class="alert alert-warning border-0 bg-warning bg-opacity-25 text-dark p-3 mb-5 rounded-3 d-flex align-items-center gap-3">
@@ -53,71 +59,13 @@
             <span class="small fw-medium">Ao aprovar o serviço, você concorda com o valor orçado e autoriza o início da manutenção.</span>
           </div>
 
-          <div class="d-flex flex-wrap gap-3" *ngIf="orcamento.estado === 'ORÇADA'">
-            <button class="btn btn-success rounded-pill px-4 fw-medium d-flex align-items-center gap-2" (click)="abrirModalAprovar()">
-              <i class="bi bi-check-circle"></i> Aprovar Serviço
-            </button>
-            <button class="btn btn-danger rounded-pill px-4 fw-medium d-flex align-items-center gap-2" (click)="abrirModalRejeitar()">
-              <i class="bi bi-x-circle"></i> Rejeitar Serviço
-            </button>
-          </div>
+
 
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6); z-index: 1050;" *ngIf="mostrarModalAprovar">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg rounded-4">
-        <div class="modal-header border-bottom-0 pb-0 mt-3 px-4">
-          <h5 class="modal-title fw-bold text-success"><i class="bi bi-check-circle-fill me-2"></i>Confirmar Aprovação</h5>
-          <button type="button" class="btn-close" (click)="fecharModalAprovar()"></button>
-        </div>
-        <div class="modal-body px-4 py-4">
-          <p class="mb-0 fs-5 text-secondary">
-            Deseja realmente aprovar este serviço no valor de <strong class="text-success fs-4">{{ orcamento.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>?
-          </p>
-        </div>
-        <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-          <button type="button" class="btn btn-light btn-lg rounded-pill px-4" (click)="fecharModalAprovar()">Cancelar</button>
-          <button type="button" class="btn btn-success btn-lg rounded-pill px-4 fw-bold" (click)="confirmarAprovacao()">Sim, Aprovar</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6); z-index: 1050;" *ngIf="mostrarModalRejeitar">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg rounded-4">
-        <div class="modal-header border-bottom-0 pb-0 mt-3 px-4">
-          <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-octagon-fill me-2"></i>Rejeitar Serviço</h5>
-          <button type="button" class="btn-close" (click)="fecharModalRejeitar()"></button>
-        </div>
-        <div class="modal-body px-4 py-4">
-          <p class="mb-3 text-secondary">Por favor, informe o motivo da rejeição do orçamento:</p>
-          <textarea #motivoInput class="form-control form-control-lg rounded-3 bg-light" rows="3" placeholder="Digite o motivo aqui... (Obrigatório)"></textarea>
-        </div>
-        <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
-          <button type="button" class="btn btn-light btn-lg rounded-pill px-4" (click)="fecharModalRejeitar()">Cancelar</button>
-          <button type="button" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold" (click)="confirmarRejeicao(motivoInput.value)">Confirmar Rejeição</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 2000;">
-    <div class="toast align-items-center text-white border-0 shadow-lg rounded-3"
-         [ngClass]="{'show': toastVisivel, 'bg-success': toastTipo === 'success', 'bg-danger': toastTipo === 'danger'}"
-         style="transition: opacity 0.3s ease;" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex p-2">
-        <div class="toast-body fw-medium fs-6 d-flex align-items-center gap-2">
-          <i class="bi fs-4" [ngClass]="{'bi-check-circle-fill': toastTipo === 'success', 'bi-exclamation-triangle-fill': toastTipo === 'danger'}"></i>
-          {{ toastMensagem }}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastVisivel = false" aria-label="Close"></button>
-      </div>
-    </div>
-  </div>
 
 </div>

@@ -1,12 +1,14 @@
 package com.trabalhow2.backend.exception;
 
-import com.trabalhow2.backend.controller.response.ErrorMessage;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.trabalhow2.backend.controller.response.ErrorMessage;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
@@ -43,6 +45,14 @@ public class ExceptionMapper {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
+    @ExceptionHandler(SolicitacaoNaoEncontradaException.class)
+    public ResponseEntity<ErrorMessage> solicitacaoNaoEncontrada(SolicitacaoNaoEncontradaException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setMessage(exception.getMessage());
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> runtimeException(RuntimeException exception) {
         ErrorMessage errorMessage = new ErrorMessage();
@@ -50,6 +60,4 @@ public class ExceptionMapper {
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
-
-
 }

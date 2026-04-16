@@ -1,14 +1,10 @@
- <div class="container-fluid p-4">
+<div class="container-fluid p-4">
 
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
       <h2 class="fw-bold mb-0">Dashboard - Cliente</h2>
       <p class="text-muted">Bem-vindo, {{ nomeCliente }}</p>
     </div>
-
-    <button (click)="resetarSistema()" class="btn btn-outline-danger rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2">
-      <i class="bi bi-arrow-clockwise"></i> Resetar para 8 Itens
-    </button>
   </div>
 
   <div class="alert alert-danger d-flex align-items-center border-0 bg-danger-subtle text-danger p-3 mb-4 rounded-3" role="alert">
@@ -20,57 +16,47 @@
   </div>
 
   <div class="d-flex flex-column gap-3">
-
     <div class="card border-0 shadow-sm rounded-4" *ngFor="let req of solicitacoes">
       <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
 
         <div class="flex-grow-1 row align-items-center w-100">
-
           <div class="col-12 col-md-6 mb-3 mb-md-0">
             <div class="d-flex align-items-center gap-2 mb-2">
-              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.estado)">{{ req.estado }}</span>
-              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
+              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.status)">{{ req.status }}</span>
+              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataCriacao | date:'dd/MM/yyyy' }}</small>
             </div>
-            <small class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</small>
-            <h6 class="fw-bold mb-0">{{ req.equipamento | slice:0:30 }}{{ req.equipamento.length > 30 ? '...' : '' }}</h6>
+            
+            <small class="text-muted d-block" style="font-size: 0.75rem;">Equipamento</small>
+            <h6 class="fw-bold mb-0">{{ req.descricaoEquipamento || 'Não informado' }}</h6>
 
-            <div *ngIf="req.valor" class="mt-2">
+            <div *ngIf="req.valorOrcado" class="mt-2">
               <small class="text-muted d-block" style="font-size: 0.75rem;">Valor Orçado</small>
-              <h6 class="text-success fw-bold mb-0">{{ req.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h6>
+              <h6 class="text-success fw-bold mb-0">{{ req.valorOrcado | currency:'BRL' }}</h6>
             </div>
           </div>
 
           <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-center justify-content-center">
-            <small class="text-muted d-block" style="font-size: 0.75rem;">Categoria</small>
-            <span class="fw-medium">{{ req.categoria }}</span>
+            <small class="text-muted d-block" style="font-size: 0.75rem;">Defeito Relatado</small>
+            <span class="fw-medium">{{ req.descricaoDefeito || 'N/A' }}</span>
           </div>
         </div>
 
         <div class="d-flex flex-column align-items-end justify-content-center gap-2 align-self-stretch" style="min-width: 180px;">
-
-          <a [routerLink]="['/client/visualizar', req.id]" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
+          <a [routerLink]="['/client/visualizar', req.id]" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100">
             <i class="bi bi-eye fs-6"></i> Ver Detalhes
           </a>
 
-          <ng-container [ngSwitch]="req.estado">
-
-            <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100 text-nowrap">
-              Aprovar/Rejeitar Serviço
+          <ng-container [ngSwitch]="req.status">
+            <button *ngSwitchCase="'ORCADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100">
+              Aprovar/Rejeitar
             </button>
-
-            <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
-              <i class="bi bi-arrow-counterclockwise"></i> Resgatar Serviço
+            <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100">
+              Pagar Serviço
             </button>
-
-            <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
-              <i class="bi bi-credit-card"></i> Pagar Serviço
-            </button>
-
           </ng-container>
-
         </div>
+
       </div>
     </div>
-
   </div>
 </div>
