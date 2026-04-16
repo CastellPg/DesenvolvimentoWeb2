@@ -1,142 +1,194 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 
 declare var bootstrap: any;
 
+interface Categoria {
+  id: number;
+  nome: string;
+}
+
 @Component({
   selector: 'app-categoria-equipamento',
-  imports: [HttpClientModule,
-            ReactiveFormsModule,
-            CommonModule,     
+  imports: [
+    HttpClientModule,
+    ReactiveFormsModule,
+    CommonModule,
   ],
   templateUrl: './categoria-equipamento.html',
   styleUrl: './categoria-equipamento.css',
 })
 export class CategoriaEquipamentoComponent implements OnInit {
 
-  
+  private readonly apiUrl = 'http://localhost:8080/categorias';
+  private readonly cacheKey = 'categoriasEquipamento';
+
   idParaExcluir: number | null = null;
   idParaEditar: number | null = null;
+  carregando = false;
+  categorias: Categoria[] = [];
 
   formCategoria!: FormGroup;
   formEditarCategoria!: FormGroup;
-  
+
   constructor(private http: HttpClient,
-              private fb: FormBuilder,
-  ){}
+              private fb: FormBuilder) {}
 
-   ngOnInit() {
-      //Inicia form de criação de categoria
-      this.formCategoria = this.fb.group({
+  ngOnInit() {
+    this.formCategoria = this.fb.group({
       nome: ['', Validators.required]
     });
-     //Inicia form de criar categoria
-     this.formEditarCategoria = this.fb.group({
+
+    this.formEditarCategoria = this.fb.group({
       nome: ['', Validators.required]
     });
-    }
 
-    // Funções do botão delete
-  prepararExclusao(id: number){
-    this.idParaExcluir = id
+    this.carregarCategoriasDoCache();
+    this.listarCategorias();
   }
 
-  /*confirmarExclusao(){
-    this.http.delete(`http://localhost:8080/categorias/${this.idParaExcluir}`).subscribe({
+  prepararExclusao(id: number) {
+    this.idParaExcluir = id;
+  }
 
-      next: () => {
-        console.log('Excluído com sucesso');
-        this.listarCategorias();
-        this.idParaExcluir = null;
-      },
-      error: (err) => console.log('Erro ao excluir', err)
-    });
-  }*/
+  confirmarExclusao() {
+    if (this.idParaExcluir !== null) {
+      const idExcluido = this.idParaExcluir;
+      const categoriasAntesDaExclusao = [...this.categorias];
 
-    confirmarExclusao(){
-      if(this.idParaExcluir) {
-        this.categorias = this.categorias.filter(c => c.id !== this.idParaExcluir)
+      this.categorias = this.categorias.filter(categoria => categoria.id !== idExcluido);
+      this.salvarCategoriasNoCache();
+      this.idParaExcluir = null;
 
-        console.log('Excluído localmente', this.idParaExcluir);
-        this.idParaExcluir = null;
-
-        this.mostrarAviso('Categoria removida com sucesso!');
-      }
-    }
-
-   
-    listarCategorias(){
-     // Vou fazer quando integrarmos com o back  
-    }
-
-    // Modal nova Categoria
-  
-    categorias = [
-      { id: 1, nome: 'Notebook' },
-      { id: 2, nome: 'Impressora' },
-      { id: 3, nome: 'Monitor' },
-      { id: 4, nome: 'teclado' },
-      { id: 5, nome: 'Desktop' }
-    ];
-
-    criarCategoria() {
-      if(this.formCategoria.valid){
-        const nomeDigitado = this.formCategoria.value.nome;
-
-        const novoId = this.categorias.length > 0 ? Math.max(...this.categorias.map(c => c.id)) + 1 : 1;
-
-        this.categorias.push({id: novoId, nome:nomeDigitado});
-
-        this.formCategoria.reset();
-
-        this.mostrarAviso('Categoria criada com sucesso!');
-      }
-    }
-
-    // modal atualizar/editar categoria
-
-    prepararEdicao(cat: any){
-      this.idParaEditar = cat.id;
-
-      this.formEditarCategoria.patchValue({
-        nome:cat.nome
+      this.http.delete(`${this.apiUrl}/${idExcluido}`).subscribe({
+        next: () => {
+          this.mostrarAviso('Categoria removida com sucesso!');
+        },
+        error: () => {
+          this.categorias = categoriasAntesDaExclusao;
+          this.salvarCategoriasNoCache();
+          this.mostrarAviso('Erro ao remover categoria.');
+        }
       });
     }
+  }
 
-    atualizarCategoria(){
-      if(this.formEditarCategoria.valid){
-        const novoNome = this.formEditarCategoria.value.nome;
+  listarCategorias() {
+    this.carregando = true;
 
-        const indice = this.categorias.findIndex(c => c.id === this.idParaEditar);
-        if(indice !== -1){
-          this.categorias[indice].nome = novoNome;
-          
+    this.http.get<Categoria[]>(this.apiUrl)
+      .pipe(finalize(() => this.carregando = false))
+      .subscribe({
+      next: (resposta) => {
+        this.categorias = this.ordenarCategorias(resposta);
+        this.salvarCategoriasNoCache();
+      },
+      error: () => {
+        this.mostrarAviso('Erro ao carregar categorias.');
+      }
+    });
+  }
+
+  criarCategoria() {
+    if (this.formCategoria.valid) {
+      const categoria = {
+        nome: this.formCategoria.value.nome
+      };
+
+      this.http.post<Categoria>(this.apiUrl, categoria).subscribe({
+        next: (categoriaCriada) => {
+          this.formCategoria.reset();
+          this.categorias = this.ordenarCategorias([...this.categorias, categoriaCriada]);
+          this.salvarCategoriasNoCache();
+          this.mostrarAviso('Categoria criada com sucesso!');
+        },
+        error: () => this.mostrarAviso('Erro ao criar categoria.')
+      });
+    }
+  }
+
+  prepararEdicao(cat: Categoria) {
+    this.idParaEditar = cat.id;
+
+    this.formEditarCategoria.patchValue({
+      nome: cat.nome
+    });
+  }
+
+  atualizarCategoria() {
+    if (this.formEditarCategoria.valid) {
+      if (this.idParaEditar === null) {
+        return;
+      }
+
+      const idAtualizado = this.idParaEditar;
+      const categoriasAntesDaAtualizacao = [...this.categorias];
+      const categoria = {
+        nome: this.formEditarCategoria.value.nome
+      };
+
+      this.categorias = this.ordenarCategorias(
+        this.categorias.map(categoriaAtual =>
+          categoriaAtual.id === idAtualizado
+            ? { ...categoriaAtual, nome: categoria.nome }
+            : categoriaAtual
+        )
+      );
+      this.salvarCategoriasNoCache();
+      this.idParaEditar = null;
+
+      this.http.put<Categoria>(`${this.apiUrl}/${idAtualizado}`, categoria).subscribe({
+        next: (categoriaAtualizada) => {
+          this.categorias = this.ordenarCategorias(
+            this.categorias.map(categoriaAtual =>
+              categoriaAtual.id === categoriaAtualizada.id ? categoriaAtualizada : categoriaAtual
+            )
+          );
+          this.salvarCategoriasNoCache();
+          this.mostrarAviso('Categoria atualizada com sucesso!');
+        },
+        error: () => {
+          this.categorias = categoriasAntesDaAtualizacao;
+          this.salvarCategoriasNoCache();
+          this.mostrarAviso('Erro ao atualizar categoria.');
         }
-        console.log(`Editando ID ${this.idParaEditar} para: ${novoNome}`);
-        //Aqui vai ir um put quando colocar o back
+      });
+    }
+  }
 
-        this.idParaEditar = null;
+  private carregarCategoriasDoCache() {
+    const categoriasEmCache = localStorage.getItem(this.cacheKey);
 
-         this.mostrarAviso('Categoria atualizada com sucesso!');
-
+    if (categoriasEmCache) {
+      try {
+        this.categorias = this.ordenarCategorias(JSON.parse(categoriasEmCache));
+      } catch {
+        localStorage.removeItem(this.cacheKey);
       }
     }
+  }
 
-    mostrarAviso(mensagem: string){
+  private salvarCategoriasNoCache() {
+    localStorage.setItem(this.cacheKey, JSON.stringify(this.categorias));
+  }
 
-      const spanTexto = document.getElementById('textoAviso');
-      if (spanTexto){
-        spanTexto.innerText = mensagem;
-      }
-        const elementoAviso = document.getElementById('avisoSucesso');
-        if(elementoAviso) {
-          const exibirAviso = new bootstrap.Toast(elementoAviso);
-          exibirAviso.show();
-        }
+  private ordenarCategorias(categorias: Categoria[]) {
+    return [...categorias].sort((categoria1, categoria2) => categoria1.id - categoria2.id);
+  }
+
+  mostrarAviso(mensagem: string) {
+    const spanTexto = document.getElementById('textoAviso');
+    if (spanTexto) {
+      spanTexto.innerText = mensagem;
     }
 
-
+    const elementoAviso = document.getElementById('avisoSucesso');
+    if (elementoAviso) {
+      const exibirAviso = new bootstrap.Toast(elementoAviso);
+      exibirAviso.show();
+    }
+  }
 }

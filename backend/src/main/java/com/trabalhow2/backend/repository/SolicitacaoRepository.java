@@ -13,5 +13,7 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
 
     Optional<Solicitacao> findByIdAndAtivoTrue(Long id);
 
-    List<Solicitacao> findByClienteIdAndAtivoTrue(Long clienteId);
+    List<Solicitacao> findByClienteIdAndAtivoTrueOrderByDataCriacaoAsc(Long clienteId);
+
+    List<Solicitacao> findByFuncionarioIdAndAtivoTrueOrderByDataCriacaoAsc(Long funcionarioId);
 } 

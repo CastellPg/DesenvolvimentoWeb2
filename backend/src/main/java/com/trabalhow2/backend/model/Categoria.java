@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-// Entidade que mapeia a tabela existente `categorias` no banco
 @Entity
 @Table(name = "categorias")
 @Getter
@@ -23,7 +22,6 @@ public class Categoria {
     @Column(nullable = false, unique = true, length = 50)
     private String nome;
 
-    // Soft delete — exclui logicamente via ativo = false
     @Column(nullable = false)
-    private boolean ativo = true;
+    private Boolean ativo = true;
 }

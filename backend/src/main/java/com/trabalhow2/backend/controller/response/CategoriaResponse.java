@@ -1,4 +1,15 @@
 package com.trabalhow2.backend.controller.response;
 
-// imutável por padrão (RF011)
-public record CategoriaResponse(Long id, String nome) {}
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoriaResponse {
+    private Long id;
+    private String nome;
+}

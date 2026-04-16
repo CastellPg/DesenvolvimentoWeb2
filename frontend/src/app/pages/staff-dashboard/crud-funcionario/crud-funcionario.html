@@ -34,6 +34,14 @@
             </thead>
 
             <tbody>
+              <tr *ngIf="carregando && funcionarios.length === 0">
+                <td colspan="4" class="text-center text-muted py-4">Carregando funcionários...</td>
+              </tr>
+
+              <tr *ngIf="!carregando && funcionarios.length === 0">
+                <td colspan="4" class="text-center text-muted py-4">Nenhum funcionário cadastrado.</td>
+              </tr>
+
               <tr *ngFor="let funcionario of funcionarios">
                 <td class="ps-0 fw-medium text-dark">
                   {{ funcionario.nome }}
@@ -112,6 +120,20 @@
               <div *ngIf="formFuncionario.get('email')?.invalid && formFuncionario.get('email')?.touched"
                    class="text-danger small mt-1">
                 Email válido é obrigatório
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold small">Senha *</label>
+              <input
+                type="password"
+                class="form-control bg-light border-0 py-2 px-3 rounded-3"
+                formControlName="senha"
+                placeholder="Senha de acesso">
+
+              <div *ngIf="formFuncionario.get('senha')?.invalid && formFuncionario.get('senha')?.touched"
+                   class="text-danger small mt-1">
+                Senha é obrigatória
               </div>
             </div>
 

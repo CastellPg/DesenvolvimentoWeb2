@@ -1,9 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 
 declare var bootstrap: any;
+
+interface FuncionarioApi {
+  id: number;
+  nome: string;
+  email: string;
+  data_nascimento: string;
+}
+
+interface Funcionario {
+  id: number;
+  nome: string;
+  email: string;
+  dataNascimento: string;
+  voce: boolean;
+}
 
 @Component({
   selector: 'app-crud-funcionario',
@@ -17,8 +33,13 @@ declare var bootstrap: any;
 })
 export class CrudFuncionarioComponent implements OnInit {
 
+  private readonly apiUrl = 'http://localhost:8080/funcionarios';
+  private readonly cacheKey = 'funcionarios';
+
   idParaExcluir: number | null = null;
   idParaEditar: number | null = null;
+  carregando = false;
+  funcionarios: Funcionario[] = [];
 
   formFuncionario!: FormGroup;
   formEditarFuncionario!: FormGroup;
@@ -32,6 +53,7 @@ export class CrudFuncionarioComponent implements OnInit {
     this.formFuncionario = this.fb.group({
       nome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      senha: ['', Validators.required],
       dataNascimento: ['', Validators.required]
     });
 
@@ -40,54 +62,79 @@ export class CrudFuncionarioComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       dataNascimento: ['', Validators.required]
     });
-  }
 
-  funcionarios = [
-    { id: 1, nome: 'Carlos Técnico', email: 'carlos@empresa.com', dataNascimento: '1990-05-14', voce: true },
-    { id: 2, nome: 'Ana Suporte', email: 'ana@empresa.com', dataNascimento: '1992-08-19', voce: false },
-    { id: 3, nome: 'Ricardo Manutenção', email: 'ricardo@empresa.com', dataNascimento: '1988-03-09', voce: false }
-  ];
+    this.carregarFuncionariosDoCache();
+    this.listarFuncionarios();
+  }
 
   prepararExclusao(id: number) {
     this.idParaExcluir = id;
   }
 
   confirmarExclusao() {
-    if (this.idParaExcluir !== null) {
-      this.funcionarios = this.funcionarios.filter(f => f.id !== this.idParaExcluir);
-
-      console.log('Funcionário excluído localmente', this.idParaExcluir);
-      this.idParaExcluir = null;
-
-      this.mostrarAviso('Funcionário removido com sucesso!');
+    if (this.idParaExcluir === null) {
+      return;
     }
+
+    const idExcluido = this.idParaExcluir;
+    const funcionariosAntesDaExclusao = [...this.funcionarios];
+
+    this.funcionarios = this.funcionarios.filter(funcionario => funcionario.id !== idExcluido);
+    this.salvarFuncionariosNoCache();
+    this.idParaExcluir = null;
+
+    this.http.delete(`${this.apiUrl}/${idExcluido}`, { headers: this.criarHeadersRemocao() }).subscribe({
+      next: () => this.mostrarAviso('Funcionario removido com sucesso!'),
+      error: () => {
+        this.funcionarios = funcionariosAntesDaExclusao;
+        this.salvarFuncionariosNoCache();
+        this.mostrarAviso('Erro ao remover funcionario.');
+      }
+    });
   }
 
   listarFuncionarios() {
-    // depois você integra com o backend
+    this.carregando = true;
+
+    this.http.get<FuncionarioApi[]>(this.apiUrl)
+      .pipe(finalize(() => this.carregando = false))
+      .subscribe({
+        next: (resposta) => {
+          this.funcionarios = this.ordenarFuncionarios(resposta.map(funcionario => this.converterFuncionario(funcionario)));
+          this.salvarFuncionariosNoCache();
+        },
+        error: () => this.mostrarAviso('Erro ao carregar funcionarios.')
+      });
   }
 
   criarFuncionario() {
-    if (this.formFuncionario.valid) {
-      const novoId = this.funcionarios.length > 0
-        ? Math.max(...this.funcionarios.map(f => f.id)) + 1
-        : 1;
-
-      this.funcionarios.push({
-        id: novoId,
-        nome: this.formFuncionario.value.nome,
-        email: this.formFuncionario.value.email,
-        dataNascimento: this.formFuncionario.value.dataNascimento,
-        voce: false
-      });
-
-      this.formFuncionario.reset();
-
-      this.mostrarAviso('Funcionário criado com sucesso!');
+    if (this.formFuncionario.invalid) {
+      this.formFuncionario.markAllAsTouched();
+      return;
     }
+
+    const request = {
+      nome: this.formFuncionario.value.nome,
+      email: this.formFuncionario.value.email,
+      senha: this.formFuncionario.value.senha,
+      data_nascimento: this.formFuncionario.value.dataNascimento
+    };
+
+    this.http.post<FuncionarioApi>(this.apiUrl, request).subscribe({
+      next: (funcionarioCriado) => {
+        this.formFuncionario.reset();
+        this.funcionarios = this.ordenarFuncionarios([
+          ...this.funcionarios,
+          this.converterFuncionario(funcionarioCriado)
+        ]);
+        this.salvarFuncionariosNoCache();
+        this.mostrarAviso('Funcionario criado com sucesso!');
+      },
+      error: () => this.mostrarAviso('Erro ao criar funcionario.')
+    });
   }
 
-  prepararEdicao(funcionario: any) {
+  prepararEdicao(funcionario: Funcionario) {
     this.idParaEditar = funcionario.id;
 
     this.formEditarFuncionario.patchValue({
@@ -98,20 +145,79 @@ export class CrudFuncionarioComponent implements OnInit {
   }
 
   atualizarFuncionario() {
-    if (this.formEditarFuncionario.valid) {
-      const indice = this.funcionarios.findIndex(f => f.id === this.idParaEditar);
-
-      if (indice !== -1) {
-        this.funcionarios[indice].nome = this.formEditarFuncionario.value.nome;
-        this.funcionarios[indice].email = this.formEditarFuncionario.value.email;
-        this.funcionarios[indice].dataNascimento = this.formEditarFuncionario.value.dataNascimento;
-      }
-
-      console.log(`Editando funcionário ID ${this.idParaEditar}`);
-      this.idParaEditar = null;
-
-      this.mostrarAviso('Funcionário atualizado com sucesso!');
+    if (this.formEditarFuncionario.invalid || this.idParaEditar === null) {
+      this.formEditarFuncionario.markAllAsTouched();
+      return;
     }
+
+    const idAtualizado = this.idParaEditar;
+    const funcionariosAntesDaAtualizacao = [...this.funcionarios];
+    const request = {
+      nome: this.formEditarFuncionario.value.nome,
+      email: this.formEditarFuncionario.value.email,
+      data_nascimento: this.formEditarFuncionario.value.dataNascimento
+    };
+
+    this.funcionarios = this.ordenarFuncionarios(
+      this.funcionarios.map(funcionario =>
+        funcionario.id === idAtualizado
+          ? {
+              ...funcionario,
+              nome: request.nome,
+              email: request.email,
+              dataNascimento: request.data_nascimento
+            }
+          : funcionario
+      )
+    );
+    this.salvarFuncionariosNoCache();
+    this.idParaEditar = null;
+
+    this.http.put(`${this.apiUrl}/${idAtualizado}`, request, { responseType: 'text' }).subscribe({
+      next: () => this.mostrarAviso('Funcionario atualizado com sucesso!'),
+      error: () => {
+        this.funcionarios = funcionariosAntesDaAtualizacao;
+        this.salvarFuncionariosNoCache();
+        this.mostrarAviso('Erro ao atualizar funcionario.');
+      }
+    });
+  }
+
+  private converterFuncionario(funcionario: FuncionarioApi): Funcionario {
+    const usuarioLogadoId = Number(localStorage.getItem('usuarioId'));
+
+    return {
+      id: funcionario.id,
+      nome: funcionario.nome,
+      email: funcionario.email,
+      dataNascimento: funcionario.data_nascimento,
+      voce: funcionario.id === usuarioLogadoId
+    };
+  }
+
+  private criarHeadersRemocao() {
+    const usuarioLogadoId = localStorage.getItem('usuarioId') || '';
+    return new HttpHeaders({ idUsuarioLogado: usuarioLogadoId });
+  }
+
+  private carregarFuncionariosDoCache() {
+    const funcionariosEmCache = localStorage.getItem(this.cacheKey);
+
+    if (funcionariosEmCache) {
+      try {
+        this.funcionarios = this.ordenarFuncionarios(JSON.parse(funcionariosEmCache));
+      } catch {
+        localStorage.removeItem(this.cacheKey);
+      }
+    }
+  }
+
+  private salvarFuncionariosNoCache() {
+    localStorage.setItem(this.cacheKey, JSON.stringify(this.funcionarios));
+  }
+
+  private ordenarFuncionarios(funcionarios: Funcionario[]) {
+    return [...funcionarios].sort((funcionario1, funcionario2) => funcionario1.id - funcionario2.id);
   }
 
   mostrarAviso(mensagem: string) {

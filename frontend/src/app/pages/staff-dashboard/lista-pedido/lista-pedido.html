@@ -3,10 +3,6 @@
     <h1 class="h3 fw-bold">Visualização de Solicitações</h1>
   </div>
 
-  <button class="btn btn-outline-danger mb-3" (click)="limparStatusSalvos()">
-    Resetar status
-  </button>
-
   <div class="card border-light shadow-sm rounded-4 mb-4">
     <div class="card-body p-4">
       <div class="d-flex align-items-center mb-4">
@@ -66,6 +62,14 @@
         </p>
       </div>
 
+      <div *ngIf="carregando" class="text-center text-muted py-4">
+        Carregando solicitacoes...
+      </div>
+
+      <div *ngIf="!carregando && solicitacoesFiltradas.length === 0" class="text-center text-muted py-4">
+        Nenhuma solicitacao encontrada para este funcionario.
+      </div>
+
       <div *ngFor="let solicitacao of solicitacoesFiltradas"
            class="card mb-3 border rounded-4 shadow-none p-3 os-solicitacao-item"
            [ngClass]="getClasseCard(solicitacao.status)">
@@ -118,7 +122,7 @@
               Finalizar Solicitação
             </a>
 
-            <span *ngIf="solicitacao.status === 'ORÇADA'"
+            <span *ngIf="solicitacao.status === 'ORCADA'"
                   class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-botao-status">
               Aguardando Resposta
             </span>

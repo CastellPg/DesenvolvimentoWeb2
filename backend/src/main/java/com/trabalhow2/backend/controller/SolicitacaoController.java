@@ -1,5 +1,7 @@
 package com.trabalhow2.backend.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,5 +39,15 @@ public class SolicitacaoController {
     @GetMapping("/{id}")
     public ResponseEntity<SolicitacaoResponse> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(solicitacaoService.buscarPorId(id));
+    }
+
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<List<SolicitacaoResponse>> listarPorCliente(@PathVariable Long clienteId) {
+        return ResponseEntity.ok(solicitacaoService.listarPorCliente(clienteId));
+    }
+
+    @GetMapping("/funcionario/{funcionarioId}")
+    public ResponseEntity<List<SolicitacaoResponse>> listarPorFuncionario(@PathVariable Long funcionarioId) {
+        return ResponseEntity.ok(solicitacaoService.listarPorFuncionario(funcionarioId));
     }
 }

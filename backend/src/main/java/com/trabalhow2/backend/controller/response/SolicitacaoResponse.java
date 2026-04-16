@@ -19,5 +19,15 @@ public record SolicitacaoResponse(
         LocalDateTime dataCriacao,
 
         BigDecimal valorOrcado,
-        String motivoRejeicao
-) {}
+        String motivoRejeicao,
+        ClienteResumoResponse cliente
+) {
+        public record ClienteResumoResponse(
+                Long id,
+                String nome,
+                String email,
+                String cpf,
+                String telefone,
+                String endereco
+        ) {}
+}

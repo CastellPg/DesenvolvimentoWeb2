@@ -15,6 +15,16 @@ export interface SolicitacaoResponse {
   dataCriacao: string;
   valorOrcado: number | null;
   motivoRejeicao: string | null;
+  cliente?: ClienteResumoResponse | null;
+}
+
+export interface ClienteResumoResponse {
+  id: number;
+  nome: string;
+  email: string;
+  cpf: string;
+  telefone: string;
+  endereco: string;
 }
 
 export interface AbrirSolicitacaoRequest {
@@ -35,6 +45,10 @@ export class SolicitacaoService {
   //Busca a lista do cliente
   listarPorCliente(clienteId: number): Observable<SolicitacaoResponse[]> {
     return this.http.get<SolicitacaoResponse[]>(`${this.apiUrl}/cliente/${clienteId}`);
+  }
+
+  listarPorFuncionario(funcionarioId: number): Observable<SolicitacaoResponse[]> {
+    return this.http.get<SolicitacaoResponse[]>(`${this.apiUrl}/funcionario/${funcionarioId}`);
   }
 
   //Busca os detalhes de apenas uma solicitação
