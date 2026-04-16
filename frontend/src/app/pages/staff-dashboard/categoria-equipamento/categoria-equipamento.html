@@ -30,6 +30,14 @@
                            </tr> 
                         </thead>
                         <tbody>
+    <tr *ngIf="carregando">
+        <td colspan="3" class="text-center text-muted py-4">Carregando categorias...</td>
+    </tr>
+
+    <tr *ngIf="!carregando && categorias.length === 0">
+        <td colspan="3" class="text-center text-muted py-4">Nenhuma categoria cadastrada.</td>
+    </tr>
+
     <tr *ngFor="let cat of categorias">
         
         <td class="ps-0 text-muted">{{ cat.id }}</td>
@@ -57,6 +65,32 @@
 </tbody>
                     </table>
 
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="text-muted small">
+                        Total de categorias: {{ totalElementos }}
+                    </span>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                (click)="paginaAnterior()"
+                                [disabled]="paginaAtual === 0 || carregando">
+                            Anterior
+                        </button>
+
+                        <span class="text-muted small">
+                            Página {{ totalPaginas === 0 ? 0 : paginaAtual + 1 }} de {{ totalPaginas }}
+                        </span>
+
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                (click)="proximaPagina()"
+                                [disabled]="paginaAtual + 1 >= totalPaginas || carregando">
+                            Próxima
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
