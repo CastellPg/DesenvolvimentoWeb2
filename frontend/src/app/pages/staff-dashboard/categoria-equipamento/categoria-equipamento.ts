@@ -2,19 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 
 declare var bootstrap: any;
 
 interface Categoria {
   id: number;
   nome: string;
-}
-
-interface CategoriaPage {
-  content: Categoria[];
-  number: number;
-  totalPages: number;
-  totalElements: number;
 }
 
 @Component({
@@ -30,13 +24,10 @@ interface CategoriaPage {
 export class CategoriaEquipamentoComponent implements OnInit {
 
   private readonly apiUrl = 'http://localhost:8080/categorias';
+  private readonly cacheKey = 'categoriasEquipamento';
 
   idParaExcluir: number | null = null;
   idParaEditar: number | null = null;
-  paginaAtual = 0;
-  tamanhoPagina = 10;
-  totalPaginas = 0;
-  totalElementos = 0;
   carregando = false;
   categorias: Categoria[] = [];
 
@@ -55,6 +46,7 @@ export class CategoriaEquipamentoComponent implements OnInit {
       nome: ['', Validators.required]
     });
 
+    this.carregarCategoriasDoCache();
     this.listarCategorias();
   }
 
@@ -64,45 +56,40 @@ export class CategoriaEquipamentoComponent implements OnInit {
 
   confirmarExclusao() {
     if (this.idParaExcluir !== null) {
-      this.http.delete(`${this.apiUrl}/${this.idParaExcluir}`).subscribe({
+      const idExcluido = this.idParaExcluir;
+      const categoriasAntesDaExclusao = [...this.categorias];
+
+      this.categorias = this.categorias.filter(categoria => categoria.id !== idExcluido);
+      this.salvarCategoriasNoCache();
+      this.idParaExcluir = null;
+
+      this.http.delete(`${this.apiUrl}/${idExcluido}`).subscribe({
         next: () => {
-          this.idParaExcluir = null;
-          this.listarCategorias();
           this.mostrarAviso('Categoria removida com sucesso!');
         },
-        error: () => this.mostrarAviso('Erro ao remover categoria.')
+        error: () => {
+          this.categorias = categoriasAntesDaExclusao;
+          this.salvarCategoriasNoCache();
+          this.mostrarAviso('Erro ao remover categoria.');
+        }
       });
     }
   }
 
-  listarCategorias(pagina: number = this.paginaAtual) {
+  listarCategorias() {
     this.carregando = true;
 
-    this.http.get<CategoriaPage>(`${this.apiUrl}?page=${pagina}&size=${this.tamanhoPagina}&sort=nome`).subscribe({
+    this.http.get<Categoria[]>(this.apiUrl)
+      .pipe(finalize(() => this.carregando = false))
+      .subscribe({
       next: (resposta) => {
-        this.categorias = resposta.content;
-        this.paginaAtual = resposta.number;
-        this.totalPaginas = resposta.totalPages;
-        this.totalElementos = resposta.totalElements;
-        this.carregando = false;
+        this.categorias = this.ordenarCategorias(resposta);
+        this.salvarCategoriasNoCache();
       },
       error: () => {
-        this.carregando = false;
         this.mostrarAviso('Erro ao carregar categorias.');
       }
     });
-  }
-
-  paginaAnterior() {
-    if (this.paginaAtual > 0) {
-      this.listarCategorias(this.paginaAtual - 1);
-    }
-  }
-
-  proximaPagina() {
-    if (this.paginaAtual + 1 < this.totalPaginas) {
-      this.listarCategorias(this.paginaAtual + 1);
-    }
   }
 
   criarCategoria() {
@@ -112,9 +99,10 @@ export class CategoriaEquipamentoComponent implements OnInit {
       };
 
       this.http.post<Categoria>(this.apiUrl, categoria).subscribe({
-        next: () => {
+        next: (categoriaCriada) => {
           this.formCategoria.reset();
-          this.listarCategorias(0);
+          this.categorias = this.ordenarCategorias([...this.categorias, categoriaCriada]);
+          this.salvarCategoriasNoCache();
           this.mostrarAviso('Categoria criada com sucesso!');
         },
         error: () => this.mostrarAviso('Erro ao criar categoria.')
@@ -136,19 +124,59 @@ export class CategoriaEquipamentoComponent implements OnInit {
         return;
       }
 
+      const idAtualizado = this.idParaEditar;
+      const categoriasAntesDaAtualizacao = [...this.categorias];
       const categoria = {
         nome: this.formEditarCategoria.value.nome
       };
 
-      this.http.put<Categoria>(`${this.apiUrl}/${this.idParaEditar}`, categoria).subscribe({
-        next: () => {
-          this.idParaEditar = null;
-          this.listarCategorias();
+      this.categorias = this.ordenarCategorias(
+        this.categorias.map(categoriaAtual =>
+          categoriaAtual.id === idAtualizado
+            ? { ...categoriaAtual, nome: categoria.nome }
+            : categoriaAtual
+        )
+      );
+      this.salvarCategoriasNoCache();
+      this.idParaEditar = null;
+
+      this.http.put<Categoria>(`${this.apiUrl}/${idAtualizado}`, categoria).subscribe({
+        next: (categoriaAtualizada) => {
+          this.categorias = this.ordenarCategorias(
+            this.categorias.map(categoriaAtual =>
+              categoriaAtual.id === categoriaAtualizada.id ? categoriaAtualizada : categoriaAtual
+            )
+          );
+          this.salvarCategoriasNoCache();
           this.mostrarAviso('Categoria atualizada com sucesso!');
         },
-        error: () => this.mostrarAviso('Erro ao atualizar categoria.')
+        error: () => {
+          this.categorias = categoriasAntesDaAtualizacao;
+          this.salvarCategoriasNoCache();
+          this.mostrarAviso('Erro ao atualizar categoria.');
+        }
       });
     }
+  }
+
+  private carregarCategoriasDoCache() {
+    const categoriasEmCache = localStorage.getItem(this.cacheKey);
+
+    if (categoriasEmCache) {
+      try {
+        this.categorias = this.ordenarCategorias(JSON.parse(categoriasEmCache));
+      } catch {
+        localStorage.removeItem(this.cacheKey);
+      }
+    }
+  }
+
+  private salvarCategoriasNoCache() {
+    localStorage.setItem(this.cacheKey, JSON.stringify(this.categorias));
+  }
+
+  private ordenarCategorias(categorias: Categoria[]) {
+    return [...categorias].sort((categoria1, categoria2) => categoria1.id - categoria2.id);
   }
 
   mostrarAviso(mensagem: string) {
