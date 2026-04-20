@@ -7,17 +7,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
+import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse.ClienteResumoResponse;
 import com.trabalhow2.backend.exception.SolicitacaoNaoEncontradaException;
 import com.trabalhow2.backend.model.Categoria;
 import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Funcionario;
+import com.trabalhow2.backend.model.HistoricoSolicitacao;
 import com.trabalhow2.backend.model.Solicitacao;
+import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.model.enums.StatusSolicitacao;
 import com.trabalhow2.backend.repository.CategoriaRepository;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.FuncionarioRepository;
+import com.trabalhow2.backend.repository.HistoricoSolicitacaoRepository;
 import com.trabalhow2.backend.repository.SolicitacaoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -31,6 +35,8 @@ public class SolicitacaoService {
     private final ClienteRepository clienteRepository;
     private final CategoriaRepository categoriaRepository;
     private final FuncionarioRepository funcionarioRepository;
+
+    private final HistoricoSolicitacaoRepository historicoRepository;
 
     @Transactional
     public SolicitacaoResponse abrirSolicitacao(AbrirSolicitacaoRequest request) {
@@ -55,7 +61,39 @@ public class SolicitacaoService {
         solicitacao.setDataCriacao(LocalDateTime.now());
         solicitacao.setFuncionario(funcionarioResponsavel);
 
-        return paraResponse(solicitacaoRepository.save(solicitacao));
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        //Regista no histórico logo depois de criar a solicitação
+        registrarMudancaHistorico(
+                solicitacaoSalva, 
+                null, // Sem estado anterior, ta abrindo agora
+                StatusSolicitacao.ABERTA.name(), 
+                cliente.getUsuario(), 
+                "Solicitação aberta pelo cliente."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    //Centraliza a criação do log para usar nos outros métodos (Aprovar, Rejeitar, etc)
+    public void registrarMudancaHistorico(Solicitacao solicitacao, String estadoAnterior, String estadoNovo, Usuario responsavel, String observacoes) {
+        HistoricoSolicitacao historico = HistoricoSolicitacao.criarRegistro(
+                solicitacao, 
+                estadoAnterior, 
+                estadoNovo, 
+                responsavel, 
+                observacoes
+        );
+        historicoRepository.save(historico);
+    }
+
+    //Busca a linha do tempo completa para a tela do Front
+    @Transactional(readOnly = true)
+    public List<HistoricoSolicitacaoResponse> buscarHistorico(Long solicitacaoId) {
+        return historicoRepository.findBySolicitacaoIdOrderByDataHoraAsc(solicitacaoId)
+                .stream()
+                .map(HistoricoSolicitacaoResponse::new)
+                .toList();
     }
 
     @Transactional(readOnly = true)
