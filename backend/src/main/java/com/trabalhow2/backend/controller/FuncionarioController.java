@@ -19,9 +19,10 @@ import com.trabalhow2.backend.controller.request.AtualizarFuncionarioRequest;
 import com.trabalhow2.backend.controller.request.CadastroFuncionarioRequest;
 import com.trabalhow2.backend.controller.response.FuncionarioResponse;
 import com.trabalhow2.backend.service.FuncionarioService;
-
+import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 
+@Slf4j
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/funcionarios")
@@ -45,16 +46,18 @@ public class FuncionarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> atualizarFuncionario(@PathVariable Long id,
-                                                       @RequestBody @Valid AtualizarFuncionarioRequest request) {
+    public ResponseEntity<String> atualizarFuncionario(@PathVariable Long id,@RequestBody @Valid AtualizarFuncionarioRequest request) {
+        log.info("Atualizando funcionário com ID: {}", id);
         funcionarioService.atualizarFuncionario(id, request);
+        log.info("Funcionário atualizado com sucesso!");
         return ResponseEntity.ok("Funcionario atualizado com sucesso.");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removerFuncionario(@PathVariable Long id,
-                                                   @RequestHeader("idUsuarioLogado") Long idUsuarioLogado) {
+    public ResponseEntity<Void> removerFuncionario(@PathVariable Long id,@RequestHeader("idUsuarioLogado") Long idUsuarioLogado) {
+        log.info("Removendo funcionário com ID: {}", id);
         funcionarioService.removerFuncionario(id, idUsuarioLogado);
+        log.info("Funcionário removido com sucesso!");
         return ResponseEntity.noContent().build();
     }
 }

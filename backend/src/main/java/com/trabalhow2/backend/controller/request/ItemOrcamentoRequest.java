@@ -10,8 +10,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ItemOrcamentoRequest(
-    @NotNull TipoItem tipo,
-    @NotBlank String descricao,
-    @Min(1) int quantidade,
-    @NotNull @DecimalMin("0.01") BigDecimal valorUnitario
+    @NotNull(message = "Tipo é obrigatório")
+    TipoItem tipo,
+    @NotBlank(message = "Descrição é obrigatória")
+    String descricao,
+    @Min(value = 1, message = "Quantidade deve ser um valor positivo")
+    int quantidade,
+    @NotNull @DecimalMin(value = "0.01", message = "Valor unitário deve ser um valor positivo")
+    BigDecimal valorUnitario
 ) {}

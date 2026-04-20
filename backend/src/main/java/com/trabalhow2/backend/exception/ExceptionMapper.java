@@ -1,23 +1,27 @@
 package com.trabalhow2.backend.exception;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.trabalhow2.backend.controller.response.ErrorMessage;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionMapper {
 
     @ExceptionHandler(LoginErrorException.class)
     public ResponseEntity<ErrorMessage> loginErrorException(LoginErrorException exception) {
         ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setMessage(exception.getMessage());
+        errorMessage.setStatus(HttpStatus.UNAUTHORIZED.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
@@ -25,22 +29,23 @@ public class ExceptionMapper {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessage> illegalArgumentException(IllegalArgumentException exception) {
         ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setMessage(exception.getMessage());
+        errorMessage.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        String mensagem = exception.getBindingResult()
+        List<String> erros = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .findFirst()
-                .map(erro -> erro.getDefaultMessage())
-                .orElse("Dados inválidos.");
+                .map(erro -> erro.getField() + ": " + erro.getDefaultMessage())
+                .collect(Collectors.toList());
 
         ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setMessage(mensagem);
+        errorMessage.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorMessage.setMessages(erros);
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
@@ -48,7 +53,8 @@ public class ExceptionMapper {
     @ExceptionHandler(SolicitacaoNaoEncontradaException.class)
     public ResponseEntity<ErrorMessage> solicitacaoNaoEncontrada(SolicitacaoNaoEncontradaException exception) {
         ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setMessage(exception.getMessage());
+        errorMessage.setStatus(HttpStatus.NOT_FOUND.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
@@ -56,7 +62,8 @@ public class ExceptionMapper {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> runtimeException(RuntimeException exception) {
         ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setMessage(exception.getMessage());
+        errorMessage.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }

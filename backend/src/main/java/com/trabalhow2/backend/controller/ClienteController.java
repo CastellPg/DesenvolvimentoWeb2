@@ -18,9 +18,10 @@ import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
 import com.trabalhow2.backend.service.ClienteService;
-
+import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 
+@Slf4j
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/clientes")
@@ -35,12 +36,15 @@ public class ClienteController {
 
     @PostMapping("/cadastro")
     public ResponseEntity<String> cadastroCliente(@RequestBody @Valid CadastroClienteRequest request) {
+        log.info("Iniciando cadastro para o e-mail: {}", request.getEmail());
         clienteService.cadastrarCliente(request);
+        log.info("Cliente cadastrado com sucesso!");
         return ResponseEntity.ok("Cliente cadastrado com sucesso.");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {
+        log.info("Buscando cliente com ID: {}", id);
         return ResponseEntity.ok(clienteService.buscarPorId(id));
     }
 

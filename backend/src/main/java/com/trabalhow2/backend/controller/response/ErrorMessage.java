@@ -1,10 +1,12 @@
 package com.trabalhow2.backend.controller.response;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-@NoArgsConstructor
 public class ErrorMessage {
-    private String message;
+    private LocalDateTime timestamp = LocalDateTime.now();
+    private int status;
+    private List<String> messages; 
 }
