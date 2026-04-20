@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
+import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.service.SolicitacaoService;
 
@@ -49,5 +50,18 @@ public class SolicitacaoController {
     @GetMapping("/funcionario/{funcionarioId}")
     public ResponseEntity<List<SolicitacaoResponse>> listarPorFuncionario(@PathVariable Long funcionarioId) {
         return ResponseEntity.ok(solicitacaoService.listarPorFuncionario(funcionarioId));
+    }
+
+    //ENDPOINT RF008 — Busca o histórico de alterações de estado de uma solicitação
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<List<HistoricoSolicitacaoResponse>> listarHistorico(@PathVariable Long id) {
+        List<HistoricoSolicitacaoResponse> historico = solicitacaoService.buscarHistorico(id);
+        
+        //se a lista estiver vazia, retorna 204 No Content
+        if (historico.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(historico);
     }
 }
