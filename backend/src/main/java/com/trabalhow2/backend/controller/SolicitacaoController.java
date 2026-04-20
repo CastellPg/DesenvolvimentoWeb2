@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
+import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
+import com.trabalhow2.backend.controller.response.OrcamentoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.service.SolicitacaoService;
 
@@ -63,5 +66,15 @@ public class SolicitacaoController {
         }
         
         return ResponseEntity.ok(historico);
+    }
+
+    // RF010 — Efetua o orçamento de uma solicitação
+    @PostMapping("/{id}/orcamento")
+    public ResponseEntity<OrcamentoResponse> efetuarOrcamento(
+            @PathVariable Long id,
+            @RequestBody @Valid EfetuarOrcamentoRequest request,
+            @RequestHeader("idUsuarioLogado") Long funcionarioId) {
+        OrcamentoResponse response = solicitacaoService.efetuarOrcamento(id, request, funcionarioId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

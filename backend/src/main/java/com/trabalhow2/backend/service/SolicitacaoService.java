@@ -1,5 +1,6 @@
 package com.trabalhow2.backend.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,7 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
+import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.ItemOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
+import com.trabalhow2.backend.controller.response.ItemOrcamentoResponse;
+import com.trabalhow2.backend.controller.response.OrcamentoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse.ClienteResumoResponse;
 import com.trabalhow2.backend.exception.SolicitacaoNaoEncontradaException;
@@ -15,6 +20,8 @@ import com.trabalhow2.backend.model.Categoria;
 import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Funcionario;
 import com.trabalhow2.backend.model.HistoricoSolicitacao;
+import com.trabalhow2.backend.model.ItemOrcamento;
+import com.trabalhow2.backend.model.Orcamento;
 import com.trabalhow2.backend.model.Solicitacao;
 import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.model.enums.StatusSolicitacao;
@@ -22,6 +29,7 @@ import com.trabalhow2.backend.repository.CategoriaRepository;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.FuncionarioRepository;
 import com.trabalhow2.backend.repository.HistoricoSolicitacaoRepository;
+import com.trabalhow2.backend.repository.OrcamentoRepository;
 import com.trabalhow2.backend.repository.SolicitacaoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -35,8 +43,8 @@ public class SolicitacaoService {
     private final ClienteRepository clienteRepository;
     private final CategoriaRepository categoriaRepository;
     private final FuncionarioRepository funcionarioRepository;
-
     private final HistoricoSolicitacaoRepository historicoRepository;
+    private final OrcamentoRepository orcamentoRepository;
 
     @Transactional
     public SolicitacaoResponse abrirSolicitacao(AbrirSolicitacaoRequest request) {
@@ -117,6 +125,81 @@ public class SolicitacaoService {
                 .stream()
                 .map(this::paraResponse)
                 .toList();
+    }
+
+    // RF010 — Efetua o orçamento de uma solicitação
+    @Transactional
+    public OrcamentoResponse efetuarOrcamento(Long solicitacaoId, EfetuarOrcamentoRequest request, Long funcionarioId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.ABERTA) {
+            throw new IllegalArgumentException(
+                    "A solicitação #" + solicitacaoId + " não está com status ABERTA (status atual: " + solicitacao.getStatus() + ").");
+        }
+
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + funcionarioId));
+
+        int versao = (int) orcamentoRepository.countBySolicitacaoId(solicitacaoId) + 1;
+
+        Orcamento orcamento = new Orcamento();
+        orcamento.setSolicitacao(solicitacao);
+        orcamento.setFuncionario(funcionario);
+        orcamento.setDataHora(LocalDateTime.now());
+        orcamento.setVersao(versao);
+
+        BigDecimal valorTotal = BigDecimal.ZERO;
+        for (ItemOrcamentoRequest itemReq : request.itens()) {
+            ItemOrcamento item = new ItemOrcamento();
+            item.setOrcamento(orcamento);
+            item.setTipo(itemReq.tipo());
+            item.setDescricao(itemReq.descricao());
+            item.setQuantidade(itemReq.quantidade());
+            item.setValorUnitario(itemReq.valorUnitario());
+            BigDecimal itemTotal = itemReq.valorUnitario().multiply(BigDecimal.valueOf(itemReq.quantidade()));
+            item.setValorTotal(itemTotal);
+            orcamento.getItens().add(item);
+            valorTotal = valorTotal.add(itemTotal);
+        }
+
+        orcamento.setValorTotal(valorTotal);
+
+        solicitacao.setValorOrcado(valorTotal);
+        solicitacao.setStatus(StatusSolicitacao.ORCADA);
+
+        Orcamento orcamentoSalvo = orcamentoRepository.save(orcamento);
+        solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacao,
+                StatusSolicitacao.ABERTA.name(),
+                StatusSolicitacao.ORCADA.name(),
+                funcionario.getUsuario(),
+                "Orçamento v" + versao + " registrado. Total: R$ " + valorTotal
+        );
+
+        return paraOrcamentoResponse(orcamentoSalvo);
+    }
+
+    private OrcamentoResponse paraOrcamentoResponse(Orcamento orcamento) {
+        List<ItemOrcamentoResponse> itensResponse = orcamento.getItens().stream()
+                .map(item -> new ItemOrcamentoResponse(
+                        item.getId(),
+                        item.getTipo().name(),
+                        item.getDescricao(),
+                        item.getQuantidade(),
+                        item.getValorUnitario(),
+                        item.getValorTotal()
+                ))
+                .toList();
+        return new OrcamentoResponse(
+                orcamento.getId(),
+                orcamento.getVersao(),
+                orcamento.getDataHora(),
+                itensResponse,
+                orcamento.getValorTotal()
+        );
     }
 
     private SolicitacaoResponse paraResponse(Solicitacao solicitacao) {
