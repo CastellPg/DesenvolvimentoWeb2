@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { SolicitacaoService, SolicitacaoResponse, ItemOrcamentoRequest } from '../../../services/solicitacao.service';
 
 declare var bootstrap: any;
 
@@ -12,74 +13,113 @@ declare var bootstrap: any;
   styleUrl: './efetuar-orcamento.css',
 })
 export class EfetuarOrcamentoComponent implements OnInit {
-  solicitacao: any;
-  formOrcamento!: FormGroup;
+  solicitacao: SolicitacaoResponse | null = null;
+  itens: ItemOrcamentoRequest[] = [];
+  formItem!: FormGroup;
 
-  tecnicoLogado: string = 'Carlos Técnico';
-  dataRegistro: string = '30/03/2026, 08:34:05';
-  dataHoraAtual: string = '30/03/2026, 08:34:05';
+  carregando = false;
+  enviando = false;
+  erro: string | null = null;
+  sucessoMensagem: string | null = null;
+
+  tiposItem: { value: 'PECA' | 'MAO_OBRA' | 'SERVICO'; label: string }[] = [
+    { value: 'PECA', label: 'Peça' },
+    { value: 'MAO_OBRA', label: 'Mão de Obra' },
+    { value: 'SERVICO', label: 'Serviço' },
+  ];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
+    private solicitacaoService: SolicitacaoService,
   ) {}
 
   ngOnInit(): void {
-    const idUrl = this.route.snapshot.paramMap.get('id');
-
-    this.formOrcamento = this.fb.group({
-      valor: ['', [Validators.required, Validators.min(0.01)]]
+    this.formItem = this.fb.group({
+      tipo: ['PECA', Validators.required],
+      descricao: ['', [Validators.required, Validators.minLength(3)]],
+      quantidade: [1, [Validators.required, Validators.min(1)]],
+      valorUnitario: ['', [Validators.required, Validators.min(0.01)]],
     });
 
-    this.carregarDadosSimulados(idUrl);
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.carregarSolicitacao(id);
+    }
   }
 
-  carregarDadosSimulados(id: string | null) {
-   const listaSalva = JSON.parse(localStorage.getItem('listaSolicitacoes') || '[]');
-   const encontrada = listaSalva.find((item: any) => item.id.toString() === id);
-   this.solicitacao = encontrada || listaSalva[0];
+  carregarSolicitacao(id: string): void {
+    this.carregando = true;
+    this.erro = null;
+    this.solicitacaoService.buscarPorId(id).subscribe({
+      next: (data) => {
+        this.solicitacao = data;
+        this.carregando = false;
+      },
+      error: () => {
+        this.erro = 'Não foi possível carregar a solicitação.';
+        this.carregando = false;
+      },
+    });
+  }
 
-   if (this.solicitacao && !this.solicitacao.dataAbertura) {
-    this.solicitacao.dataAbertura = this.solicitacao.data;
-   }
- }
+  get totalCalculado(): number {
+    return this.itens.reduce((acc, item) => acc + item.quantidade * item.valorUnitario, 0);
+  }
 
-  confirmarOrcamento() {
-    if (this.formOrcamento.valid) {
-      const listaSalva = JSON.parse(localStorage.getItem('listaSolicitacoes') || '[]');
+  adicionarItem(): void {
+    if (this.formItem.invalid) return;
+    const val = this.formItem.value;
+    this.itens.push({
+      tipo: val.tipo,
+      descricao: val.descricao,
+      quantidade: Number(val.quantidade),
+      valorUnitario: Number(val.valorUnitario),
+    });
+    this.formItem.reset({ tipo: 'PECA', quantidade: 1 });
+  }
 
-      const listaAtualizada = listaSalva.map((item: any) => {
-        if (item.id.toString() === this.solicitacao.id.toString()) {
-          return {
-            ...item,
-            status: 'ORÇADA',
-            acao: 'Aguardando Resposta'
-          };
-        }
-        return item;
+  removerItem(index: number): void {
+    this.itens.splice(index, 1);
+  }
+
+  confirmarOrcamento(): void {
+    if (this.itens.length === 0 || !this.solicitacao) return;
+
+    const funcionarioIdRaw = localStorage.getItem('usuarioId');
+    const funcionarioId = funcionarioIdRaw ? Number(funcionarioIdRaw) : null;
+
+    if (!funcionarioId) {
+      this.erro = 'Sessão inválida. Faça login novamente.';
+      return;
+    }
+
+    this.enviando = true;
+    this.erro = null;
+
+    this.solicitacaoService
+      .efetuarOrcamento(this.solicitacao.id, { itens: this.itens }, funcionarioId)
+      .subscribe({
+        next: () => {
+          this.enviando = false;
+          this.mostrarAviso('Orçamento registrado com sucesso!');
+          setTimeout(() => this.router.navigate(['/staff']), 2000);
+        },
+        error: (err) => {
+          this.enviando = false;
+          this.erro = err?.error?.message || 'Erro ao registrar orçamento.';
+        },
       });
-
-      localStorage.setItem('listaSolicitacoes', JSON.stringify(listaAtualizada));
-
-      this.mostrarAviso('Orçamento confirmado com sucesso!');
-
-      setTimeout(() => {
-        this.router.navigate(['/solicitacoes']);
-      }, 2000);
-    }
   }
 
-  mostrarAviso(mensagem: string) {
-    const spanTexto = document.getElementById('textoAviso');
-    if (spanTexto) {
-      spanTexto.innerText = mensagem;
-    }
-
-    const elementoAviso = document.getElementById('avisoSucesso');
-    if (elementoAviso) {
-      const exibirAviso = new bootstrap.Toast(elementoAviso);
-      exibirAviso.show();
+  mostrarAviso(mensagem: string): void {
+    this.sucessoMensagem = mensagem;
+    const el = document.getElementById('avisoSucesso');
+    if (el) {
+      const toast = new bootstrap.Toast(el);
+      toast.show();
     }
   }
 }
+

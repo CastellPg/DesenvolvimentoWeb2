@@ -11,125 +11,204 @@
     <h1 class="h3 fw-bold">Efetuar Orçamento</h1>
   </div>
 
-  <div class="card border-light shadow-sm rounded-4 mb-4">
-    <div class="card-body p-4">
-      <h2 class="h6 fw-bold mb-4">Dados do Cliente</h2>
+  <!-- Loading -->
+  <div *ngIf="carregando" class="text-center py-5">
+    <div class="spinner-border text-dark" role="status"></div>
+  </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="text-muted d-block small mb-1">Nome</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.cliente.nome }}</span>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="text-muted d-block small mb-1">Email</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.cliente.email }}</span>
-        </div>
-      </div>
+  <!-- Erro ao carregar -->
+  <div *ngIf="erro && !solicitacao" class="alert alert-danger rounded-3">{{ erro }}</div>
 
-      <div class="row mt-2">
-        <div class="col-md-6 mb-3">
-          <label class="text-muted d-block small mb-1">CPF</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.cliente.cpf }}</span>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label class="text-muted d-block small mb-1">Telefone</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.cliente.telefone }}</span>
-        </div>
-      </div>
+  <ng-container *ngIf="solicitacao && !carregando">
 
-      <div class="row mt-2">
-        <div class="col-12">
-          <label class="text-muted d-block small mb-1">Endereço</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.cliente.endereco }}</span>
+    <!-- Dados do Cliente -->
+    <div class="card border-light shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-4">Dados do Cliente</h2>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Nome</label>
+            <span class="fw-medium text-dark">{{ solicitacao.cliente?.nome || '—' }}</span>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Email</label>
+            <span class="fw-medium text-dark">{{ solicitacao.cliente?.email || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">CPF</label>
+            <span class="fw-medium text-dark">{{ solicitacao.cliente?.cpf || '—' }}</span>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Telefone</label>
+            <span class="fw-medium text-dark">{{ solicitacao.cliente?.telefone || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-12">
+            <label class="text-muted d-block small mb-1">Endereço</label>
+            <span class="fw-medium text-dark">{{ solicitacao.cliente?.endereco || '—' }}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="card border-light shadow-sm rounded-4 mb-4">
-    <div class="card-body p-4">
-      <h2 class="h6 fw-bold mb-4">Dados da Solicitação</h2>
+    <!-- Dados da Solicitação -->
+    <div class="card border-light shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-4">Dados da Solicitação</h2>
 
-      <div class="mb-3">
-        <span class="fw-bold">Solicitação #{{ solicitacao?.id }}</span>
-        <span class="badge bg-secondary px-3 py-1 small ms-3" style="font-size: 0.7rem;">
-          {{ solicitacao?.status }}
-        </span>
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-3">
-          <label class="text-muted d-block small mb-1">Data/Hora de Abertura</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.dataAbertura }}</span>
+        <div class="mb-3">
+          <span class="fw-bold">Solicitação #{{ solicitacao.id }}</span>
+          <span class="badge bg-secondary px-3 py-1 small ms-3" style="font-size: 0.7rem;">
+            {{ solicitacao.status }}
+          </span>
         </div>
-      </div>
 
-      <div class="row mt-2">
-        <div class="col-12 mb-3">
-          <label class="text-muted d-block small mb-1">Descrição do Produto</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.produto }}</span>
+        <div class="row mt-4">
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Data/Hora de Abertura</label>
+            <span class="fw-medium text-dark">{{ solicitacao.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</span>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Categoria</label>
+            <span class="fw-medium text-dark">{{ solicitacao.categoria }}</span>
+          </div>
         </div>
-        <div class="col-12">
-          <label class="text-muted d-block small mb-1">Descrição do Problema</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.problema }}</span>
+
+        <div class="row mt-2">
+          <div class="col-12 mb-3">
+            <label class="text-muted d-block small mb-1">Descrição do Equipamento</label>
+            <span class="fw-medium text-dark">{{ solicitacao.descricaoEquipamento }}</span>
+          </div>
+          <div class="col-12">
+            <label class="text-muted d-block small mb-1">Descrição do Defeito</label>
+            <span class="fw-medium text-dark">{{ solicitacao.descricaoDefeito }}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="card border-light shadow-sm rounded-4 mb-4">
-    <div class="card-body p-4">
-      <h2 class="h6 fw-bold mb-4">Registrar Orçamento</h2>
+    <!-- Itens do Orçamento -->
+    <div class="card border-light shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-4">Itens do Orçamento</h2>
 
-      <form [formGroup]="formOrcamento" (ngSubmit)="confirmarOrcamento()">
-        <div class="mb-4 col-md-4">
-          <label for="valor" class="text-muted d-block small mb-1 fw-bold">
-            Valor do Orçamento (R$)
-          </label>
-          <input type="number" 
-                 id="valor" 
-                 formControlName="valor" 
-                 class="form-control form-control-lg border-0 bg-light rounded-3 shadow-none" 
-                 placeholder="0.00">
+        <!-- Formulário adicionar item -->
+        <form [formGroup]="formItem" (ngSubmit)="adicionarItem()" class="row g-3 mb-4 align-items-end">
+          <div class="col-md-2">
+            <label class="text-muted small mb-1">Tipo</label>
+            <select formControlName="tipo" class="form-select form-select-sm border-0 bg-light rounded-3">
+              <option *ngFor="let t of tiposItem" [value]="t.value">{{ t.label }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted small mb-1">Descrição</label>
+            <input type="text" formControlName="descricao"
+              class="form-control form-control-sm border-0 bg-light rounded-3"
+              placeholder="Ex: Tela LCD, Diagnóstico...">
+          </div>
+          <div class="col-md-2">
+            <label class="text-muted small mb-1">Quantidade</label>
+            <input type="number" formControlName="quantidade" min="1"
+              class="form-control form-control-sm border-0 bg-light rounded-3">
+          </div>
+          <div class="col-md-2">
+            <label class="text-muted small mb-1">Valor Unit. (R$)</label>
+            <input type="number" formControlName="valorUnitario" min="0.01" step="0.01"
+              class="form-control form-control-sm border-0 bg-light rounded-3"
+              placeholder="0.00">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-dark btn-sm w-100 rounded-3"
+              [disabled]="formItem.invalid">
+              <i class="bi bi-plus-lg me-1"></i> Adicionar
+            </button>
+          </div>
+        </form>
+
+        <!-- Tabela de itens -->
+        <div *ngIf="itens.length > 0">
+          <table class="table table-sm table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th class="text-center">Qtd</th>
+                <th class="text-end">Valor Unit.</th>
+                <th class="text-end">Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of itens; let i = index">
+                <td>
+                  <span class="badge bg-secondary">{{ item.tipo }}</span>
+                </td>
+                <td>{{ item.descricao }}</td>
+                <td class="text-center">{{ item.quantidade }}</td>
+                <td class="text-end">{{ item.valorUnitario | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td class="text-end fw-medium">{{ item.quantidade * item.valorUnitario | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-link text-danger p-0" (click)="removerItem(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="table-light fw-bold">
+                <td colspan="4" class="text-end">Total:</td>
+                <td class="text-end">{{ totalCalculado | currency:'BRL':'symbol':'1.2-2' }}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
 
-        <div class="mb-4 bg-light p-3 rounded-3 text-muted" style="font-size: 0.85rem;">
-          <p class="mb-1">Informações do Registro</p>
-          <p class="mb-1">Funcionário: Carlos Técnico</p>
-          <p class="mb-0">Data/Hora: {{ dataHoraAtual }}</p>
-        </div>
+        <p *ngIf="itens.length === 0" class="text-muted small">
+          Nenhum item adicionado ainda.
+        </p>
 
-        <div class="d-flex justify-content-between">
-          <button type="submit" 
-                  class="btn btn-dark fw-bold px-5 py-2 rounded-3" 
-                  [disabled]="!formOrcamento.valid">
+        <!-- Erro de envio -->
+        <div *ngIf="erro && solicitacao" class="alert alert-danger rounded-3 mt-3">{{ erro }}</div>
+
+        <!-- Botões -->
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button"
+            class="btn btn-dark fw-bold px-5 py-2 rounded-3"
+            [disabled]="itens.length === 0 || enviando"
+            (click)="confirmarOrcamento()">
+            <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2" role="status"></span>
             Confirmar Orçamento
           </button>
-          
+
           <a routerLink="/staff" class="btn btn-outline-secondary px-4 py-2 rounded-3">
             Cancelar
           </a>
         </div>
-      </form>
+
+      </div>
     </div>
-  </div>
+
+  </ng-container>
 
 </div>
 
-<!--Toast de aviso-->
-
+<!-- Toast de sucesso -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-  
-  <div id="avisoSucesso" class="toast align-items-center text-white bg-dark border-0 rounded-4 shadow" role="alert" aria-live="assertive" aria-atomic="true">
-    
+  <div id="avisoSucesso" class="toast align-items-center text-white bg-dark border-0 rounded-4 shadow"
+    role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex p-2">
       <div class="toast-body d-flex align-items-center">
         <i class="bi bi-check-circle-fill me-2 text-success"></i>
-        <p id="textoAviso" class="mb-0"></p>
+        <p class="mb-0">{{ sucessoMensagem }}</p>
       </div>
-      
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
-
   </div>
 </div>

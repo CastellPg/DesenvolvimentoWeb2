@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 export interface CategoriaResponse {
   id: number;
@@ -34,6 +34,34 @@ export interface AbrirSolicitacaoRequest {
   descricaoDefeito: string;
 }
 
+export interface ItemOrcamentoRequest {
+  tipo: 'PECA' | 'MAO_OBRA' | 'SERVICO';
+  descricao: string;
+  quantidade: number;
+  valorUnitario: number;
+}
+
+export interface EfetuarOrcamentoRequest {
+  itens: ItemOrcamentoRequest[];
+}
+
+export interface ItemOrcamentoResponse {
+  id: number;
+  tipo: string;
+  descricao: string;
+  quantidade: number;
+  valorUnitario: number;
+  valorTotal: number;
+}
+
+export interface OrcamentoResponse {
+  id: number;
+  versao: number;
+  dataHora: string;
+  itens: ItemOrcamentoResponse[];
+  valorTotal: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -64,5 +92,11 @@ export class SolicitacaoService {
   //Busca categorias ativas
   getCategorias(): Observable<CategoriaResponse[]> {
     return this.http.get<CategoriaResponse[]>(`${this.categoriasUrl}`);
+  }
+
+  // RF010 — Efetua orçamento de uma solicitação
+  efetuarOrcamento(solicitacaoId: number, request: EfetuarOrcamentoRequest, funcionarioId: number): Observable<OrcamentoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
+    return this.http.post<OrcamentoResponse>(`${this.apiUrl}/${solicitacaoId}/orcamento`, request, { headers });
   }
 }
