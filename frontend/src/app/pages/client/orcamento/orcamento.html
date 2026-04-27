@@ -5,14 +5,16 @@
   </div>
 
   <div *ngIf="erroCarregamento" class="alert alert-danger rounded-3">{{ erroCarregamento }}</div>
+  <div *ngIf="mensagemErro" class="alert alert-danger rounded-3">{{ mensagemErro }}</div>
+  <div *ngIf="mensagemSucesso" class="alert alert-success rounded-3">{{ mensagemSucesso }}</div>
 
   <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2">
     <i class="bi bi-arrow-left"></i> Voltar
   </a>
 
   <div class="mb-4">
-    <h3 class="fw-bold mb-1">Avaliar Orçamento</h3>
-    <p class="text-muted">Analise os detalhes e decida sobre a aprovação do serviço</p>
+    <h3 class="fw-bold mb-1">Avaliar Orcamento</h3>
+    <p class="text-muted">Analise os detalhes e decida sobre a aprovacao do servico</p>
   </div>
 
   <div class="row g-4" *ngIf="solicitacao && !carregando">
@@ -90,7 +92,41 @@
 
           <div class="alert alert-warning border-0 bg-warning bg-opacity-25 text-dark p-3 mb-5 rounded-3 d-flex align-items-center gap-3">
             <i class="bi bi-info-circle-fill text-warning fs-4"></i>
-            <span class="small fw-medium">Ao aprovar o serviço, você concorda com o valor orçado e autoriza o início da manutenção.</span>
+            <span class="small fw-medium">Ao aprovar o servico, voce concorda com o valor orcado e autoriza o inicio da manutencao.</span>
+          </div>
+
+          <div *ngIf="podeDecidir()" class="border rounded-4 p-4 bg-light">
+            <h5 class="fw-bold mb-3">Decisao do cliente</h5>
+
+            <label for="motivoRejeicao" class="form-label fw-semibold small">Motivo da rejeicao</label>
+            <textarea
+              id="motivoRejeicao"
+              class="form-control mb-3"
+              rows="3"
+              [(ngModel)]="motivoRejeicao"
+              placeholder="Obrigatorio apenas se for rejeitar o orcamento"></textarea>
+
+            <div class="d-flex flex-column flex-md-row gap-2">
+              <button
+                type="button"
+                class="btn btn-success px-4 fw-semibold"
+                [disabled]="processandoDecisao"
+                (click)="aprovar()">
+                Aprovar
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-danger px-4 fw-semibold"
+                [disabled]="processandoDecisao"
+                (click)="rejeitar()">
+                Rejeitar
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="!podeDecidir()" class="alert alert-secondary border-0 rounded-3 mb-0">
+            Este orcamento ja foi avaliado ou nao esta disponivel para decisao.
           </div>
 
         </div>

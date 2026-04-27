@@ -21,6 +21,11 @@ interface Funcionario {
   voce: boolean;
 }
 
+interface ApiError {
+  message?: string;
+  messages?: string[];
+}
+
 @Component({
   selector: 'app-crud-funcionario',
   imports: [
@@ -53,7 +58,7 @@ export class CrudFuncionarioComponent implements OnInit {
     this.formFuncionario = this.fb.group({
       nome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required],
+      senha: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]],
       dataNascimento: ['', Validators.required]
     });
 
@@ -103,7 +108,7 @@ export class CrudFuncionarioComponent implements OnInit {
           this.funcionarios = this.ordenarFuncionarios(resposta.map(funcionario => this.converterFuncionario(funcionario)));
           this.salvarFuncionariosNoCache();
         },
-        error: () => this.mostrarAviso('Erro ao carregar funcionarios.')
+        error: (erro) => this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao carregar funcionarios.'))
       });
   }
 
@@ -128,9 +133,10 @@ export class CrudFuncionarioComponent implements OnInit {
           this.converterFuncionario(funcionarioCriado)
         ]);
         this.salvarFuncionariosNoCache();
+        this.fecharModal('modalNovoFuncionario');
         this.mostrarAviso('Funcionario criado com sucesso!');
       },
-      error: () => this.mostrarAviso('Erro ao criar funcionario.')
+      error: (erro) => this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao criar funcionario.'))
     });
   }
 
@@ -218,6 +224,20 @@ export class CrudFuncionarioComponent implements OnInit {
 
   private ordenarFuncionarios(funcionarios: Funcionario[]) {
     return [...funcionarios].sort((funcionario1, funcionario2) => funcionario1.id - funcionario2.id);
+  }
+
+  private extrairMensagemErro(erro: { error?: ApiError | string }, mensagemPadrao: string) {
+    if (typeof erro.error === 'string') {
+      return erro.error || mensagemPadrao;
+    }
+
+    return erro.error?.messages?.join(' | ') || erro.error?.message || mensagemPadrao;
+  }
+
+  private fecharModal(idModal: string) {
+    const elementoModal = document.getElementById(idModal);
+    const instanciaModal = elementoModal ? bootstrap.Modal.getInstance(elementoModal) : null;
+    instanciaModal?.hide();
   }
 
   mostrarAviso(mensagem: string) {

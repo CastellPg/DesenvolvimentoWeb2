@@ -3,24 +3,23 @@ package com.trabalhow2.backend.controller.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record CadastroFuncionarioRequest(
-        @NotBlank(message = "O nome é obrigatório")
+        @NotBlank(message = "O nome e obrigatorio")
         String nome,
-        @NotBlank(message = "O email é obrigatório")
-        @Email(message = "Formato de email inválido")
+
+        @NotBlank(message = "O email e obrigatorio")
+        @Email(message = "Formato de email invalido")
         String email,
-        @NotBlank(message = "A senha é obrigatória")
-        @Size(min = 6, message = "A senha deve conter no mínimo 6 caracteres")
-        @Pattern(
-        regexp = "^(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
-        message = "O campo deve conter pelo menos uma letra maiúscula e um caractere especial"
-        )
+
+        @NotBlank(message = "A senha e obrigatoria")
+        @Size(min = 4, max = 4, message = "A senha deve conter exatamente 4 digitos")
+        @Pattern(regexp = "\\d{4}", message = "A senha deve conter apenas numeros")
         String senha,
 
-        @NotNull(message = "A data de nascimento é obrigatória")
+        @NotNull(message = "A data de nascimento e obrigatoria")
         LocalDate data_nascimento
 ) {}

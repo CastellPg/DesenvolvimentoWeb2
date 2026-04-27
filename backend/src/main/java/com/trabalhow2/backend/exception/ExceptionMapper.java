@@ -78,6 +78,13 @@ public class ExceptionMapper {
         errorMessage.setMessages(List.of("Header obrigatório ausente: " + exception.getHeaderName()));
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    @ExceptionHandler(TransicaoStatusInvalidaException.class)
+    public ResponseEntity<ErrorMessage> transicaoStatusInvalida(TransicaoStatusInvalidaException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setStatus(HttpStatus.CONFLICT.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
     }
 
     @ExceptionHandler(RuntimeException.class)

@@ -45,6 +45,10 @@ export interface EfetuarOrcamentoRequest {
   itens: ItemOrcamentoRequest[];
 }
 
+export interface RejeitarOrcamentoRequest {
+  motivo: string;
+}
+
 export interface ItemOrcamentoResponse {
   id: number;
   tipo: string;
@@ -103,5 +107,15 @@ export class SolicitacaoService {
   efetuarOrcamento(solicitacaoId: number, request: EfetuarOrcamentoRequest, funcionarioId: number): Observable<OrcamentoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
     return this.http.post<OrcamentoResponse>(`${this.apiUrl}/${solicitacaoId}/orcamento`, request, { headers });
+  }
+
+  aprovarOrcamento(solicitacaoId: number, clienteId: number): Observable<SolicitacaoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
+    return this.http.post<SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/aprovar`, {}, { headers });
+  }
+
+  rejeitarOrcamento(solicitacaoId: number, request: RejeitarOrcamentoRequest, clienteId: number): Observable<SolicitacaoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
+    return this.http.post<SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/rejeitar`, request, { headers });
   }
 }
