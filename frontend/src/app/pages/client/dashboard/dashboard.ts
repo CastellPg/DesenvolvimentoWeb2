@@ -24,7 +24,12 @@ export class DashboardComponent implements OnInit {
 
   carregarSistema(): void {
     
-    const clienteIdLogado = 1;
+    const clienteIdLogado = Number(localStorage.getItem('usuarioId'));
+
+    if (!clienteIdLogado) {
+      alert('Sessao invalida. Faca login novamente.');
+      return;
+    }
 
     this.solicitacaoService.listarPorCliente(clienteIdLogado).subscribe({
       next: (dadosRetornadosDoBanco) => {

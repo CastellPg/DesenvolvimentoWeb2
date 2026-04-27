@@ -2,16 +2,28 @@
 
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div>
-      <h2 class="fw-bold mb-1">Minhas Solicitações</h2>
-      <p class="text-muted mb-0">Acompanhe o histórico completo de todos os seus equipamentos</p>
+      <h2 class="fw-bold mb-1">Minhas Solicitacoes</h2>
+      <p class="text-muted mb-0">Acompanhe o historico completo de todos os seus equipamentos</p>
     </div>
 
-    <button (click)="resetarSistema()" class="btn btn-outline-danger rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2">
-      <i class="bi bi-arrow-clockwise"></i> Resetar Testes
+    <button (click)="carregarDados()" class="btn btn-outline-dark rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2">
+      <i class="bi bi-arrow-clockwise"></i> Atualizar
     </button>
   </div>
 
-  <div class="d-flex flex-column gap-3">
+  <div *ngIf="carregando && todasSolicitacoes.length === 0" class="text-center text-muted py-5">
+    Carregando solicitacoes...
+  </div>
+
+  <div *ngIf="erro" class="alert alert-danger rounded-3">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="!carregando && !erro && todasSolicitacoes.length === 0" class="text-center text-muted py-5">
+    Nenhuma solicitacao encontrada para este cliente.
+  </div>
+
+  <div class="d-flex flex-column gap-3" *ngIf="todasSolicitacoes.length > 0 && !erro">
 
     <div class="card border-0 shadow-sm rounded-4" *ngFor="let req of todasSolicitacoes">
       <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -44,16 +56,16 @@
 
           <ng-container [ngSwitch]="req.estado">
 
-            <button *ngSwitchCase="'ORÇADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100 text-nowrap">
-              Aprovar/Rejeitar Serviço
+            <button *ngSwitchCase="'ORCADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100 text-nowrap">
+              Aprovar/Rejeitar Servico
             </button>
 
             <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
-              <i class="bi bi-arrow-counterclockwise"></i> Resgatar Serviço
+              <i class="bi bi-arrow-counterclockwise"></i> Resgatar Servico
             </button>
 
             <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm d-flex align-items-center justify-content-center gap-2 w-100 text-nowrap">
-              <i class="bi bi-credit-card"></i> Pagar Serviço
+              <i class="bi bi-credit-card"></i> Pagar Servico
             </button>
 
           </ng-container>

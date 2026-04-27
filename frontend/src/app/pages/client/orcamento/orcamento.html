@@ -1,6 +1,6 @@
 <div class="container-fluid p-4">
 
-  <div *ngIf="carregando" class="text-center py-5">
+  <div *ngIf="carregando && !orcamento" class="text-center py-5">
     <div class="spinner-border text-primary" role="status"></div>
   </div>
 
@@ -8,7 +8,7 @@
   <div *ngIf="mensagemErro" class="alert alert-danger rounded-3">{{ mensagemErro }}</div>
   <div *ngIf="mensagemSucesso" class="alert alert-success rounded-3">{{ mensagemSucesso }}</div>
 
-  <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2">
+  <a routerLink="/client/minhas-solicitacoes" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2">
     <i class="bi bi-arrow-left"></i> Voltar
   </a>
 

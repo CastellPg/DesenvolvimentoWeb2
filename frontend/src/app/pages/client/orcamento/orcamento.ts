@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs';
 import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
@@ -22,27 +23,46 @@ export class OrcamentoComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private solicitacaoService = inject(SolicitacaoService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.solicitacaoId = this.route.snapshot.paramMap.get('id');
-    if (this.solicitacaoId) {
-      this.buscarDados(this.solicitacaoId);
+    if (!this.solicitacaoId) {
+      this.erroCarregamento = 'Solicitacao nao informada na rota.';
+      this.carregando = false;
+      this.cdr.detectChanges();
+      return;
     }
+
+    this.buscarDados(this.solicitacaoId);
   }
 
   buscarDados(id: string): void {
-    this.carregando = true;
-    this.solicitacaoService.buscarPorId(Number(id)).subscribe({
-      next: (dados) => {
-        this.orcamento = dados;
-        this.carregando = false;
-        this.mensagemErro = null;
-      },
-      error: () => {
-        this.erroCarregamento = 'Não foi possível carregar os dados da solicitação.';
-        this.carregando = false;
-      },
-    });
+    this.carregarOrcamentoDoCache(id);
+    this.carregando = !this.orcamento;
+    this.erroCarregamento = null;
+    this.cdr.detectChanges();
+
+    this.solicitacaoService.buscarPorId(Number(id))
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.carregando = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (dados) => {
+          this.orcamento = dados;
+          this.atualizarSolicitacaoNoCache(dados);
+          this.mensagemErro = null;
+          this.cdr.detectChanges();
+        },
+        error: (erro) => {
+          this.erroCarregamento = this.extrairMensagemErro(erro, 'Nao foi possivel carregar os dados da solicitacao.');
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   aprovar(): void {
@@ -53,16 +73,20 @@ export class OrcamentoComponent implements OnInit {
 
     this.processandoDecisao = true;
     this.limparMensagens();
+    this.cdr.detectChanges();
 
     this.solicitacaoService.aprovarOrcamento(ids.solicitacaoId, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
         this.orcamento = solicitacaoAtualizada;
+        this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
         this.mensagemSucesso = 'Orcamento aprovado com sucesso.';
         this.processandoDecisao = false;
+        this.cdr.detectChanges();
       },
       error: (erro) => {
         this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel aprovar o orcamento.');
         this.processandoDecisao = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -76,22 +100,27 @@ export class OrcamentoComponent implements OnInit {
     const motivo = this.motivoRejeicao.trim();
     if (!motivo) {
       this.mensagemErro = 'Informe o motivo da rejeicao.';
+      this.cdr.detectChanges();
       return;
     }
 
     this.processandoDecisao = true;
     this.limparMensagens();
+    this.cdr.detectChanges();
 
     this.solicitacaoService.rejeitarOrcamento(ids.solicitacaoId, { motivo }, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
         this.orcamento = solicitacaoAtualizada;
+        this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
         this.motivoRejeicao = '';
         this.mensagemSucesso = 'Orcamento rejeitado com sucesso.';
         this.processandoDecisao = false;
+        this.cdr.detectChanges();
       },
       error: (erro) => {
         this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel rejeitar o orcamento.');
         this.processandoDecisao = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -106,6 +135,7 @@ export class OrcamentoComponent implements OnInit {
 
     if (!solicitacaoId || !clienteId) {
       this.mensagemErro = 'Nao foi possivel identificar a solicitacao ou o cliente logado.';
+      this.cdr.detectChanges();
       return null;
     }
 
@@ -117,16 +147,92 @@ export class OrcamentoComponent implements OnInit {
     this.mensagemSucesso = null;
   }
 
+  private carregarOrcamentoDoCache(id: string): void {
+    const clienteId = localStorage.getItem('usuarioId');
+    if (!clienteId) {
+      return;
+    }
+
+    const cache = localStorage.getItem(`solicitacoes-cliente-${clienteId}`);
+    if (!cache) {
+      return;
+    }
+
+    try {
+      const solicitacoes = JSON.parse(cache);
+      const solicitacaoCache = solicitacoes.find((item: any) => String(item.id) === String(id));
+
+      if (!solicitacaoCache) {
+        return;
+      }
+
+      this.orcamento = {
+        id: Number(solicitacaoCache.id),
+        descricaoEquipamento: solicitacaoCache.equipamento || solicitacaoCache.descricaoEquipamento || '-',
+        categoria: solicitacaoCache.categoria || '-',
+        descricaoDefeito: solicitacaoCache.descricaoDefeito || '-',
+        status: solicitacaoCache.estado || solicitacaoCache.status || 'ORCADA',
+        dataCriacao: solicitacaoCache.dataHora || solicitacaoCache.dataCriacao || new Date().toISOString(),
+        valorOrcado: solicitacaoCache.valor ?? solicitacaoCache.valorOrcado ?? null,
+        motivoRejeicao: solicitacaoCache.motivoRejeicao ?? null,
+      };
+    } catch {
+      localStorage.removeItem(`solicitacoes-cliente-${clienteId}`);
+    }
+  }
+
+  private atualizarSolicitacaoNoCache(solicitacaoAtualizada: any): void {
+    const clienteId = localStorage.getItem('usuarioId');
+    if (!clienteId) {
+      return;
+    }
+
+    const cacheKey = `solicitacoes-cliente-${clienteId}`;
+    const cache = localStorage.getItem(cacheKey);
+    if (!cache) {
+      return;
+    }
+
+    try {
+      const solicitacoes = JSON.parse(cache);
+      const novasSolicitacoes = solicitacoes.map((item: any) => {
+        if (Number(item.id) !== Number(solicitacaoAtualizada.id)) {
+          return item;
+        }
+
+        return {
+          ...item,
+          estado: solicitacaoAtualizada.status,
+          status: solicitacaoAtualizada.status,
+          valor: solicitacaoAtualizada.valorOrcado,
+          valorOrcado: solicitacaoAtualizada.valorOrcado,
+          motivoRejeicao: solicitacaoAtualizada.motivoRejeicao,
+        };
+      });
+
+      localStorage.setItem(cacheKey, JSON.stringify(novasSolicitacoes));
+    } catch {
+      localStorage.removeItem(cacheKey);
+    }
+  }
+
   private extrairMensagemErro(erro: any, mensagemPadrao: string): string {
+    if (erro?.name === 'TimeoutError') {
+      return 'O backend demorou demais para responder.';
+    }
+
     if (erro?.status === 409) {
       return erro.error?.messages?.join(' | ') || 'Essa solicitacao nao esta mais ORCADA.';
+    }
+
+    if (erro?.status === 0) {
+      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
     }
 
     return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;
   }
 
   getBadgeClass(status: string): string {
-    // RF013 — escala de cores obrigatória
     switch (status) {
       case 'ABERTA':
         return 'bg-secondary';

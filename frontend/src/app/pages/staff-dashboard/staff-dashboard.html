@@ -13,6 +13,18 @@
       </div>
       <p class="text-muted small mb-4">Total de {{ solicitacoes.length }} solicitação(ões) aguardando orçamento</p>
 
+      
+      <div *ngIf="carregando && solicitacoes.length === 0" class="text-center text-muted py-4">
+        Carregando solicitacoes...
+      </div>
+
+      <div *ngIf="erro" class="alert alert-danger rounded-3">
+        {{ erro }}
+      </div>
+
+      <div *ngIf="!carregando && !erro && solicitacoes.length === 0" class="text-center text-muted py-4">
+        Nenhuma solicitacao aberta para este funcionario.
+      </div>
       <div *ngFor="let item of solicitacoes" class="card mb-3 border rounded-3 shadow-none p-3">
         <div class="row align-items-center">
           
