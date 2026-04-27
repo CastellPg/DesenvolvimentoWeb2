@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/solicitacoes")
 @RequiredArgsConstructor
@@ -100,6 +100,12 @@ public class SolicitacaoController {
         }
         
         return ResponseEntity.ok(historico);
+    }
+
+    // RF005 — Busca o orçamento mais recente com os itens detalhados para exibição ao cliente
+    @GetMapping("/{id}/orcamento")
+    public ResponseEntity<OrcamentoResponse> buscarUltimoOrcamento(@PathVariable Long id) {
+        return ResponseEntity.ok(solicitacaoService.buscarUltimoOrcamento(id));
     }
 
     // RF010 — Efetua o orçamento de uma solicitação

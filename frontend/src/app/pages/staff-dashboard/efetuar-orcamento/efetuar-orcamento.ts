@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, timeout } from 'rxjs';
+import { timeout } from 'rxjs';
 import { SolicitacaoService, SolicitacaoResponse, ItemOrcamentoRequest } from '../../../services/solicitacao.service';
 
 declare var bootstrap: any;
@@ -59,24 +59,16 @@ export class EfetuarOrcamentoComponent implements OnInit {
     this.carregarSolicitacaoDoCache(id);
     this.carregando = !this.solicitacao;
     this.erro = null;
-    this.cdr.detectChanges();
-
     this.solicitacaoService.buscarPorId(id)
-      .pipe(
-        timeout(10000),
-        finalize(() => {
-          this.carregando = false;
-          this.cdr.detectChanges();
-        })
-      )
+      .pipe(timeout(15000))
       .subscribe({
         next: (data) => {
           this.solicitacao = data;
-          this.cdr.detectChanges();
+          this.carregando = false;
         },
-        error: (err) => {
-          this.erro = this.extrairMensagemErro(err, 'Nao foi possivel carregar a solicitacao.');
-          this.cdr.detectChanges();
+        error: () => {
+          this.erro = 'Não foi possível carregar a solicitação. Verifique se o servidor está ativo.';
+          this.carregando = false;
         },
       });
   }
@@ -165,8 +157,7 @@ export class EfetuarOrcamentoComponent implements OnInit {
         },
         error: (err) => {
           this.enviando = false;
-          this.erro = this.extrairMensagemErro(err, 'Erro ao registrar orcamento.');
-          this.cdr.detectChanges();
+          this.erro = err?.error?.messages?.[0] || 'Erro ao registrar orçamento.';
         },
       });
   }

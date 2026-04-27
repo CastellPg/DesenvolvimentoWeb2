@@ -19,8 +19,9 @@ import com.trabalhow2.backend.controller.request.AtualizarFuncionarioRequest;
 import com.trabalhow2.backend.controller.request.CadastroFuncionarioRequest;
 import com.trabalhow2.backend.controller.response.FuncionarioResponse;
 import com.trabalhow2.backend.service.FuncionarioService;
-import lombok.extern.slf4j.Slf4j;
+
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/funcionarios")
 @Tag(name = "Funcionários", description = "Endpoints para o gerenciamento de Funcionários (CRUD)")

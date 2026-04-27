@@ -74,9 +74,10 @@ export class NovaSolicitacaoComponent implements OnInit {
         this.mostrarToast('Solicitação criada com sucesso!');
         setTimeout(() => this.router.navigate(['/client/dashboard']), 2000);
       },
-      error: () => {
+      error: (err) => {
         this.enviando = false;
-        this.mostrarToast('Erro ao criar solicitação. Tente novamente.');
+        // RF004 — exibe mensagem de validação retornada pelo backend, ou mensagem genérica
+        this.mostrarToast(err.error?.messages?.[0] ?? 'Erro ao criar solicitação. Tente novamente.');
       }
     });
   }
