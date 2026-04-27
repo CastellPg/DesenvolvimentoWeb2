@@ -10,12 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.ItemOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.ItemOrcamentoResponse;
 import com.trabalhow2.backend.controller.response.OrcamentoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse.ClienteResumoResponse;
 import com.trabalhow2.backend.exception.SolicitacaoNaoEncontradaException;
+import com.trabalhow2.backend.exception.TransicaoStatusInvalidaException;
 import com.trabalhow2.backend.model.Categoria;
 import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Funcionario;
@@ -180,6 +182,68 @@ public class SolicitacaoService {
         );
 
         return paraOrcamentoResponse(orcamentoSalvo);
+    }
+
+    // RF011 - Aprova o orcamento de uma solicitacao pelo cliente
+    @Transactional
+    public SolicitacaoResponse aprovarOrcamento(Long solicitacaoId, Long clienteId) {
+        Solicitacao solicitacao = buscarSolicitacaoOrcadaDoCliente(solicitacaoId, clienteId);
+        Cliente cliente = solicitacao.getCliente();
+
+        solicitacao.setStatus(StatusSolicitacao.APROVADA);
+        solicitacao.setMotivoRejeicao(null);
+
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.ORCADA.name(),
+                StatusSolicitacao.APROVADA.name(),
+                cliente.getUsuario(),
+                "Orcamento aprovado pelo cliente."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    // RF012 - Rejeita o orcamento de uma solicitacao pelo cliente
+    @Transactional
+    public SolicitacaoResponse rejeitarOrcamento(Long solicitacaoId, RejeitarOrcamentoRequest request, Long clienteId) {
+        Solicitacao solicitacao = buscarSolicitacaoOrcadaDoCliente(solicitacaoId, clienteId);
+        Cliente cliente = solicitacao.getCliente();
+        String motivo = request.motivo().trim();
+
+        solicitacao.setStatus(StatusSolicitacao.REJEITADA);
+        solicitacao.setMotivoRejeicao(motivo);
+
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.ORCADA.name(),
+                StatusSolicitacao.REJEITADA.name(),
+                cliente.getUsuario(),
+                "Orcamento rejeitado pelo cliente. Motivo: " + motivo
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    private Solicitacao buscarSolicitacaoOrcadaDoCliente(Long solicitacaoId, Long clienteId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.ORCADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " deve estar ORCADA para aprovar ou rejeitar (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        if (solicitacao.getCliente() == null || !solicitacao.getCliente().getId().equals(clienteId)) {
+            throw new IllegalArgumentException("Solicitacao nao pertence ao cliente informado.");
+        }
+
+        return solicitacao;
     }
 
     private OrcamentoResponse paraOrcamentoResponse(Orcamento orcamento) {
