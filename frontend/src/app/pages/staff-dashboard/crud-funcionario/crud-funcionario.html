@@ -1,4 +1,4 @@
-<div class="container-fluid p-4">
+﻿<div class="container-fluid p-4">
 
   <header>
     <h1 class="h3 fw-bold">Controle de Funcionários</h1>
@@ -133,7 +133,7 @@
 
               <div *ngIf="formFuncionario.get('senha')?.invalid && formFuncionario.get('senha')?.touched"
                    class="text-danger small mt-1">
-                Senha é obrigatória
+                A senha deve conter exatamente 4 digitos numericos
               </div>
             </div>
 
@@ -162,8 +162,7 @@
             <button
               type="submit"
               class="btn btn-dark px-4 fw-medium rounded-3"
-              [disabled]="formFuncionario.invalid"
-              data-bs-dismiss="modal">
+              [disabled]="formFuncionario.invalid">
               Criar
             </button>
           </div>

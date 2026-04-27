@@ -61,7 +61,7 @@ public class FuncionarioService {
     }
 
     public List<FuncionarioResponse> listarTodos() {
-        return funcionarioRepository.findAll()
+        return funcionarioRepository.findAllComUsuario()
                 .stream()
                 .map(this::converterParaFuncionarioResponse)
                 .toList();

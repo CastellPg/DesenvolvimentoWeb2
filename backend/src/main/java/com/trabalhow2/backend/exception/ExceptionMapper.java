@@ -59,6 +59,15 @@ public class ExceptionMapper {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
 
+    @ExceptionHandler(TransicaoStatusInvalidaException.class)
+    public ResponseEntity<ErrorMessage> transicaoStatusInvalida(TransicaoStatusInvalidaException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setStatus(HttpStatus.CONFLICT.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> runtimeException(RuntimeException exception) {
         ErrorMessage errorMessage = new ErrorMessage();

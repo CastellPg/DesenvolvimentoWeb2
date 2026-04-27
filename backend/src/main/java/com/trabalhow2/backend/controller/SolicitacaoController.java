@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.OrcamentoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
@@ -76,5 +77,22 @@ public class SolicitacaoController {
             @RequestHeader("idUsuarioLogado") Long funcionarioId) {
         OrcamentoResponse response = solicitacaoService.efetuarOrcamento(id, request, funcionarioId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // RF011 - Aprova o orcamento de uma solicitacao
+    @PostMapping("/{id}/aprovar")
+    public ResponseEntity<SolicitacaoResponse> aprovarOrcamento(
+            @PathVariable Long id,
+            @RequestHeader("idUsuarioLogado") Long clienteId) {
+        return ResponseEntity.ok(solicitacaoService.aprovarOrcamento(id, clienteId));
+    }
+
+    // RF012 - Rejeita o orcamento de uma solicitacao
+    @PostMapping("/{id}/rejeitar")
+    public ResponseEntity<SolicitacaoResponse> rejeitarOrcamento(
+            @PathVariable Long id,
+            @RequestBody @Valid RejeitarOrcamentoRequest request,
+            @RequestHeader("idUsuarioLogado") Long clienteId) {
+        return ResponseEntity.ok(solicitacaoService.rejeitarOrcamento(id, request, clienteId));
     }
 }
