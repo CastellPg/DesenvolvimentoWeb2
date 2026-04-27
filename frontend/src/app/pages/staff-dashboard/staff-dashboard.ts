@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router';
+import { SolicitacaoService, SolicitacaoResponse } from '../../services/solicitacao.service';
 
 @Component({
   selector: 'app-staff-dashboard',
@@ -10,7 +11,10 @@ import { RouterLink } from '@angular/router';
 })
 export class StaffDashboardComponent implements OnInit {
   nomeFuncionario: string | null = null;
-  solicitacoes: any[] = [];
+  solicitacoes: SolicitacaoResponse[] = [];
+  carregando = false;
+
+  private readonly solicitacaoService = inject(SolicitacaoService);
 
   private solicitacoesBase = [
     {
@@ -118,25 +122,23 @@ export class StaffDashboardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // pega o nome do usuário logado do localStorage do login 
     this.nomeFuncionario = localStorage.getItem('nomeUsuario');
     this.carregarSolicitacoes();
   }
 
   carregarSolicitacoes(): void {
-    const salvas = localStorage.getItem('listaSolicitacoes');
+    const funcionarioId = Number(localStorage.getItem('usuarioId'));
+    if (!funcionarioId) return;
 
-    if (salvas) {
-      const listaCompleta = JSON.parse(salvas);
-      this.solicitacoes = listaCompleta.filter((item: any) => item.status === 'ABERTA');
-      return;
-    }
-
-    localStorage.setItem('listaSolicitacoes', JSON.stringify(this.solicitacoesBase));
-    this.solicitacoes = this.solicitacoesBase.filter(item => item.status === 'ABERTA');
-  }
-
-  efetuarOrcamento(solicitacao: any) {
-    console.log('Orçando para:', solicitacao.cliente.nome);
+    this.carregando = true;
+    this.solicitacaoService.listarPorFuncionario(funcionarioId).subscribe({
+      next: (lista) => {
+        this.solicitacoes = lista.filter(s => s.status === 'ABERTA');
+        this.carregando = false;
+      },
+      error: () => {
+        this.carregando = false;
+      }
+    });
   }
 }

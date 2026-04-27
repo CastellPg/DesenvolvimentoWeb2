@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { timeout } from 'rxjs';
 import { SolicitacaoService, SolicitacaoResponse, ItemOrcamentoRequest } from '../../../services/solicitacao.service';
 
 declare var bootstrap: any;
@@ -52,16 +53,18 @@ export class EfetuarOrcamentoComponent implements OnInit {
   carregarSolicitacao(id: string): void {
     this.carregando = true;
     this.erro = null;
-    this.solicitacaoService.buscarPorId(id).subscribe({
-      next: (data) => {
-        this.solicitacao = data;
-        this.carregando = false;
-      },
-      error: () => {
-        this.erro = 'Não foi possível carregar a solicitação.';
-        this.carregando = false;
-      },
-    });
+    this.solicitacaoService.buscarPorId(id)
+      .pipe(timeout(15000))
+      .subscribe({
+        next: (data) => {
+          this.solicitacao = data;
+          this.carregando = false;
+        },
+        error: () => {
+          this.erro = 'Não foi possível carregar a solicitação. Verifique se o servidor está ativo.';
+          this.carregando = false;
+        },
+      });
   }
 
   get totalCalculado(): number {
@@ -108,7 +111,7 @@ export class EfetuarOrcamentoComponent implements OnInit {
         },
         error: (err) => {
           this.enviando = false;
-          this.erro = err?.error?.message || 'Erro ao registrar orçamento.';
+          this.erro = err?.error?.messages?.[0] || 'Erro ao registrar orçamento.';
         },
       });
   }

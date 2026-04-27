@@ -134,6 +134,19 @@ public class SolicitacaoService {
                 .toList();
     }
 
+    // RF005 — Busca o orçamento mais recente de uma solicitação com os itens detalhados
+    @Transactional(readOnly = true)
+    public OrcamentoResponse buscarUltimoOrcamento(Long solicitacaoId) {
+        solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+        return orcamentoRepository.findBySolicitacaoIdOrderByVersaoDesc(solicitacaoId)
+                .stream()
+                .findFirst()
+                .map(this::paraOrcamentoResponse)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Nenhum orçamento encontrado para a solicitação #" + solicitacaoId));
+    }
+
     // RF010 — Efetua o orçamento de uma solicitação
     @Transactional
     public OrcamentoResponse efetuarOrcamento(Long solicitacaoId, EfetuarOrcamentoRequest request, Long funcionarioId) {

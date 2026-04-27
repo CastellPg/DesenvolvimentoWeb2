@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit {
 
   carregarSistema(): void {
     
-    const clienteIdLogado = 1;
+    const clienteIdLogado = Number(localStorage.getItem('usuarioId'));
 
     this.solicitacaoService.listarPorCliente(clienteIdLogado).subscribe({
       next: (dadosRetornadosDoBanco) => {

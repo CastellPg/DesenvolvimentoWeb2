@@ -18,8 +18,9 @@ import com.trabalhow2.backend.controller.request.AtualizarClienteRequest;
 import com.trabalhow2.backend.controller.request.CadastroClienteRequest;
 import com.trabalhow2.backend.controller.response.ClienteResponse;
 import com.trabalhow2.backend.service.ClienteService;
-import lombok.extern.slf4j.Slf4j;
+
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

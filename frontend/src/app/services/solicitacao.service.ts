@@ -98,6 +98,11 @@ export class SolicitacaoService {
     return this.http.get<CategoriaResponse[]>(`${this.categoriasUrl}`);
   }
 
+  // RF005 — Busca o orçamento mais recente com itens detalhados
+  buscarUltimoOrcamento(id: number): Observable<OrcamentoResponse> {
+    return this.http.get<OrcamentoResponse>(`${this.apiUrl}/${id}/orcamento`);
+  }
+
   // RF010 — Efetua orçamento de uma solicitação
   efetuarOrcamento(solicitacaoId: number, request: EfetuarOrcamentoRequest, funcionarioId: number): Observable<OrcamentoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
