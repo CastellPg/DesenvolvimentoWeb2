@@ -21,6 +21,10 @@ import com.trabalhow2.backend.controller.response.OrcamentoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.service.SolicitacaoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,11 +32,19 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/solicitacoes")
 @RequiredArgsConstructor
+@Tag(name = "Solicitações e Orçamentos", description = "Endpoints para o gerenciamento do fluxo de manutenção, histórico de estados e orçamentos")
 public class SolicitacaoController {
 
     private final SolicitacaoService solicitacaoService;
 
     // RF004 — Abre uma nova solicitação de manutenção
+
+    @Operation(summary = "Abrir Solicitação de Manutenção (RF004)", description = "O cliente registra uma nova solicitação. O estado inicial será definido automaticamente como ABERTA.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Solicitação aberta com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro de validação nos dados enviados")
+    })
+
     @PostMapping
     public ResponseEntity<SolicitacaoResponse> abrirSolicitacao(
             @RequestBody @Valid AbrirSolicitacaoRequest request) {
@@ -41,15 +53,28 @@ public class SolicitacaoController {
     }
 
     // RF005 — Busca os detalhes de uma solicitação para exibição do orçamento
+
+    @Operation(summary = "Mostrar detalhes e orçamento (RF005)", description = "Retorna todos os dados de uma solicitação específica. Usado para o cliente aprovar/rejeitar serviços.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Solicitação encontrada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
+    })
+
     @GetMapping("/{id}")
     public ResponseEntity<SolicitacaoResponse> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(solicitacaoService.buscarPorId(id));
     }
 
+    @Operation(summary = "Listar solicitações por Cliente (RF003)", description = "Retorna todas as solicitações pertencentes a um cliente específico.")
+    @ApiResponse(responseCode = "200", description = "Listagem retornada com sucesso")
+
     @GetMapping("/cliente/{clienteId}")
     public ResponseEntity<List<SolicitacaoResponse>> listarPorCliente(@PathVariable Long clienteId) {
         return ResponseEntity.ok(solicitacaoService.listarPorCliente(clienteId));
     }
+
+    @Operation(summary = "Listar solicitações por Funcionário (RF011/RF013)", description = "Retorna as solicitações vinculadas a um funcionário (Abertas, Redirecionadas, etc).")
+    @ApiResponse(responseCode = "200", description = "Listagem retornada com sucesso")
 
     @GetMapping("/funcionario/{funcionarioId}")
     public ResponseEntity<List<SolicitacaoResponse>> listarPorFuncionario(@PathVariable Long funcionarioId) {
@@ -57,6 +82,14 @@ public class SolicitacaoController {
     }
 
     //ENDPOINT RF008 — Busca o histórico de alterações de estado de uma solicitação
+
+    @Operation(summary = "Visualizar Histórico do Serviço (RF008)", description = "Retorna a linha do tempo (timeline) completa de todas as mudanças de estado da solicitação (Data, Hora e Responsável).")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Histórico retornado com sucesso"),
+        @ApiResponse(responseCode = "204", description = "Nenhum histórico encontrado (Sem conteúdo)"),
+        @ApiResponse(responseCode = "404", description = "Solicitação não encontrada")
+    })
+
     @GetMapping("/{id}/historico")
     public ResponseEntity<List<HistoricoSolicitacaoResponse>> listarHistorico(@PathVariable Long id) {
         List<HistoricoSolicitacaoResponse> historico = solicitacaoService.buscarHistorico(id);
@@ -70,6 +103,14 @@ public class SolicitacaoController {
     }
 
     // RF010 — Efetua o orçamento de uma solicitação
+
+    @Operation(summary = "Efetuar Orçamento (RF012)", description = "O funcionário cadastra o valor orçado para o serviço. A solicitação passa para o estado ORÇADA. Exige o Header idUsuarioLogado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Orçamento registrado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro na regra de negócio (ex: solicitação já orçada)"),
+        @ApiResponse(responseCode = "404", description = "Solicitação ou funcionário não encontrados")
+    })
+
     @PostMapping("/{id}/orcamento")
     public ResponseEntity<OrcamentoResponse> efetuarOrcamento(
             @PathVariable Long id,
