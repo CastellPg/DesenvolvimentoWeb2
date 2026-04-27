@@ -47,6 +47,7 @@ public class SolicitacaoService {
     private final FuncionarioRepository funcionarioRepository;
     private final HistoricoSolicitacaoRepository historicoRepository;
     private final OrcamentoRepository orcamentoRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public SolicitacaoResponse abrirSolicitacao(AbrirSolicitacaoRequest request) {
@@ -95,6 +96,10 @@ public class SolicitacaoService {
                 observacoes
         );
         historicoRepository.save(historico);
+
+        if (estadoAnterior != null && !estadoAnterior.equals(estadoNovo)){
+                eventPublisher.publishEvent(new com.trabalhow2.backend.model.MudancaEstadoEvent(solicitacao, estadoAnterior, estadoNovo));
+        }
     }
 
     //Busca a linha do tempo completa para a tela do Front
