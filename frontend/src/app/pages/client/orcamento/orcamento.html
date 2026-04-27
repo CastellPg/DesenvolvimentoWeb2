@@ -5,14 +5,16 @@
   </div>
 
   <div *ngIf="erroCarregamento" class="alert alert-danger rounded-3">{{ erroCarregamento }}</div>
+  <div *ngIf="mensagemErro" class="alert alert-danger rounded-3">{{ mensagemErro }}</div>
+  <div *ngIf="mensagemSucesso" class="alert alert-success rounded-3">{{ mensagemSucesso }}</div>
 
   <a routerLink="/client/dashboard" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2">
     <i class="bi bi-arrow-left"></i> Voltar
   </a>
 
   <div class="mb-4">
-    <h3 class="fw-bold mb-1">Avaliar Orçamento</h3>
-    <p class="text-muted">Analise os detalhes e decida sobre a aprovação do serviço</p>
+    <h3 class="fw-bold mb-1">Avaliar Orcamento</h3>
+    <p class="text-muted">Analise os detalhes e decida sobre a aprovacao do servico</p>
   </div>
 
   <div class="row g-4" *ngIf="orcamento && !carregando">
@@ -22,7 +24,7 @@
 
           <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
-              <small class="text-muted d-block mb-1">Data/Hora da Solicitação</small>
+              <small class="text-muted d-block mb-1">Data/Hora da Solicitacao</small>
               <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ orcamento.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</span>
             </div>
             <div class="text-end">
@@ -35,7 +37,7 @@
 
           <div class="row mb-5">
             <div class="col-md-8 mb-3 mb-md-0">
-              <small class="text-muted d-block mb-1">Descrição do Equipamento</small>
+              <small class="text-muted d-block mb-1">Descricao do Equipamento</small>
               <h5 class="fw-bold mb-0">{{ orcamento.descricaoEquipamento }}</h5>
             </div>
             <div class="col-md-4">
@@ -45,27 +47,57 @@
           </div>
 
           <div class="mb-5">
-            <small class="text-muted d-block mb-1">Descrição do Defeito</small>
+            <small class="text-muted d-block mb-1">Descricao do Defeito</small>
             <p class="mb-0">{{ orcamento.descricaoDefeito }}</p>
           </div>
 
           <div *ngIf="orcamento.valorOrcado" class="mb-5">
-            <small class="text-muted d-block mb-1">Valor Orçado</small>
+            <small class="text-muted d-block mb-1">Valor Orcado</small>
             <h2 class="text-success fw-bold mb-0">{{ orcamento.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h2>
           </div>
 
           <div class="alert alert-warning border-0 bg-warning bg-opacity-25 text-dark p-3 mb-5 rounded-3 d-flex align-items-center gap-3">
             <i class="bi bi-info-circle-fill text-warning fs-4"></i>
-            <span class="small fw-medium">Ao aprovar o serviço, você concorda com o valor orçado e autoriza o início da manutenção.</span>
+            <span class="small fw-medium">Ao aprovar o servico, voce concorda com o valor orcado e autoriza o inicio da manutencao.</span>
           </div>
 
+          <div *ngIf="podeDecidir()" class="border rounded-4 p-4 bg-light">
+            <h5 class="fw-bold mb-3">Decisao do cliente</h5>
 
+            <label for="motivoRejeicao" class="form-label fw-semibold small">Motivo da rejeicao</label>
+            <textarea
+              id="motivoRejeicao"
+              class="form-control mb-3"
+              rows="3"
+              [(ngModel)]="motivoRejeicao"
+              placeholder="Obrigatorio apenas se for rejeitar o orcamento"></textarea>
+
+            <div class="d-flex flex-column flex-md-row gap-2">
+              <button
+                type="button"
+                class="btn btn-success px-4 fw-semibold"
+                [disabled]="processandoDecisao"
+                (click)="aprovar()">
+                Aprovar
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-danger px-4 fw-semibold"
+                [disabled]="processandoDecisao"
+                (click)="rejeitar()">
+                Rejeitar
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="!podeDecidir()" class="alert alert-secondary border-0 rounded-3 mb-0">
+            Este orcamento ja foi avaliado ou nao esta disponivel para decisao.
+          </div>
 
         </div>
       </div>
     </div>
   </div>
-
-
 
 </div>

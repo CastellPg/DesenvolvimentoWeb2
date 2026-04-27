@@ -77,16 +77,24 @@ export class RegistroComponent {
     }
   }
 
+
   registrar() {
     this.mensagemErro = '';
     this.mensagemSucesso = '';
     this.cdr.detectChanges();
 
+     const telefoneLimpo = this.dados.telefone.replace(/\D/g, '');
+
+     const telefoneFormatado = telefoneLimpo.replace(
+     /^(\d{2})(\d{4,5})(\d{4})$/,
+     '($1) $2-$3'
+   );
+
     const dados_registrar = {
       cpf: this.dados.cpf,
       email: this.dados.email,
       nome: this.dados.nomeCompleto,
-      telefone: this.dados.telefone,
+      telefone: telefoneFormatado ,
       cep: this.endereco.cep,
       logradouro: this.endereco.logradouro,
       numero: this.endereco.numero,
