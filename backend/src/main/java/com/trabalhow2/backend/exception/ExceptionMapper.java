@@ -6,11 +6,13 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.trabalhow2.backend.controller.response.ErrorMessage;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -57,6 +59,25 @@ public class ExceptionMapper {
         errorMessage.setMessages(List.of(exception.getMessage()));
         log.error("{}", errorMessage);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    // RF010 — Funcionário não encontrado no banco retorna 404 em vez de 500
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setStatus(HttpStatus.NOT_FOUND.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ErrorMessage> missingRequestHeaderException(MissingRequestHeaderException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorMessage.setMessages(List.of("Header obrigatório ausente: " + exception.getHeaderName()));
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
     @ExceptionHandler(RuntimeException.class)

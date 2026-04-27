@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { SolicitacaoService } from '../../../services/solicitacao.service';
+import { OrcamentoResponse, SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-orcamento',
@@ -10,7 +10,9 @@ import { SolicitacaoService } from '../../../services/solicitacao.service';
   templateUrl: './orcamento.html',
 })
 export class OrcamentoComponent implements OnInit {
-  orcamento: any | null = null;
+  solicitacao: SolicitacaoResponse | null = null;
+  // RF005 — itens detalhados do orçamento (peças, mão de obra, serviços)
+  orcamentoDetalhado: OrcamentoResponse | null = null;
   solicitacaoId: string | null = null;
   carregando = true;
   erroCarregamento: string | null = null;
@@ -27,10 +29,24 @@ export class OrcamentoComponent implements OnInit {
 
   buscarDados(id: string): void {
     this.carregando = true;
+    // Busca solicitação e, se já orçada, os itens detalhados em paralelo
     this.solicitacaoService.buscarPorId(Number(id)).subscribe({
       next: (dados) => {
-        this.orcamento = dados;
-        this.carregando = false;
+        this.solicitacao = dados;
+        if (dados.status === 'ORCADA' || dados.valorOrcado !== null) {
+          this.solicitacaoService.buscarUltimoOrcamento(Number(id)).subscribe({
+            next: (orcamento) => {
+              this.orcamentoDetalhado = orcamento;
+              this.carregando = false;
+            },
+            error: () => {
+              // Exibe a solicitação mesmo sem itens detalhados
+              this.carregando = false;
+            }
+          });
+        } else {
+          this.carregando = false;
+        }
       },
       error: () => {
         this.erroCarregamento = 'Não foi possível carregar os dados da solicitação.';

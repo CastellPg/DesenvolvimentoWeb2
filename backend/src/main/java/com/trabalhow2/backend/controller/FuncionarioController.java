@@ -19,11 +19,12 @@ import com.trabalhow2.backend.controller.request.AtualizarFuncionarioRequest;
 import com.trabalhow2.backend.controller.request.CadastroFuncionarioRequest;
 import com.trabalhow2.backend.controller.response.FuncionarioResponse;
 import com.trabalhow2.backend.service.FuncionarioService;
-import lombok.extern.slf4j.Slf4j;
+
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/funcionarios")
 public class FuncionarioController {

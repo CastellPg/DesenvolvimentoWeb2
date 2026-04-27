@@ -15,7 +15,7 @@
     <p class="text-muted">Analise os detalhes e decida sobre a aprovação do serviço</p>
   </div>
 
-  <div class="row g-4" *ngIf="orcamento && !carregando">
+  <div class="row g-4" *ngIf="solicitacao && !carregando">
     <div class="col-12 col-lg-8">
       <div class="card border-0 shadow-sm rounded-4 h-100">
         <div class="card-body p-4 p-md-5">
@@ -23,12 +23,12 @@
           <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
               <small class="text-muted d-block mb-1">Data/Hora da Solicitação</small>
-              <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ orcamento.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</span>
+              <span class="fw-medium"><i class="bi bi-calendar3 me-1"></i> {{ solicitacao.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</span>
             </div>
             <div class="text-end">
               <small class="text-muted d-block mb-1">Status</small>
-              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(orcamento.status)">
-                {{ orcamento.status }}
+              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(solicitacao.status)">
+                {{ solicitacao.status }}
               </span>
             </div>
           </div>
@@ -36,22 +36,56 @@
           <div class="row mb-5">
             <div class="col-md-8 mb-3 mb-md-0">
               <small class="text-muted d-block mb-1">Descrição do Equipamento</small>
-              <h5 class="fw-bold mb-0">{{ orcamento.descricaoEquipamento }}</h5>
+              <h5 class="fw-bold mb-0">{{ solicitacao.descricaoEquipamento }}</h5>
             </div>
             <div class="col-md-4">
               <small class="text-muted d-block mb-1">Categoria</small>
-              <span class="fw-medium">{{ orcamento.categoria }}</span>
+              <span class="fw-medium">{{ solicitacao.categoria }}</span>
             </div>
           </div>
 
           <div class="mb-5">
             <small class="text-muted d-block mb-1">Descrição do Defeito</small>
-            <p class="mb-0">{{ orcamento.descricaoDefeito }}</p>
+            <p class="mb-0">{{ solicitacao.descricaoDefeito }}</p>
           </div>
 
-          <div *ngIf="orcamento.valorOrcado" class="mb-5">
+          <!-- RF005 — Itens detalhados do orçamento (peças, mão de obra, serviços) -->
+          <div *ngIf="orcamentoDetalhado" class="mb-5">
+            <small class="text-muted d-block mb-2">Itens do Orçamento</small>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th class="text-center">Qtd.</th>
+                    <th class="text-end">Valor Unit.</th>
+                    <th class="text-end">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of orcamentoDetalhado.itens">
+                    <td><span class="badge bg-secondary">{{ item.tipo }}</span></td>
+                    <td>{{ item.descricao }}</td>
+                    <td class="text-center">{{ item.quantidade }}</td>
+                    <td class="text-end">{{ item.valorUnitario | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td class="text-end fw-medium">{{ item.valorTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="table-light fw-bold">
+                    <td colspan="4" class="text-end">Total</td>
+                    <td class="text-end text-success fs-5">{{ orcamentoDetalhado.valorTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Exibe apenas o total quando os itens ainda não foram carregados -->
+          <div *ngIf="solicitacao.valorOrcado && !orcamentoDetalhado" class="mb-5">
             <small class="text-muted d-block mb-1">Valor Orçado</small>
-            <h2 class="text-success fw-bold mb-0">{{ orcamento.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h2>
+            <h2 class="text-success fw-bold mb-0">{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h2>
           </div>
 
           <div class="alert alert-warning border-0 bg-warning bg-opacity-25 text-dark p-3 mb-5 rounded-3 d-flex align-items-center gap-3">
@@ -59,13 +93,9 @@
             <span class="small fw-medium">Ao aprovar o serviço, você concorda com o valor orçado e autoriza o início da manutenção.</span>
           </div>
 
-
-
         </div>
       </div>
     </div>
   </div>
-
-
 
 </div>

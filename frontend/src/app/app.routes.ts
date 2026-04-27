@@ -18,6 +18,7 @@ export const routes: Routes = [
     {path: 'login', component: LoginComponent},
     {path: 'registro', component: RegistroComponent},
     {path: 'staff', component: StaffDashboardComponent},
+    {path: 'staff-dashboard', redirectTo: 'staff', pathMatch: 'full'},
     {path: 'funcionario/pedidos', component: ListaPedidoComponent },
     {path: 'receitas-categorias', component: ReceitasCategoriaComponent },
     {path: 'categorias', component: CategoriaEquipamentoComponent},
