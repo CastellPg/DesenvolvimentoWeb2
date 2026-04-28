@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { OrcamentoResponse, SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 import { FormsModule } from '@angular/forms';
-import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-orcamento',
@@ -72,7 +71,7 @@ export class OrcamentoComponent implements OnInit {
 
     this.solicitacaoService.aprovarOrcamento(ids.solicitacaoId, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
-        this.orcamento = solicitacaoAtualizada;
+        this.solicitacao = solicitacaoAtualizada;
         this.mensagemSucesso = 'Orcamento aprovado com sucesso.';
         this.processandoDecisao = false;
       },
@@ -100,7 +99,7 @@ export class OrcamentoComponent implements OnInit {
 
     this.solicitacaoService.rejeitarOrcamento(ids.solicitacaoId, { motivo }, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
-        this.orcamento = solicitacaoAtualizada;
+        this.solicitacao = solicitacaoAtualizada;
         this.motivoRejeicao = '';
         this.mensagemSucesso = 'Orcamento rejeitado com sucesso.';
         this.processandoDecisao = false;
@@ -113,7 +112,7 @@ export class OrcamentoComponent implements OnInit {
   }
 
   podeDecidir(): boolean {
-    return this.orcamento?.status === 'ORCADA';
+    return this.solicitacao?.status === 'ORCADA';
   }
 
   private obterIdsParaDecisao(): { solicitacaoId: number; clienteId: number } | null {
