@@ -111,7 +111,8 @@ export class EfetuarOrcamentoComponent implements OnInit {
         },
         error: (err) => {
           this.enviando = false;
-          this.erro = err?.error?.messages?.[0] || 'Erro ao registrar orçamento.';
+          const msgs = err?.error?.data?.messages ?? err?.error?.messages;
+          this.erro = msgs?.[0] || err?.error?.data?.message || 'Erro ao registrar orçamento.';
         },
       });
   }
