@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { finalize, timeout } from 'rxjs';
+import { SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-visualizar-servico',
@@ -10,61 +12,44 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
   styleUrls: ['./visualizar-servico.css']
 })
 export class VisualizarServicoComponent implements OnInit {
-
   solicitacao: any;
-  mostrarToast: boolean = false;
-  mensagemToast: string = '';
+  carregando = false;
+  erro: string | null = null;
+  mostrarToast = false;
+  mensagemToast = '';
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private solicitacaoService: SolicitacaoService
+  ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.buscarDados(id);
+    if (!id) {
+      this.erro = 'Solicitacao nao informada na rota.';
+      return;
     }
+
+    this.buscarDados(id);
   }
 
-  buscarDados(idUrl: string | number) {
-    const dados = localStorage.getItem('banco_dados_v1');
+  buscarDados(idUrl: string | number): void {
+    this.carregando = true;
+    this.erro = null;
 
-    if (dados) {
-      const banco = JSON.parse(dados);
-      this.solicitacao = banco.find((item: any) => String(item.id) === String(idUrl));
-    }
+    this.solicitacaoService.buscarPorId(idUrl)
+      .pipe(
+        timeout(10000),
+        finalize(() => this.carregando = false)
+      )
+      .subscribe({
+        next: (dados) => this.solicitacao = this.converterSolicitacao(dados),
+        error: (err) => this.erro = this.extrairMensagemErro(err)
+      });
   }
 
   resgatarServico(): void {
-    if (!this.solicitacao) return;
-  
-    const dados = localStorage.getItem('banco_dados_v1');
-    if (!dados) return;
-
-    const banco = JSON.parse(dados);
-    const index = banco.findIndex((item: any) => String(item.id) === String(this.solicitacao.id));
-
-    if (index === -1) return;
-
-    // Preparar novo histórico
-    const dataAtual = new Date();
-    const novoHistorico = {
-      dataHora: dataAtual.toISOString(),
-      funcionario: 'Sistema',
-      estadoAnterior: 'REJEITADA',
-      estadoNovo: 'APROVADA',
-      descricao: 'Serviço resgatado pelo cliente'
-    };
-
-    // Atualiza solicitação
-    banco[index].estado = 'APROVADA';
-    banco[index].historico.push(novoHistorico);
-
-    // Salva no localStorage
-    localStorage.setItem('banco_dados_v1', JSON.stringify(banco));
-
-    // Atualiza dados locais
-    this.solicitacao = banco[index];
-
-    this.mensagemToast = 'Serviço resgado com sucesso! Status alterado para APROVADA.';
+    this.mensagemToast = 'Resgate de servico ainda nao foi integrado ao backend.';
     this.mostrarToast = true;
 
     setTimeout(() => {
@@ -75,7 +60,7 @@ export class VisualizarServicoComponent implements OnInit {
   getBadgeClass(estado: string): string {
     switch (estado) {
       case 'ABERTA': return 'bg-secondary';
-      case 'ORÇADA': return 'bg-marrom';
+      case 'ORCADA': return 'bg-marrom';
       case 'REJEITADA': return 'bg-danger';
       case 'APROVADA': return 'bg-warning text-dark';
       case 'REDIRECIONADA': return 'bg-roxo';
@@ -86,4 +71,29 @@ export class VisualizarServicoComponent implements OnInit {
     }
   }
 
+  private converterSolicitacao(solicitacao: SolicitacaoResponse) {
+    return {
+      id: solicitacao.id,
+      dataHora: solicitacao.dataCriacao,
+      equipamento: solicitacao.descricaoEquipamento,
+      categoria: solicitacao.categoria,
+      estado: solicitacao.status,
+      valor: solicitacao.valorOrcado,
+      descricaoDefeito: solicitacao.descricaoDefeito,
+      motivoRejeicao: solicitacao.motivoRejeicao,
+      historico: []
+    };
+  }
+
+  private extrairMensagemErro(err: any): string {
+    if (err?.name === 'TimeoutError') {
+      return 'Backend demorou demais para responder ao buscar a solicitacao.';
+    }
+
+    if (err?.status === 0) {
+      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+    }
+
+    return err?.error?.messages?.join(' | ') || err?.error?.message || 'Nao foi possivel carregar a solicitacao.';
+  }
 }
