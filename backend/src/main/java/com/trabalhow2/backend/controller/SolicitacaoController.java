@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RedirecionarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
@@ -158,5 +159,14 @@ public class SolicitacaoController {
             @RequestBody @Valid RegistrarManutencaoRequest request,
             @RequestHeader("idUsuarioLogado") Long funcionarioId) {
         return ResponseEntity.ok(solicitacaoService.registrarManutencao(id, request, funcionarioId));
+    }
+
+    // RF016 — Redireciona uma manutenção para outro técnico. Pré-condição: OS APROVADA.
+    @PostMapping("/{id}/redirecionar")
+    public ResponseEntity<SolicitacaoResponse> redirecionarManutencao(
+            @PathVariable Long id,
+            @RequestBody @Valid RedirecionarManutencaoRequest request,
+            @RequestHeader("idUsuarioLogado") Long funcionarioOrigemId) {
+        return ResponseEntity.ok(solicitacaoService.redirecionarManutencao(id, request, funcionarioOrigemId));
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.ItemOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RedirecionarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
@@ -289,6 +290,47 @@ public class SolicitacaoService {
                 StatusSolicitacao.ARRUMADA.name(),
                 funcionario.getUsuario(),
                 "Manutenção registrada pelo técnico."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    // RF016 — Redireciona uma OS aprovada para outro técnico responsável.
+    @Transactional
+    public SolicitacaoResponse redirecionarManutencao(Long solicitacaoId, RedirecionarManutencaoRequest request, Long funcionarioOrigemId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.APROVADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitação #" + solicitacaoId + " deve estar APROVADA para redirecionar (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        Funcionario funcionarioOrigem = funcionarioRepository.findById(funcionarioOrigemId)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário origem não encontrado com ID: " + funcionarioOrigemId));
+
+        Funcionario funcionarioDestino = funcionarioRepository.findById(request.funcionarioDestinoId())
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário destino não encontrado com ID: " + request.funcionarioDestinoId()));
+
+        if (funcionarioOrigem.getId().equals(funcionarioDestino.getId())) {
+            throw new TransicaoStatusInvalidaException("Não é possível redirecionar a OS para o mesmo funcionário.");
+        }
+
+        solicitacao.setFuncionario(funcionarioDestino);
+        solicitacao.setStatus(StatusSolicitacao.REDIRECIONADA);
+
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        String origemNome = funcionarioOrigem.getUsuario() != null ? funcionarioOrigem.getUsuario().getNome() : "Funcionário " + funcionarioOrigem.getId();
+        String destinoNome = funcionarioDestino.getUsuario() != null ? funcionarioDestino.getUsuario().getNome() : "Funcionário " + funcionarioDestino.getId();
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.APROVADA.name(),
+                StatusSolicitacao.REDIRECIONADA.name(),
+                funcionarioOrigem.getUsuario(),
+                "Manutenção redirecionada de " + origemNome + " para " + destinoNome + ". Motivo: " + request.motivo().trim()
         );
 
         return paraResponse(solicitacaoSalva);

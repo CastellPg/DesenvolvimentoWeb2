@@ -1,18 +1,19 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
-import { OrcamentoResponse, SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs';
+import { OrcamentoResponse, SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-orcamento',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './orcamento.html',
+  styleUrl: './orcamento.css',
 })
 export class OrcamentoComponent implements OnInit {
   solicitacao: SolicitacaoResponse | null = null;
-  // RF005 — itens detalhados do orçamento (peças, mão de obra, serviços)
   orcamentoDetalhado: OrcamentoResponse | null = null;
   solicitacaoId: string | null = null;
   carregando = true;
@@ -21,13 +22,16 @@ export class OrcamentoComponent implements OnInit {
   mensagemErro: string | null = null;
   mensagemSucesso: string | null = null;
   motivoRejeicao = '';
+  exibindoRejeicao = false;
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private solicitacaoService = inject(SolicitacaoService);
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.solicitacaoId = this.route.snapshot.paramMap.get('id');
+
     if (!this.solicitacaoId) {
       this.erroCarregamento = 'Solicitacao nao informada na rota.';
       this.carregando = false;
@@ -40,37 +44,38 @@ export class OrcamentoComponent implements OnInit {
 
   buscarDados(id: string): void {
     this.carregando = true;
-    // Busca solicitação e, se já orçada, os itens detalhados em paralelo
-    this.solicitacaoService.buscarPorId(Number(id)).subscribe({
+    this.erroCarregamento = null;
+    this.mensagemErro = null;
+    this.carregarSolicitacaoDoCache(id);
+    this.cdr.detectChanges();
+
+    this.solicitacaoService.buscarPorId(Number(id)).pipe(
+      timeout(10000),
+      finalize(() => {
+        this.carregando = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
       next: (dados) => {
         this.solicitacao = dados;
+        this.atualizarSolicitacaoNoCache(dados);
+        this.cdr.detectChanges();
+
         if (dados.status === 'ORCADA' || dados.valorOrcado !== null) {
-          this.solicitacaoService.buscarUltimoOrcamento(Number(id)).subscribe({
-            next: (orcamento) => {
-              this.orcamentoDetalhado = orcamento;
-              this.carregando = false;
-            },
-            error: () => {
-              // Exibe a solicitação mesmo sem itens detalhados
-              this.carregando = false;
-            }
-          });
-        } else {
-          this.carregando = false;
+          this.carregarOrcamentoDetalhado(Number(id));
         }
       },
-      error: () => {
-        this.erroCarregamento = 'Não foi possível carregar os dados da solicitação.';
-        this.carregando = false;
+      error: (erro) => {
+        if (!this.solicitacao) {
+          this.erroCarregamento = this.extrairMensagemErro(erro, 'Nao foi possivel carregar os dados da solicitacao.');
+        }
       },
     });
   }
 
   aprovar(): void {
     const ids = this.obterIdsParaDecisao();
-    if (!ids) {
-      return;
-    }
+    if (!ids) return;
 
     this.processandoDecisao = true;
     this.limparMensagens();
@@ -79,12 +84,14 @@ export class OrcamentoComponent implements OnInit {
     this.solicitacaoService.aprovarOrcamento(ids.solicitacaoId, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
         this.solicitacao = solicitacaoAtualizada;
-        this.mensagemSucesso = 'Orcamento aprovado com sucesso.';
+        this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
+        this.mensagemSucesso = 'Servico aprovado com sucesso.';
         this.processandoDecisao = false;
         this.cdr.detectChanges();
+        this.voltarParaListaAposDecisao();
       },
       error: (erro) => {
-        this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel aprovar o orcamento.');
+        this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel aprovar o servico.');
         this.processandoDecisao = false;
         this.cdr.detectChanges();
       }
@@ -93,9 +100,7 @@ export class OrcamentoComponent implements OnInit {
 
   rejeitar(): void {
     const ids = this.obterIdsParaDecisao();
-    if (!ids) {
-      return;
-    }
+    if (!ids) return;
 
     const motivo = this.motivoRejeicao.trim();
     if (!motivo) {
@@ -111,13 +116,16 @@ export class OrcamentoComponent implements OnInit {
     this.solicitacaoService.rejeitarOrcamento(ids.solicitacaoId, { motivo }, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
         this.solicitacao = solicitacaoAtualizada;
+        this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
         this.motivoRejeicao = '';
-        this.mensagemSucesso = 'Orcamento rejeitado com sucesso.';
+        this.exibindoRejeicao = false;
+        this.mensagemSucesso = 'Servico rejeitado com sucesso.';
         this.processandoDecisao = false;
         this.cdr.detectChanges();
+        this.voltarParaListaAposDecisao();
       },
       error: (erro) => {
-        this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel rejeitar o orcamento.');
+        this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel rejeitar o servico.');
         this.processandoDecisao = false;
         this.cdr.detectChanges();
       }
@@ -126,6 +134,64 @@ export class OrcamentoComponent implements OnInit {
 
   podeDecidir(): boolean {
     return this.solicitacao?.status === 'ORCADA';
+  }
+
+  mostrarRejeicao(): void {
+    this.exibindoRejeicao = true;
+    this.limparMensagens();
+  }
+
+  cancelarRejeicao(): void {
+    this.exibindoRejeicao = false;
+    this.motivoRejeicao = '';
+    this.limparMensagens();
+  }
+
+  tituloStatus(): string {
+    if (this.solicitacao?.status === 'APROVADA') return 'Servico aprovado';
+    if (this.solicitacao?.status === 'REJEITADA') return 'Servico rejeitado';
+    return 'Aguardando decisao';
+  }
+
+  textoStatus(): string {
+    if (this.solicitacao?.status === 'APROVADA') {
+      return 'O servico foi autorizado e agora pode seguir para manutencao.';
+    }
+
+    if (this.solicitacao?.status === 'REJEITADA') {
+      return 'O orcamento foi recusado. O motivo fica registrado no historico da solicitacao.';
+    }
+
+    return 'Confira o valor e os itens do orcamento antes de aprovar ou rejeitar.';
+  }
+
+  getBadgeClass(status: string): string {
+    switch (status) {
+      case 'ABERTA': return 'bg-secondary';
+      case 'ORCADA': return 'bg-marrom';
+      case 'APROVADA': return 'bg-warning text-dark';
+      case 'REJEITADA': return 'bg-danger';
+      case 'REDIRECIONADA': return 'bg-roxo';
+      case 'ARRUMADA': return 'bg-primary';
+      case 'PAGA': return 'bg-laranja';
+      case 'FINALIZADA': return 'bg-success';
+      default: return 'bg-secondary';
+    }
+  }
+
+  private carregarOrcamentoDetalhado(id: number): void {
+    this.solicitacaoService.buscarUltimoOrcamento(id).pipe(
+      timeout(10000)
+    ).subscribe({
+      next: (orcamento) => {
+        this.orcamentoDetalhado = orcamento;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.orcamentoDetalhado = null;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   private obterIdsParaDecisao(): { solicitacaoId: number; clienteId: number } | null {
@@ -146,26 +212,26 @@ export class OrcamentoComponent implements OnInit {
     this.mensagemSucesso = null;
   }
 
-  private carregarOrcamentoDoCache(id: string): void {
+  private voltarParaListaAposDecisao(): void {
+    setTimeout(() => this.router.navigate(['/client/minhas-solicitacoes']), 1200);
+  }
+
+  private carregarSolicitacaoDoCache(id: string): void {
     const clienteId = localStorage.getItem('usuarioId');
-    if (!clienteId) {
-      return;
-    }
+    if (!clienteId) return;
 
     const cache = localStorage.getItem(`solicitacoes-cliente-${clienteId}`);
-    if (!cache) {
-      return;
-    }
+    if (!cache) return;
 
     try {
       const solicitacoes = JSON.parse(cache);
-      const solicitacaoCache = solicitacoes.find((item: any) => String(item.id) === String(id));
+      const solicitacaoCache = Array.isArray(solicitacoes)
+        ? solicitacoes.find((item: any) => String(item.id) === String(id))
+        : null;
 
-      if (!solicitacaoCache) {
-        return;
-      }
+      if (!solicitacaoCache) return;
 
-      this.orcamento = {
+      this.solicitacao = {
         id: Number(solicitacaoCache.id),
         descricaoEquipamento: solicitacaoCache.equipamento || solicitacaoCache.descricaoEquipamento || '-',
         categoria: solicitacaoCache.categoria || '-',
@@ -180,20 +246,18 @@ export class OrcamentoComponent implements OnInit {
     }
   }
 
-  private atualizarSolicitacaoNoCache(solicitacaoAtualizada: any): void {
+  private atualizarSolicitacaoNoCache(solicitacaoAtualizada: SolicitacaoResponse): void {
     const clienteId = localStorage.getItem('usuarioId');
-    if (!clienteId) {
-      return;
-    }
+    if (!clienteId) return;
 
     const cacheKey = `solicitacoes-cliente-${clienteId}`;
     const cache = localStorage.getItem(cacheKey);
-    if (!cache) {
-      return;
-    }
+    if (!cache) return;
 
     try {
       const solicitacoes = JSON.parse(cache);
+      if (!Array.isArray(solicitacoes)) return;
+
       const novasSolicitacoes = solicitacoes.map((item: any) => {
         if (Number(item.id) !== Number(solicitacaoAtualizada.id)) {
           return item;
@@ -229,28 +293,5 @@ export class OrcamentoComponent implements OnInit {
     }
 
     return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;
-  }
-
-  getBadgeClass(status: string): string {
-    switch (status) {
-      case 'ABERTA':
-        return 'bg-secondary';
-      case 'ORCADA':
-        return 'bg-marrom';
-      case 'APROVADA':
-        return 'bg-warning text-dark';
-      case 'REJEITADA':
-        return 'bg-danger';
-      case 'REDIRECIONADA':
-        return 'bg-roxo';
-      case 'ARRUMADA':
-        return 'bg-primary';
-      case 'PAGA':
-        return 'bg-laranja';
-      case 'FINALIZADA':
-        return 'bg-success';
-      default:
-        return 'bg-secondary';
-    }
   }
 }

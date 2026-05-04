@@ -1,6 +1,6 @@
 <div class="container-fluid p-4">
 
-  <div *ngIf="carregando && !orcamento" class="text-center py-5">
+  <div *ngIf="carregando && !solicitacao" class="text-center py-5">
     <div class="spinner-border text-primary" role="status"></div>
   </div>
 
@@ -51,7 +51,6 @@
             <p class="mb-0">{{ solicitacao.descricaoDefeito }}</p>
           </div>
 
-          <!-- RF005 — Itens detalhados do orçamento (peças, mão de obra, serviços) -->
           <div *ngIf="orcamentoDetalhado" class="mb-5">
             <small class="text-muted d-block mb-2">Itens do Orçamento</small>
             <div class="table-responsive">
@@ -84,7 +83,6 @@
             </div>
           </div>
 
-          <!-- Exibe apenas o total quando os itens ainda não foram carregados -->
           <div *ngIf="solicitacao.valorOrcado && !orcamentoDetalhado" class="mb-5">
             <small class="text-muted d-block mb-1">Valor Orçado</small>
             <h2 class="text-success fw-bold mb-0">{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</h2>
