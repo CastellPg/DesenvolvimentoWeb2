@@ -127,12 +127,12 @@ export class RegistroComponent {
 
         if (typeof err.error === 'string') {
           try {
-            this.mensagemErro = JSON.parse(err.error).message;
+            this.mensagemErro = JSON.parse(err.error).messages?.[0] || 'Erro ao cadastrar.';
           } catch {
             this.mensagemErro = err.error || 'Erro ao cadastrar.';
           }
         } else {
-          this.mensagemErro = err.error?.message || 'Erro ao cadastrar.';
+          this.mensagemErro = err.error?.messages?.[0] || 'Erro ao cadastrar.';
         }
 
         this.cdr.detectChanges();

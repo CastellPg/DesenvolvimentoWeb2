@@ -13,29 +13,40 @@
       </div>
       <p class="text-muted small mb-4">Total de {{ solicitacoes.length }} solicitação(ões) aguardando orçamento</p>
 
+      <div *ngIf="carregando" class="text-center text-muted py-4">
+        <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>
+        Carregando solicitações...
+      </div>
+
+      <div *ngIf="!carregando && solicitacoes.length === 0" class="text-center text-muted py-4">
+        Nenhuma solicitação aberta no momento.
+      </div>
+
       <div *ngFor="let item of solicitacoes" class="card mb-3 border rounded-3 shadow-none p-3">
         <div class="row align-items-center">
           
           <div class="col-12 mb-2">
             <span class="badge px-3 py-2 small me-2" 
-                  [ngClass]="{
-                    'bg-secondary': item.status === 'ABERTA' || item.status === 'EM ANÁLISE'
-                  }"
+                  [ngClass]="getBadgeClass(item.status)"
                   style="font-size: 0.7rem;">
               {{ item.status }}
             </span>
-            <small class="text-muted" style="font-size: 0.85rem;">{{ item.data }}</small>
+            <small class="text-muted" style="font-size: 0.85rem;">{{ item.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</small>
           </div>
 
           <div class="col-md-4">
             <label class="text-muted d-block" style="font-size: 0.75rem;">Cliente</label>
-            <span class="fw-medium text-dark">{{ item.cliente.nome }}</span>
+            <span class="fw-medium text-dark">{{ item.cliente?.nome }}</span>
           </div>
 
-          <div class="col-md-5">
-            <label class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</label>
-            <span class="fw-medium text-dark"> {{ item.produto.length > 30 ? (item.produto | slice:0:30) + '...' : item.produto }}</span>
-          </div>
+         <div class="col-md-5">
+  <label class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</label>
+  <span class="fw-medium text-dark">
+    {{ item.descricaoEquipamento.length > 30
+      ? (item.descricaoEquipamento | slice:0:30) + '...'
+      : item.descricaoEquipamento }}
+  </span>
+</div>
 
           <div class="col-md-3 text-end">
               <a [routerLink]="['/efetuar-orcamento', item.id]" 

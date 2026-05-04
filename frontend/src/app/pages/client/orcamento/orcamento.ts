@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { OrcamentoResponse, SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 import { FormsModule } from '@angular/forms';
-import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-orcamento',
@@ -11,7 +11,9 @@ import { SolicitacaoService } from '../../../services/solicitacao.service';
   templateUrl: './orcamento.html',
 })
 export class OrcamentoComponent implements OnInit {
-  orcamento: any | null = null;
+  solicitacao: SolicitacaoResponse | null = null;
+  // RF005 — itens detalhados do orçamento (peças, mão de obra, serviços)
+  orcamentoDetalhado: OrcamentoResponse | null = null;
   solicitacaoId: string | null = null;
   carregando = true;
   processandoDecisao = false;
@@ -32,11 +34,24 @@ export class OrcamentoComponent implements OnInit {
 
   buscarDados(id: string): void {
     this.carregando = true;
+    // Busca solicitação e, se já orçada, os itens detalhados em paralelo
     this.solicitacaoService.buscarPorId(Number(id)).subscribe({
       next: (dados) => {
-        this.orcamento = dados;
-        this.carregando = false;
-        this.mensagemErro = null;
+        this.solicitacao = dados;
+        if (dados.status === 'ORCADA' || dados.valorOrcado !== null) {
+          this.solicitacaoService.buscarUltimoOrcamento(Number(id)).subscribe({
+            next: (orcamento) => {
+              this.orcamentoDetalhado = orcamento;
+              this.carregando = false;
+            },
+            error: () => {
+              // Exibe a solicitação mesmo sem itens detalhados
+              this.carregando = false;
+            }
+          });
+        } else {
+          this.carregando = false;
+        }
       },
       error: () => {
         this.erroCarregamento = 'Não foi possível carregar os dados da solicitação.';
@@ -56,7 +71,7 @@ export class OrcamentoComponent implements OnInit {
 
     this.solicitacaoService.aprovarOrcamento(ids.solicitacaoId, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
-        this.orcamento = solicitacaoAtualizada;
+        this.solicitacao = solicitacaoAtualizada;
         this.mensagemSucesso = 'Orcamento aprovado com sucesso.';
         this.processandoDecisao = false;
       },
@@ -84,7 +99,7 @@ export class OrcamentoComponent implements OnInit {
 
     this.solicitacaoService.rejeitarOrcamento(ids.solicitacaoId, { motivo }, ids.clienteId).subscribe({
       next: (solicitacaoAtualizada) => {
-        this.orcamento = solicitacaoAtualizada;
+        this.solicitacao = solicitacaoAtualizada;
         this.motivoRejeicao = '';
         this.mensagemSucesso = 'Orcamento rejeitado com sucesso.';
         this.processandoDecisao = false;
@@ -97,7 +112,7 @@ export class OrcamentoComponent implements OnInit {
   }
 
   podeDecidir(): boolean {
-    return this.orcamento?.status === 'ORCADA';
+    return this.solicitacao?.status === 'ORCADA';
   }
 
   private obterIdsParaDecisao(): { solicitacaoId: number; clienteId: number } | null {
