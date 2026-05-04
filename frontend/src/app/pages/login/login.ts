@@ -48,13 +48,14 @@ export class LoginComponent {
 
     this.http.post<any>('http://localhost:8080/login', this.loginUsuario, {withCredentials: true}).subscribe({
       next: (response) => {
+        const data = response.data ?? response;
         localStorage.setItem('usuarioId', response.id);
         localStorage.setItem('perfil', response.perfil);
         localStorage.setItem('nomeUsuario', response.nome);
 
-        if (response.perfil === 'CLIENTE') {
+        if (data.perfil === 'CLIENTE') {
           this.router.navigate(['/client']);
-        } else if (response.perfil === 'FUNCIONARIO') {
+        } else if (data.perfil === 'FUNCIONARIO') {
           this.router.navigate(['/staff']);
         }
       },
