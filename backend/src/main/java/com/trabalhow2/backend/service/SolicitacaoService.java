@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.ItemOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.ItemOrcamentoResponse;
@@ -23,6 +24,7 @@ import com.trabalhow2.backend.model.Cliente;
 import com.trabalhow2.backend.model.Funcionario;
 import com.trabalhow2.backend.model.HistoricoSolicitacao;
 import com.trabalhow2.backend.model.ItemOrcamento;
+import com.trabalhow2.backend.model.Manutencao;
 import com.trabalhow2.backend.model.Orcamento;
 import com.trabalhow2.backend.model.Solicitacao;
 import com.trabalhow2.backend.model.Usuario;
@@ -31,6 +33,7 @@ import com.trabalhow2.backend.repository.CategoriaRepository;
 import com.trabalhow2.backend.repository.ClienteRepository;
 import com.trabalhow2.backend.repository.FuncionarioRepository;
 import com.trabalhow2.backend.repository.HistoricoSolicitacaoRepository;
+import com.trabalhow2.backend.repository.ManutencaoRepository;
 import com.trabalhow2.backend.repository.OrcamentoRepository;
 import com.trabalhow2.backend.repository.SolicitacaoRepository;
 
@@ -47,6 +50,7 @@ public class SolicitacaoService {
     private final FuncionarioRepository funcionarioRepository;
     private final HistoricoSolicitacaoRepository historicoRepository;
     private final OrcamentoRepository orcamentoRepository;
+    private final ManutencaoRepository manutencaoRepository;
     private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -242,6 +246,49 @@ public class SolicitacaoService {
                 StatusSolicitacao.REJEITADA.name(),
                 cliente.getUsuario(),
                 "Orcamento rejeitado pelo cliente. Motivo: " + motivo
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    // RF013 — Registra a manutenção realizada pelo técnico. Pré-condição: OS deve estar APROVADA ou REDIRECIONADA.
+    @Transactional
+    public SolicitacaoResponse registrarManutencao(Long solicitacaoId, RegistrarManutencaoRequest request, Long funcionarioId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        // Pré-condição: somente APROVADA ou REDIRECIONADA aceitam manutenção
+        if (solicitacao.getStatus() != StatusSolicitacao.APROVADA
+                && solicitacao.getStatus() != StatusSolicitacao.REDIRECIONADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitação #" + solicitacaoId + " deve estar APROVADA ou REDIRECIONADA para registrar manutenção (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + funcionarioId));
+
+        Manutencao manutencao = new Manutencao();
+        manutencao.setSolicitacao(solicitacao);
+        manutencao.setFuncionario(funcionario);
+        manutencao.setDataHora(LocalDateTime.now());
+        manutencao.setDescricaoManutencao(request.descricaoManutencao());
+        manutencao.setOrientacoesCliente(request.orientacoesCliente());
+        manutencao.setPecasUsadas(request.pecasUsadas());
+        manutencao.setTempoGasto(request.tempoGasto());
+
+        manutencaoRepository.save(manutencao);
+
+        String estadoAnterior = solicitacao.getStatus().name();
+        solicitacao.setStatus(StatusSolicitacao.ARRUMADA);
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                estadoAnterior,
+                StatusSolicitacao.ARRUMADA.name(),
+                funcionario.getUsuario(),
+                "Manutenção registrada pelo técnico."
         );
 
         return paraResponse(solicitacaoSalva);

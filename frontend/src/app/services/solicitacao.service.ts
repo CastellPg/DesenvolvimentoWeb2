@@ -66,6 +66,13 @@ export interface OrcamentoResponse {
   valorTotal: number;
 }
 
+export interface RegistrarManutencaoRequest {
+  descricaoManutencao: string;
+  orientacoesCliente: string;
+  pecasUsadas?: string;
+  tempoGasto?: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -117,5 +124,11 @@ export class SolicitacaoService {
   rejeitarOrcamento(solicitacaoId: number, request: RejeitarOrcamentoRequest, clienteId: number): Observable<SolicitacaoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
     return this.http.post<SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/rejeitar`, request, { headers });
+  }
+
+  // RF013 — Registra a manutenção realizada pelo técnico
+  registrarManutencao(solicitacaoId: number, request: RegistrarManutencaoRequest, funcionarioId: number): Observable<SolicitacaoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
+    return this.http.post<SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/manutencao`, request, { headers });
   }
 }
