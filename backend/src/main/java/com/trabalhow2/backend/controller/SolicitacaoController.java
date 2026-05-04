@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.OrcamentoResponse;
@@ -141,5 +142,21 @@ public class SolicitacaoController {
             @RequestBody @Valid RejeitarOrcamentoRequest request,
             @RequestHeader("idUsuarioLogado") Long clienteId) {
         return ResponseEntity.ok(solicitacaoService.rejeitarOrcamento(id, request, clienteId));
+    }
+
+    // RF013 — Registra a manutenção realizada pelo técnico. Pré-condição: OS deve estar APROVADA ou REDIRECIONADA.
+    @Operation(summary = "Registrar Manutenção (RF013)", description = "O técnico registra o trabalho realizado. Transiciona a OS de APROVADA ou REDIRECIONADA para ARRUMADA. Exige o header idUsuarioLogado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Manutenção registrada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro de validação nos dados enviados"),
+        @ApiResponse(responseCode = "404", description = "Solicitação ou funcionário não encontrados"),
+        @ApiResponse(responseCode = "409", description = "OS não está em estado APROVADA ou REDIRECIONADA")
+    })
+    @PostMapping("/{id}/manutencao")
+    public ResponseEntity<SolicitacaoResponse> registrarManutencao(
+            @PathVariable Long id,
+            @RequestBody @Valid RegistrarManutencaoRequest request,
+            @RequestHeader("idUsuarioLogado") Long funcionarioId) {
+        return ResponseEntity.ok(solicitacaoService.registrarManutencao(id, request, funcionarioId));
     }
 }

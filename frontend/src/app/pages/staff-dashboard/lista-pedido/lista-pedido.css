@@ -145,6 +145,17 @@
     color: #fff;
 }
 
+.os-card-rejeitada {
+    background-color: #fee2e2 !important;
+    border: 2px solid #ef4444 !important;
+}
+
+.os-badge-rejeitada {
+    background-color: #ef4444;
+    color: #fff;
+}
+
+
 .badge {
     padding: 0.45rem 0.7rem;
     font-size: 0.72rem;
