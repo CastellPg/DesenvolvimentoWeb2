@@ -202,12 +202,12 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
         return 'os-card-arrumada';
       case 'FINALIZADA':
         return 'os-card-finalizada';
+      case 'REJEITADA':
+        return 'os-card-rejeitada';
       default:
         return '';
     }
-  }
-
-  getClasseBadge(status: StatusSolicitacao): string {
+  }(status: StatusSolicitacao): string {
     switch (status) {
       case 'ABERTA':
         return 'os-badge-aberta';
@@ -223,12 +223,12 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
         return 'os-badge-arrumada';
       case 'FINALIZADA':
         return 'os-badge-finalizada';
+      case 'REJEITADA':
+        return 'os-badge-rejeitada';
       default:
         return '';
     }
-  }
-
-  getClasseIndicador(status: StatusSolicitacao): string {
+  }(status: StatusSolicitacao): string {
     switch (status) {
       case 'ARRUMADA':
         return 'os-indicador-arrumada';

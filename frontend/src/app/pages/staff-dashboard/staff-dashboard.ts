@@ -36,4 +36,18 @@ export class StaffDashboardComponent implements OnInit {
       }
     });
   }
+
+  getBadgeClass(status: string): string {
+    switch (status) {
+      case 'ABERTA': return 'bg-secondary';
+      case 'ORCADA': return 'bg-warning text-dark';
+      case 'APROVADA': return 'bg-warning text-dark';
+      case 'REJEITADA': return 'bg-danger';
+      case 'REDIRECIONADA': return 'bg-purple text-white';
+      case 'ARRUMADA': return 'bg-primary';
+      case 'PAGA': return 'bg-orange text-dark';
+      case 'FINALIZADA': return 'bg-success';
+      default: return 'bg-secondary';
+    }
+  }
 }
