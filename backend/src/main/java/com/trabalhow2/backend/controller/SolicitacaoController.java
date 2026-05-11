@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
+import com.trabalhow2.backend.controller.request.ConfirmarPagamentoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.RedirecionarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
@@ -149,8 +150,9 @@ public class SolicitacaoController {
     @PostMapping("/{id}/pagamento")
     public ResponseEntity<SolicitacaoResponse> confirmarPagamento(
             @PathVariable Long id,
+            @RequestBody @Valid ConfirmarPagamentoRequest request,
             @RequestHeader("idUsuarioLogado") Long clienteId) {
-        return ResponseEntity.ok(solicitacaoService.confirmarPagamento(id, clienteId));
+        return ResponseEntity.ok(solicitacaoService.confirmarPagamento(id, request, clienteId));
     }
 
     // RF013 — Registra a manutenção realizada pelo técnico. Pré-condição: OS deve estar APROVADA ou REDIRECIONADA.

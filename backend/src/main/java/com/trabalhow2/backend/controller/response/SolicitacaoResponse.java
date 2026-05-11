@@ -19,6 +19,12 @@ public record SolicitacaoResponse(
         LocalDateTime dataCriacao,
 
         BigDecimal valorOrcado,
+        BigDecimal valorPago,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        LocalDateTime dataHoraPagamento,
+
+        boolean pagamentoDivergente,
         String motivoRejeicao,
         ClienteResumoResponse cliente
 ) {
