@@ -14,6 +14,9 @@ export interface SolicitacaoPagamento {
   descricaoDefeito: string;
   estado: string;
   valor: number;
+  valorPago?: number | null;
+  dataHoraPagamento?: string | null;
+  pagamentoDivergente?: boolean;
 }
 
 @Component({
@@ -96,7 +99,9 @@ export class PagamentoComponent implements OnInit {
     this.enviando = true;
     this.mensagemErro = null;
 
-    this.solicitacaoService.confirmarPagamento(this.solicitacaoId, clienteId).pipe(
+    const valorPago = this.servico.valor;
+
+    this.solicitacaoService.confirmarPagamento(this.solicitacaoId, clienteId, { valorPago }).pipe(
       timeout(10000),
       finalize(() => this.enviando = false)
     ).subscribe({
@@ -121,8 +126,25 @@ export class PagamentoComponent implements OnInit {
       categoria: solicitacao.categoria || '-',
       descricaoDefeito: solicitacao.descricaoDefeito,
       estado: solicitacao.status,
-      valor: solicitacao.valorOrcado ?? 0
+      valor: solicitacao.valorOrcado ?? 0,
+      valorPago: solicitacao.valorPago ?? null,
+      dataHoraPagamento: solicitacao.dataHoraPagamento ?? null,
+      pagamentoDivergente: !!solicitacao.pagamentoDivergente
     };
+  }
+
+  getBadgeClass(estado: string): string {
+    switch (estado) {
+      case 'ABERTA': return 'bg-secondary';
+      case 'ORCADA': return 'bg-marrom';
+      case 'APROVADA': return 'bg-warning text-dark';
+      case 'REJEITADA': return 'bg-danger';
+      case 'REDIRECIONADA': return 'bg-roxo';
+      case 'ARRUMADA': return 'bg-primary';
+      case 'PAGA': return 'bg-laranja';
+      case 'FINALIZADA': return 'bg-success';
+      default: return 'bg-secondary';
+    }
   }
 
   private carregarServicoDoCache(id: number): void {
@@ -147,7 +169,10 @@ export class PagamentoComponent implements OnInit {
         categoria: encontrada.categoria || '-',
         descricaoDefeito: encontrada.problema || encontrada.descricaoDefeito || '-',
         estado: encontrada.estado || encontrada.status || 'ARRUMADA',
-        valor: encontrada.valor || encontrada.valorOrcado || 0
+        valor: encontrada.valor || encontrada.valorOrcado || 0,
+        valorPago: encontrada.valorPago ?? null,
+        dataHoraPagamento: encontrada.dataHoraPagamento ?? null,
+        pagamentoDivergente: !!encontrada.pagamentoDivergente
       };
     } catch {
       localStorage.removeItem(`solicitacoes-cliente-${clienteId}`);
@@ -174,6 +199,9 @@ export class PagamentoComponent implements OnInit {
               status: solicitacaoAtualizada.status,
               valor: solicitacaoAtualizada.valorOrcado ?? item.valor,
               valorOrcado: solicitacaoAtualizada.valorOrcado,
+              valorPago: solicitacaoAtualizada.valorPago,
+              dataHoraPagamento: solicitacaoAtualizada.dataHoraPagamento,
+              pagamentoDivergente: solicitacaoAtualizada.pagamentoDivergente,
             }
           : item
       );

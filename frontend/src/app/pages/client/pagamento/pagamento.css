@@ -4,11 +4,6 @@
   min-height: 100vh;
 }
 
-.badge-arrumada {
-  background-color: #6f42c1;
-  color: white;
-}
-
 .shadow-sm {
   box-shadow: 0 .125rem .25rem rgba(0,0,0,.05) !important;
 }
@@ -29,4 +24,16 @@
 
 .btn-dark:hover {
   background-color: #2c2f3b;
+}
+
+.payment-summary {
+  border: 1px solid #e9ecef;
+}
+
+.total-pagamento {
+  display: block;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
