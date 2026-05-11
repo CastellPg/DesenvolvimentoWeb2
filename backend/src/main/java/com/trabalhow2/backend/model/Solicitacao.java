@@ -26,6 +26,7 @@ import lombok.Setter;
     @Index(name = "idx_solicitacao_categoria", columnList = "categoria_id"),
     @Index(name = "idx_solicitacao_funcionario", columnList = "funcionario_responsavel_id")
 })
+@Getter
 @Setter
 public class Solicitacao {
 
@@ -56,6 +57,15 @@ public class Solicitacao {
 
     @Column(name = "valor_orcamento")
     private BigDecimal valorOrcado;
+
+    @Column(name = "valor_pago", precision = 10, scale = 2)
+    private BigDecimal valorPago;
+
+    @Column(name = "data_hora_pagamento")
+    private LocalDateTime dataHoraPagamento;
+
+    @Column(name = "pagamento_divergente", nullable = false)
+    private boolean pagamentoDivergente = false;
 
     @Column(name = "motivo_rejeicao")
     private String motivoRejeicao;

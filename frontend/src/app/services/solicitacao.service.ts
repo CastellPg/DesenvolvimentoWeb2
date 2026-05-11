@@ -22,6 +22,9 @@ export interface SolicitacaoResponse {
   status: string;
   dataCriacao: string;
   valorOrcado: number | null;
+  valorPago?: number | null;
+  dataHoraPagamento?: string | null;
+  pagamentoDivergente?: boolean;
   motivoRejeicao: string | null;
   cliente?: ClienteResumoResponse | null;
 }
@@ -55,6 +58,10 @@ export interface EfetuarOrcamentoRequest {
 
 export interface RejeitarOrcamentoRequest {
   motivo: string;
+}
+
+export interface ConfirmarPagamentoRequest {
+  valorPago: number;
 }
 
 export interface ItemOrcamentoResponse {
@@ -157,10 +164,10 @@ export class SolicitacaoService {
       .pipe(map(response => this.extrairDados(response)));
   }
 
-  confirmarPagamento(solicitacaoId: number, clienteId: number): Observable<SolicitacaoResponse> {
+  confirmarPagamento(solicitacaoId: number, clienteId: number, request: ConfirmarPagamentoRequest): Observable<SolicitacaoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
     return this.http
-      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/pagamento`, {}, { headers })
+      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/pagamento`, request, { headers })
       .pipe(map(response => this.extrairDados(response)));
   }
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
+import com.trabalhow2.backend.controller.request.ConfirmarPagamentoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.ItemOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.RedirecionarManutencaoRequest;
@@ -42,9 +43,11 @@ import com.trabalhow2.backend.repository.SolicitacaoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitacaoService {
 
     private final SolicitacaoRepository solicitacaoRepository;
@@ -279,7 +282,7 @@ public class SolicitacaoService {
 
     // RF014 - Confirma o pagamento pelo cliente. Pre-condicao: OS ARRUMADA.
     @Transactional
-    public SolicitacaoResponse confirmarPagamento(Long solicitacaoId, Long clienteId) {
+    public SolicitacaoResponse confirmarPagamento(Long solicitacaoId, ConfirmarPagamentoRequest request, Long clienteId) {
         Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
                 .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
 
@@ -298,16 +301,42 @@ public class SolicitacaoService {
                     "A solicitacao #" + solicitacaoId + " precisa ter manutencao registrada antes do pagamento.");
         }
 
+        BigDecimal valorOrcado = solicitacao.getValorOrcado();
+        if (valorOrcado == null) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " nao possui orcamento aprovado para conciliacao do pagamento.");
+        }
+
+        BigDecimal valorPago = request.valorPago();
+        boolean pagamentoDivergente = valorPago.compareTo(valorOrcado) != 0;
+        if (pagamentoDivergente) {
+            log.warn(
+                    "RF014 - Divergencia no pagamento da solicitacao #{}: valor pago {} difere do orcamento aprovado {}.",
+                    solicitacaoId,
+                    valorPago,
+                    valorOrcado
+            );
+        }
+
         Cliente cliente = solicitacao.getCliente();
+        LocalDateTime dataHoraPagamento = LocalDateTime.now();
+        solicitacao.setValorPago(valorPago);
+        solicitacao.setDataHoraPagamento(dataHoraPagamento);
+        solicitacao.setPagamentoDivergente(pagamentoDivergente);
         solicitacao.setStatus(StatusSolicitacao.PAGA);
         Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        String observacao = pagamentoDivergente
+                ? "Pagamento confirmado pelo cliente com divergencia. Valor pago: R$ " + valorPago
+                        + ". Orcamento aprovado: R$ " + valorOrcado
+                : "Pagamento confirmado pelo cliente. Valor pago: R$ " + valorPago;
 
         registrarMudancaHistorico(
                 solicitacaoSalva,
                 StatusSolicitacao.ARRUMADA.name(),
                 StatusSolicitacao.PAGA.name(),
                 cliente.getUsuario(),
-                "Pagamento confirmado pelo cliente."
+                observacao
         );
 
         return paraResponse(solicitacaoSalva);
@@ -482,6 +511,9 @@ public class SolicitacaoService {
                 solicitacao.getStatus().name(),
                 solicitacao.getDataCriacao(),
                 solicitacao.getValorOrcado(),
+                solicitacao.getValorPago(),
+                solicitacao.getDataHoraPagamento(),
+                solicitacao.isPagamentoDivergente(),
                 solicitacao.getMotivoRejeicao(),
                 paraClienteResumo(solicitacao.getCliente())
         );
@@ -503,7 +535,7 @@ public class SolicitacaoService {
     }
 
     private String montarEndereco(Cliente cliente) {
-        return List.of(
+        return java.util.stream.Stream.of(
                         cliente.getLogradouro(),
                         cliente.getNumero(),
                         cliente.getComplemento(),
@@ -511,7 +543,6 @@ public class SolicitacaoService {
                         cliente.getCidade(),
                         cliente.getEstado()
                 )
-                .stream()
                 .filter(valor -> valor != null && !valor.isBlank())
                 .reduce((parte1, parte2) -> parte1 + ", " + parte2)
                 .orElse("");
