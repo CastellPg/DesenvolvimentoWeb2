@@ -48,14 +48,23 @@ export class LoginComponent {
 
     this.http.post<any>('http://localhost:8080/login', this.loginUsuario, {withCredentials: true}).subscribe({
       next: (response) => {
-        localStorage.setItem('usuarioId', response.id);
-        localStorage.setItem('perfil', response.perfil);
-        localStorage.setItem('nomeUsuario', response.nome);
+        const usuario = response.data ?? response;
 
-        if (response.perfil === 'CLIENTE') {
+        if (!usuario?.id || !usuario?.perfil) {
+          this.mensagemErro.set('Resposta de login inválida.');
+          return;
+        }
+
+        localStorage.setItem('usuarioId', String(usuario.id));
+        localStorage.setItem('perfil', usuario.perfil);
+        localStorage.setItem('nomeUsuario', usuario.nome ?? '');
+
+        if (usuario.perfil === 'CLIENTE') {
           this.router.navigate(['/client']);
-        } else if (response.perfil === 'FUNCIONARIO') {
+        } else if (usuario.perfil === 'FUNCIONARIO') {
           this.router.navigate(['/staff']);
+        } else {
+          this.mensagemErro.set('Perfil de usuário inválido.');
         }
       },
       error: (error) => {

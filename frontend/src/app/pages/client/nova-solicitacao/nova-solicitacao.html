@@ -29,8 +29,10 @@
           <select id="categoria" class="form-select form-select-lg bg-light border-0"
                   formControlName="categoriaId"
                   [ngClass]="{'is-invalid': solicitacaoForm.get('categoriaId')?.invalid && solicitacaoForm.get('categoriaId')?.touched}">
-            <option value="" disabled selected>Selecione...</option>
-            <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</option>
+            <option [ngValue]="null" disabled>
+              {{ carregandoCategorias ? 'Carregando categorias...' : 'Selecione...' }}
+            </option>
+            <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{ cat.nome }}</option>
           </select>
 
           <div class="invalid-feedback">Por favor, selecione uma categoria válida.</div>

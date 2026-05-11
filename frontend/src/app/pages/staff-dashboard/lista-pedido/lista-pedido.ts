@@ -51,7 +51,6 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
   dataInicio = '';
   dataFim = '';
   carregando = false;
-
   solicitacoes: Solicitacao[] = [];
 
   private readonly solicitacaoService = inject(SolicitacaoService);
@@ -89,8 +88,8 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     if (usarCache) {
       this.carregarSolicitacoesDoCache();
     }
-    this.carregando = this.solicitacoes.length === 0;
 
+    this.carregando = this.solicitacoes.length === 0;
     this.solicitacaoService.listarPorFuncionario(funcionarioId).subscribe({
       next: (resposta) => {
         this.atualizarSolicitacoes(resposta);
@@ -102,37 +101,16 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
         if (usarCache) {
           alert('Nao foi possivel carregar as solicitacoes do funcionario.');
         }
+        this.cdr.detectChanges();
       }
     });
   }
 
-  limparStatusSalvos() {
-    this.carregarSolicitacoesDoFuncionario();
+  limparStatusSalvos(): void {
+    this.carregarSolicitacoesDoFuncionario(false);
   }
 
-  private iniciarAtualizacaoAutomatica(funcionarioId: number): void {
-    this.atualizadorAutomatico = timer(0, 3000)
-      .pipe(
-        switchMap(() =>
-          this.solicitacaoService.listarPorFuncionario(funcionarioId).pipe(
-            catchError(() => of(null))
-          )
-        )
-      )
-      .subscribe((resposta) => {
-        if (!resposta) {
-          this.carregando = false;
-          this.cdr.detectChanges();
-          return;
-        }
-
-        this.atualizarSolicitacoes(resposta);
-        this.carregando = false;
-        this.cdr.detectChanges();
-      });
-  }
-
-  onFiltroChange() {
+  onFiltroChange(): void {
     if (this.filtroSelecionado !== 'periodo') {
       this.dataInicio = '';
       this.dataFim = '';
@@ -146,10 +124,9 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
 
     if (this.filtroSelecionado === 'hoje') {
       const hoje = new Date();
-      return this.solicitacoes.filter(s => {
-        const dataSolicitacao = new Date(s.dataOriginal);
-        return this.mesmaData(dataSolicitacao, hoje);
-      });
+      return this.solicitacoes.filter(solicitacao =>
+        this.mesmaData(new Date(solicitacao.dataOriginal), hoje)
+      );
     }
 
     if (this.filtroSelecionado === 'periodo') {
@@ -157,21 +134,18 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
         return this.solicitacoes;
       }
 
-      return this.solicitacoes.filter(s => {
-        const dataSolicitacao = new Date(s.dataOriginal);
-        let dentroDoPeriodo = true;
+      return this.solicitacoes.filter(solicitacao => {
+        const dataSolicitacao = new Date(solicitacao.dataOriginal);
 
-        if (this.dataInicio) {
-          const inicio = new Date(this.dataInicio + 'T00:00:00');
-          if (dataSolicitacao < inicio) dentroDoPeriodo = false;
+        if (this.dataInicio && dataSolicitacao < new Date(`${this.dataInicio}T00:00:00`)) {
+          return false;
         }
 
-        if (this.dataFim) {
-          const fim = new Date(this.dataFim + 'T23:59:59');
-          if (dataSolicitacao > fim) dentroDoPeriodo = false;
+        if (this.dataFim && dataSolicitacao > new Date(`${this.dataFim}T23:59:59`)) {
+          return false;
         }
 
-        return dentroDoPeriodo;
+        return true;
       });
     }
 
@@ -188,55 +162,57 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
 
   getClasseCard(status: StatusSolicitacao): string {
     switch (status) {
-      case 'ABERTA':
-        return 'os-card-aberta';
-      case 'PAGA':
-        return 'os-card-paga';
-      case 'APROVADA':
-        return 'os-card-aprovada';
-      case 'ORCADA':
-        return 'os-card-orcada';
-      case 'REDIRECIONADA':
-        return 'os-card-redirecionada';
-      case 'ARRUMADA':
-        return 'os-card-arrumada';
-      case 'FINALIZADA':
-        return 'os-card-finalizada';
-      case 'REJEITADA':
-        return 'os-card-rejeitada';
-      default:
-        return '';
+      case 'ABERTA': return 'os-card-aberta';
+      case 'PAGA': return 'os-card-paga';
+      case 'APROVADA': return 'os-card-aprovada';
+      case 'ORCADA': return 'os-card-orcada';
+      case 'REDIRECIONADA': return 'os-card-redirecionada';
+      case 'ARRUMADA': return 'os-card-arrumada';
+      case 'FINALIZADA': return 'os-card-finalizada';
+      case 'REJEITADA': return 'os-card-rejeitada';
+      default: return '';
     }
-  }(status: StatusSolicitacao): string {
+  }
+
+  getClasseBadge(status: StatusSolicitacao): string {
     switch (status) {
-      case 'ABERTA':
-        return 'os-badge-aberta';
-      case 'PAGA':
-        return 'os-badge-paga';
-      case 'APROVADA':
-        return 'os-badge-aprovada';
-      case 'ORCADA':
-        return 'os-badge-orcada';
-      case 'REDIRECIONADA':
-        return 'os-badge-redirecionada';
-      case 'ARRUMADA':
-        return 'os-badge-arrumada';
-      case 'FINALIZADA':
-        return 'os-badge-finalizada';
-      case 'REJEITADA':
-        return 'os-badge-rejeitada';
-      default:
-        return '';
+      case 'ABERTA': return 'os-badge-aberta';
+      case 'PAGA': return 'os-badge-paga';
+      case 'APROVADA': return 'os-badge-aprovada';
+      case 'ORCADA': return 'os-badge-orcada';
+      case 'REDIRECIONADA': return 'os-badge-redirecionada';
+      case 'ARRUMADA': return 'os-badge-arrumada';
+      case 'FINALIZADA': return 'os-badge-finalizada';
+      case 'REJEITADA': return 'os-badge-rejeitada';
+      default: return '';
     }
-  }(status: StatusSolicitacao): string {
+  }
+
+  getClasseIndicador(status: StatusSolicitacao): string {
     switch (status) {
-      case 'ARRUMADA':
-        return 'os-indicador-arrumada';
-      case 'FINALIZADA':
-        return 'os-indicador-finalizada';
-      default:
-        return 'os-indicador-neutro';
+      case 'ARRUMADA': return 'os-indicador-arrumada';
+      case 'FINALIZADA': return 'os-indicador-finalizada';
+      default: return 'os-indicador-neutro';
     }
+  }
+
+  private iniciarAtualizacaoAutomatica(funcionarioId: number): void {
+    this.atualizadorAutomatico = timer(0, 3000)
+      .pipe(
+        switchMap(() =>
+          this.solicitacaoService.listarPorFuncionario(funcionarioId).pipe(
+            catchError(() => of(null))
+          )
+        )
+      )
+      .subscribe((resposta) => {
+        if (resposta) {
+          this.atualizarSolicitacoes(resposta);
+        }
+
+        this.carregando = false;
+        this.cdr.detectChanges();
+      });
   }
 
   private carregarSolicitacoesDoCache(): void {
@@ -247,7 +223,10 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     }
 
     try {
-      this.solicitacoes = this.ordenarSolicitacoes(JSON.parse(solicitacoesEmCache));
+      const solicitacoes = JSON.parse(solicitacoesEmCache);
+      this.solicitacoes = Array.isArray(solicitacoes)
+        ? this.ordenarSolicitacoes(solicitacoes)
+        : [];
     } catch {
       localStorage.removeItem(this.cacheKey);
     }
@@ -258,8 +237,9 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
   }
 
   private atualizarSolicitacoes(resposta: SolicitacaoResponse[]): void {
+    const lista = Array.isArray(resposta) ? resposta : [];
     this.solicitacoes = this.ordenarSolicitacoes(
-      resposta.map((solicitacao) => this.converterSolicitacao(solicitacao))
+      lista.map(solicitacao => this.converterSolicitacao(solicitacao))
     );
     this.salvarSolicitacoesNoCache();
   }
@@ -308,21 +288,15 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
 
   private definirAcao(status: StatusSolicitacao): string {
     switch (status) {
-      case 'ABERTA':
-        return 'Efetuar Orcamento';
+      case 'ABERTA': return 'Efetuar Orcamento';
       case 'APROVADA':
-      case 'REDIRECIONADA':
-        return 'Efetuar Manutencao';
-      case 'ORCADA':
-        return 'Aguardando Resposta';
-      case 'ARRUMADA':
-        return 'Aguardando Pagamento';
-      case 'PAGA':
-        return 'Finalizar Solicitacao';
-      case 'FINALIZADA':
-        return 'Concluida';
-      default:
-        return '';
+      case 'REDIRECIONADA': return 'Efetuar Manutencao';
+      case 'ORCADA': return 'Aguardando Resposta';
+      case 'ARRUMADA': return 'Aguardando Pagamento';
+      case 'PAGA': return 'Finalizar Solicitacao';
+      case 'FINALIZADA': return 'Concluida';
+      case 'REJEITADA': return 'Rejeitada';
+      default: return '';
     }
   }
 }

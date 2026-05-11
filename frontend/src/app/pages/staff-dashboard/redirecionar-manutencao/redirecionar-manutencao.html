@@ -8,80 +8,100 @@
   </div>
 
   <div class="header mb-4">
-    <h1 class="h3 fw-bold">Redirecionar Manutenção</h1>
+    <h1 class="h3 fw-bold">Redirecionar Manutencao</h1>
   </div>
 
-  <div class="card border-light shadow-sm rounded-4 mb-4">
-    <div class="card-body p-4">
-      <h2 class="h6 fw-bold mb-4">Dados da Solicitação</h2>
-
-      <div class="mb-3">
-        <span class="fw-bold">Solicitação #{{ solicitacao?.id }}</span>
-        <span class="badge bg-primary px-3 py-1 small ms-3" style="font-size: 0.7rem;">
-          {{ solicitacao?.status }}
-        </span>
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-3">
-          <label class="text-muted d-block small mb-1">Data/Hora de Abertura</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.data }}</span>
-        </div>
-
-        <div class="col-12 mb-3">
-          <label class="text-muted d-block small mb-1">Descrição do Produto</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.produto }}</span>
-        </div>
-
-        <div class="col-12">
-          <label class="text-muted d-block small mb-1">Descrição do Problema</label>
-          <span class="fw-medium text-dark">{{ solicitacao?.problema }}</span>
-        </div>
-      </div>
-    </div>
+  <div *ngIf="mensagemErro" class="alert alert-danger rounded-3">
+    {{ mensagemErro }}
   </div>
 
-  <div class="card border-light shadow-sm rounded-4 mb-4">
-    <div class="card-body p-4">
-      <h2 class="h6 fw-bold mb-2">Redirecionar Manutenção</h2>
-      <p class="text-muted mb-4">Escolha outro funcionário para realizar esta manutenção</p>
+  <div *ngIf="carregando" class="text-center py-5">
+    <div class="spinner-border text-dark" role="status"></div>
+  </div>
 
-      <form [formGroup]="formRedirecionamento" (ngSubmit)="confirmarRedirecionamento()">
+  <ng-container *ngIf="!carregando">
+    <div class="card border-light shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-4">Dados da Solicitacao</h2>
+
         <div class="mb-3">
-          <label class="text-muted d-block small mb-1 fw-bold">Funcionário Destino *</label>
-          <select formControlName="funcionarioDestino"
-                  class="form-select border-0 bg-light rounded-3 shadow-none">
-            <option value="">Selecione</option>
-            <option *ngFor="let funcionario of funcionarios" [value]="funcionario.nome">
-              {{ funcionario.nome }} ({{ funcionario.email }})
-            </option>
-          </select>
+          <span class="fw-bold">Solicitacao #{{ solicitacao?.id }}</span>
+          <span class="badge bg-primary px-3 py-1 small ms-3" style="font-size: 0.7rem;">
+            {{ solicitacao?.status }}
+          </span>
         </div>
 
-        <p class="text-muted small">Esta solicitação pode ser redirecionada infinitas vezes</p>
+        <div class="row mt-4">
+          <div class="col-12 mb-3">
+            <label class="text-muted d-block small mb-1">Data/Hora de Abertura</label>
+            <span class="fw-medium text-dark">{{ solicitacao?.dataCriacao | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
 
-        <hr>
+          <div class="col-12 mb-3">
+            <label class="text-muted d-block small mb-1">Descricao do Produto</label>
+            <span class="fw-medium text-dark">{{ solicitacao?.descricaoEquipamento }}</span>
+          </div>
 
-        <div class="mb-4 bg-light p-3 rounded-3">
-          <p class="mb-1 text-muted small">Informações do Redirecionamento</p>
-          <p class="mb-1">Funcionário Origem: {{ tecnicoOrigem }}</p>
-          <p class="mb-0">Data/Hora: {{ dataHoraAtual }}</p>
+          <div class="col-12">
+            <label class="text-muted d-block small mb-1">Descricao do Problema</label>
+            <span class="fw-medium text-dark">{{ solicitacao?.descricaoDefeito }}</span>
+          </div>
         </div>
-
-        <div class="d-flex justify-content-between gap-2">
-          <button type="submit"
-                  class="btn btn-dark fw-bold px-5 py-2 rounded-3"
-                  [disabled]="!formRedirecionamento.valid">
-            Confirmar Redirecionamento
-          </button>
-
-          <a routerLink="/solicitacoes" class="btn btn-outline-secondary px-4 py-2 rounded-3">
-            Cancelar
-          </a>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
+
+    <div class="card border-light shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold mb-2">Redirecionar Manutencao</h2>
+        <p class="text-muted mb-4">Escolha outro funcionario para realizar esta manutencao</p>
+
+        <form [formGroup]="formRedirecionamento" (ngSubmit)="confirmarRedirecionamento()">
+          <div class="mb-3">
+            <label class="text-muted d-block small mb-1 fw-bold">Funcionario Destino *</label>
+            <select formControlName="funcionarioDestinoId"
+                    class="form-select border-0 bg-light rounded-3 shadow-none">
+              <option value="">Selecione</option>
+              <option *ngFor="let funcionario of funcionarios" [value]="funcionario.id">
+                {{ funcionario.nome }} ({{ funcionario.email }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="text-muted d-block small mb-1 fw-bold">Motivo do Redirecionamento *</label>
+            <textarea
+              formControlName="motivo"
+              rows="3"
+              class="form-control border-0 bg-light rounded-3 shadow-none"
+              placeholder="Explique por que esta OS precisa ir para outro tecnico"></textarea>
+          </div>
+
+          <p class="text-muted small">A solicitacao sera marcada como REDIRECIONADA e atribuida ao tecnico escolhido.</p>
+
+          <hr>
+
+          <div class="mb-4 bg-light p-3 rounded-3">
+            <p class="mb-1 text-muted small">Informacoes do Redirecionamento</p>
+            <p class="mb-1">Funcionario Origem: {{ tecnicoOrigem }}</p>
+            <p class="mb-0">Data/Hora: {{ dataHoraAtual }}</p>
+          </div>
+
+          <div class="d-flex justify-content-between gap-2">
+            <button type="submit"
+                    class="btn btn-dark fw-bold px-5 py-2 rounded-3"
+                    [disabled]="!formRedirecionamento.valid || enviando">
+              <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Confirmar Redirecionamento
+            </button>
+
+            <a routerLink="/solicitacoes" class="btn btn-outline-secondary px-4 py-2 rounded-3">
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-container>
 
 </div>
 

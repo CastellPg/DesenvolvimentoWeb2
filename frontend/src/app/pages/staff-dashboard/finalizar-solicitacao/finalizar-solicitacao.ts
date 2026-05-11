@@ -1,75 +1,187 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-
-declare var bootstrap: any;
+import { finalize, timeout } from 'rxjs';
+import { SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-finalizar-solicitacao',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './finalizar-solicitacao.html',
   styleUrl: './finalizar-solicitacao.css',
 })
 export class FinalizarSolicitacaoComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private solicitacaoService = inject(SolicitacaoService);
 
-  solicitacao: any;
+  solicitacao: SolicitacaoResponse | null = null;
+  nomeUsuario = localStorage.getItem('nomeUsuario') ?? 'Funcionario';
+  funcionarioId = Number(localStorage.getItem('usuarioId'));
+  dataHoraAtual = new Date();
 
-  tecnicoLogado: string = 'Carlos Técnico';
-  dataHoraAtual: string = '03/04/2026, 11:39:14';
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {}
+  carregando = false;
+  enviando = false;
+  mensagemErro: string | null = null;
+  mensagemSucesso: string | null = null;
 
   ngOnInit(): void {
-    const idUrl = this.route.snapshot.paramMap.get('id');
-    this.carregarDadosSimulados(idUrl);
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (!id) {
+      this.mensagemErro = 'Solicitacao nao informada na rota.';
+      return;
+    }
+
+    this.carregarSolicitacao(id);
   }
 
-  carregarDadosSimulados(id: string | null) {
-  const listaSalva = JSON.parse(localStorage.getItem('listaSolicitacoes') || '[]');
-  const encontrada = listaSalva.find((item: any) => item.id.toString() === id);
-  this.solicitacao = encontrada || listaSalva[0];
+  carregarSolicitacao(id: string): void {
+    this.carregando = true;
+    this.mensagemErro = null;
+    this.carregarSolicitacaoDoCache(id);
+    this.cdr.detectChanges();
 
-  if (this.solicitacao && !this.solicitacao.dataAbertura) {
-    this.solicitacao.dataAbertura = this.solicitacao.data;
-  }
-}
-
-  confirmarFinalizacao() {
-    const listaSalva = JSON.parse(localStorage.getItem('listaSolicitacoes') || '[]');
-
-    const listaAtualizada = listaSalva.map((item: any) => {
-      if (item.id.toString() === this.solicitacao.id.toString()) {
-        return {
-          ...item,
-          status: 'FINALIZADA',
-          acao: 'Concluída'
-        };
+    this.solicitacaoService.buscarPorId(id).pipe(
+      timeout(10000),
+      finalize(() => {
+        this.carregando = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (dados) => {
+        this.solicitacao = dados;
+        this.atualizarSolicitacaoNoCache(dados);
+      },
+      error: (err) => {
+        if (!this.solicitacao) {
+          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitacao.');
+        }
       }
-      return item;
     });
-
-    localStorage.setItem('listaSolicitacoes', JSON.stringify(listaAtualizada));
-
-    this.mostrarAviso('Solicitação finalizada com sucesso!');
-
-    setTimeout(() => {
-      this.router.navigate(['/solicitacoes']);
-    }, 2000);
   }
 
-  mostrarAviso(mensagem: string) {
-    const spanTexto = document.getElementById('textoAviso');
-    if (spanTexto) {
-      spanTexto.innerText = mensagem;
+  confirmarFinalizacao(): void {
+    if (!this.solicitacao || !this.podeFinalizar) {
+      this.mensagemErro = this.solicitacao?.status === 'FINALIZADA'
+        ? 'Esta solicitacao ja esta finalizada.'
+        : 'A solicitacao precisa estar PAGA para ser finalizada.';
+      return;
     }
 
-    const elementoAviso = document.getElementById('avisoSucesso');
-    if (elementoAviso) {
-      const exibirAviso = new bootstrap.Toast(elementoAviso);
-      exibirAviso.show();
+    if (!this.funcionarioId) {
+      this.mensagemErro = 'Sessao invalida. Faca login novamente.';
+      return;
     }
+
+    this.enviando = true;
+    this.mensagemErro = null;
+    this.mensagemSucesso = null;
+
+    this.solicitacaoService.finalizarSolicitacao(this.solicitacao.id, this.funcionarioId).pipe(
+      timeout(10000),
+      finalize(() => {
+        this.enviando = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (solicitacaoAtualizada) => {
+        this.solicitacao = solicitacaoAtualizada;
+        this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
+        this.mensagemSucesso = 'Solicitacao finalizada com sucesso!';
+        setTimeout(() => this.router.navigate(['/solicitacoes']), 1800);
+      },
+      error: (err) => {
+        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao finalizar a solicitacao.');
+      }
+    });
+  }
+
+  get podeFinalizar(): boolean {
+    return this.solicitacao?.status === 'PAGA' && !this.enviando;
+  }
+
+  getBadgeClass(status: string): string {
+    switch (status) {
+      case 'PAGA': return 'bg-laranja';
+      case 'FINALIZADA': return 'bg-success';
+      case 'ARRUMADA': return 'bg-primary';
+      default: return 'bg-secondary';
+    }
+  }
+
+  private carregarSolicitacaoDoCache(id: string): void {
+    const funcionarioId = localStorage.getItem('usuarioId');
+    if (!funcionarioId) return;
+
+    const cache = localStorage.getItem(`solicitacoes-funcionario-${funcionarioId}`);
+    if (!cache) return;
+
+    try {
+      const solicitacoes = JSON.parse(cache);
+      const encontrada = Array.isArray(solicitacoes)
+        ? solicitacoes.find((item: any) => String(item.id) === String(id))
+        : null;
+
+      if (!encontrada) return;
+
+      this.solicitacao = {
+        id: Number(encontrada.id),
+        descricaoEquipamento: encontrada.produto || encontrada.descricaoEquipamento || '-',
+        categoria: encontrada.categoria || '-',
+        descricaoDefeito: encontrada.problema || encontrada.descricaoDefeito || '-',
+        status: encontrada.status || 'PAGA',
+        dataCriacao: encontrada.dataOriginal || encontrada.dataCriacao || new Date().toISOString(),
+        valorOrcado: encontrada.valorOrcado ?? null,
+        motivoRejeicao: encontrada.motivoRejeicao ?? null,
+        cliente: encontrada.cliente ?? null
+      };
+    } catch {
+      localStorage.removeItem(`solicitacoes-funcionario-${funcionarioId}`);
+    }
+  }
+
+  private atualizarSolicitacaoNoCache(solicitacaoAtualizada: SolicitacaoResponse): void {
+    const funcionarioId = localStorage.getItem('usuarioId');
+    if (!funcionarioId) return;
+
+    const cacheKey = `solicitacoes-funcionario-${funcionarioId}`;
+    const cache = localStorage.getItem(cacheKey);
+    if (!cache) return;
+
+    try {
+      const solicitacoes = JSON.parse(cache);
+      if (!Array.isArray(solicitacoes)) return;
+
+      const atualizadas = solicitacoes.map((item: any) =>
+        Number(item.id) === Number(solicitacaoAtualizada.id)
+          ? {
+              ...item,
+              status: solicitacaoAtualizada.status,
+              acao: solicitacaoAtualizada.status === 'FINALIZADA' ? 'Concluida' : item.acao,
+              valorOrcado: solicitacaoAtualizada.valorOrcado,
+              motivoRejeicao: solicitacaoAtualizada.motivoRejeicao,
+            }
+          : item
+      );
+
+      localStorage.setItem(cacheKey, JSON.stringify(atualizadas));
+    } catch {
+      localStorage.removeItem(cacheKey);
+    }
+  }
+
+  private extrairMensagemErro(err: any, mensagemPadrao: string): string {
+    if (err?.name === 'TimeoutError') {
+      return 'Backend demorou demais para responder.';
+    }
+
+    if (err?.status === 0) {
+      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+    }
+
+    return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;
   }
 }

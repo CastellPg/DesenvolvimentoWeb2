@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RedirecionarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
@@ -144,6 +145,14 @@ public class SolicitacaoController {
         return ResponseEntity.ok(solicitacaoService.rejeitarOrcamento(id, request, clienteId));
     }
 
+    // RF014 - Confirma o pagamento de uma solicitacao arrumada
+    @PostMapping("/{id}/pagamento")
+    public ResponseEntity<SolicitacaoResponse> confirmarPagamento(
+            @PathVariable Long id,
+            @RequestHeader("idUsuarioLogado") Long clienteId) {
+        return ResponseEntity.ok(solicitacaoService.confirmarPagamento(id, clienteId));
+    }
+
     // RF013 — Registra a manutenção realizada pelo técnico. Pré-condição: OS deve estar APROVADA ou REDIRECIONADA.
     @Operation(summary = "Registrar Manutenção (RF013)", description = "O técnico registra o trabalho realizado. Transiciona a OS de APROVADA ou REDIRECIONADA para ARRUMADA. Exige o header idUsuarioLogado.")
     @ApiResponses(value = {
@@ -158,5 +167,22 @@ public class SolicitacaoController {
             @RequestBody @Valid RegistrarManutencaoRequest request,
             @RequestHeader("idUsuarioLogado") Long funcionarioId) {
         return ResponseEntity.ok(solicitacaoService.registrarManutencao(id, request, funcionarioId));
+    }
+
+    // RF016 — Redireciona uma manutenção para outro técnico. Pré-condição: OS APROVADA.
+    @PostMapping("/{id}/redirecionar")
+    public ResponseEntity<SolicitacaoResponse> redirecionarManutencao(
+            @PathVariable Long id,
+            @RequestBody @Valid RedirecionarManutencaoRequest request,
+            @RequestHeader("idUsuarioLogado") Long funcionarioOrigemId) {
+        return ResponseEntity.ok(solicitacaoService.redirecionarManutencao(id, request, funcionarioOrigemId));
+    }
+
+    // RF015 - Finaliza uma solicitacao paga e com manutencao concluida
+    @PostMapping("/{id}/finalizar")
+    public ResponseEntity<SolicitacaoResponse> finalizarSolicitacao(
+            @PathVariable Long id,
+            @RequestHeader("idUsuarioLogado") Long funcionarioId) {
+        return ResponseEntity.ok(solicitacaoService.finalizarSolicitacao(id, funcionarioId));
     }
 }

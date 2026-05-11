@@ -62,7 +62,6 @@ export const routes: Routes = [
     },
 
     {path: 'funcionarios', component: CrudFuncionarioComponent},
-    {path: 'orcamento/:id', component: EfetuarOrcamentoComponent},
 
     {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];

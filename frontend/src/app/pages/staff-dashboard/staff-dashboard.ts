@@ -1,10 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { of } from 'rxjs';
+import { catchError, finalize, timeout } from 'rxjs/operators';
 import { SolicitacaoService, SolicitacaoResponse } from '../../services/solicitacao.service';
 
 @Component({
   selector: 'app-staff-dashboard',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './staff-dashboard.html',
   styleUrl: './staff-dashboard.css',
@@ -15,6 +18,7 @@ export class StaffDashboardComponent implements OnInit {
   carregando = false;
 
   private readonly solicitacaoService = inject(SolicitacaoService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.nomeFuncionario = localStorage.getItem('nomeUsuario');
@@ -26,14 +30,18 @@ export class StaffDashboardComponent implements OnInit {
     if (!funcionarioId) return;
 
     this.carregando = true;
-    this.solicitacaoService.listarPorFuncionario(funcionarioId).subscribe({
+    this.solicitacaoService.listarPorFuncionario(funcionarioId).pipe(
+      timeout(10000),
+      catchError(() => of([] as SolicitacaoResponse[])),
+      finalize(() => {
+        this.carregando = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
       next: (lista) => {
-        this.solicitacoes = lista.filter(s => s.status === 'ABERTA');
-        this.carregando = false;
+        this.solicitacoes = lista.filter(solicitacao => solicitacao.status === 'ABERTA');
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.carregando = false;
-      }
     });
   }
 

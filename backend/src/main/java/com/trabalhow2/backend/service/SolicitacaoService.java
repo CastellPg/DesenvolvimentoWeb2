@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.trabalhow2.backend.controller.request.AbrirSolicitacaoRequest;
 import com.trabalhow2.backend.controller.request.EfetuarOrcamentoRequest;
 import com.trabalhow2.backend.controller.request.ItemOrcamentoRequest;
+import com.trabalhow2.backend.controller.request.RedirecionarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RegistrarManutencaoRequest;
 import com.trabalhow2.backend.controller.request.RejeitarOrcamentoRequest;
 import com.trabalhow2.backend.controller.response.HistoricoSolicitacaoResponse;
@@ -251,6 +252,42 @@ public class SolicitacaoService {
         return paraResponse(solicitacaoSalva);
     }
 
+    // RF014 - Confirma o pagamento pelo cliente. Pre-condicao: OS ARRUMADA.
+    @Transactional
+    public SolicitacaoResponse confirmarPagamento(Long solicitacaoId, Long clienteId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.ARRUMADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " deve estar ARRUMADA para confirmar pagamento (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        if (solicitacao.getCliente() == null || !solicitacao.getCliente().getId().equals(clienteId)) {
+            throw new IllegalArgumentException("Solicitacao nao pertence ao cliente informado.");
+        }
+
+        if (manutencaoRepository.findBySolicitacaoId(solicitacaoId).isEmpty()) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " precisa ter manutencao registrada antes do pagamento.");
+        }
+
+        Cliente cliente = solicitacao.getCliente();
+        solicitacao.setStatus(StatusSolicitacao.PAGA);
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.ARRUMADA.name(),
+                StatusSolicitacao.PAGA.name(),
+                cliente.getUsuario(),
+                "Pagamento confirmado pelo cliente."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
     // RF013 — Registra a manutenção realizada pelo técnico. Pré-condição: OS deve estar APROVADA ou REDIRECIONADA.
     @Transactional
     public SolicitacaoResponse registrarManutencao(Long solicitacaoId, RegistrarManutencaoRequest request, Long funcionarioId) {
@@ -289,6 +326,86 @@ public class SolicitacaoService {
                 StatusSolicitacao.ARRUMADA.name(),
                 funcionario.getUsuario(),
                 "Manutenção registrada pelo técnico."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    // RF016 — Redireciona uma OS aprovada para outro técnico responsável.
+    @Transactional
+    public SolicitacaoResponse redirecionarManutencao(Long solicitacaoId, RedirecionarManutencaoRequest request, Long funcionarioOrigemId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.APROVADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitação #" + solicitacaoId + " deve estar APROVADA para redirecionar (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        Funcionario funcionarioOrigem = funcionarioRepository.findById(funcionarioOrigemId)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário origem não encontrado com ID: " + funcionarioOrigemId));
+
+        Funcionario funcionarioDestino = funcionarioRepository.findById(request.funcionarioDestinoId())
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário destino não encontrado com ID: " + request.funcionarioDestinoId()));
+
+        if (funcionarioOrigem.getId().equals(funcionarioDestino.getId())) {
+            throw new TransicaoStatusInvalidaException("Não é possível redirecionar a OS para o mesmo funcionário.");
+        }
+
+        solicitacao.setFuncionario(funcionarioDestino);
+        solicitacao.setStatus(StatusSolicitacao.REDIRECIONADA);
+
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        String origemNome = funcionarioOrigem.getUsuario() != null ? funcionarioOrigem.getUsuario().getNome() : "Funcionário " + funcionarioOrigem.getId();
+        String destinoNome = funcionarioDestino.getUsuario() != null ? funcionarioDestino.getUsuario().getNome() : "Funcionário " + funcionarioDestino.getId();
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.APROVADA.name(),
+                StatusSolicitacao.REDIRECIONADA.name(),
+                funcionarioOrigem.getUsuario(),
+                "Manutenção redirecionada de " + origemNome + " para " + destinoNome + ". Motivo: " + request.motivo().trim()
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    // RF015 - Finaliza a OS. Pre-condicoes: pagamento confirmado e manutencao registrada.
+    @Transactional
+    public SolicitacaoResponse finalizarSolicitacao(Long solicitacaoId, Long funcionarioId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() == StatusSolicitacao.FINALIZADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " ja esta FINALIZADA e nao permite novas transicoes.");
+        }
+
+        if (solicitacao.getStatus() != StatusSolicitacao.PAGA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " deve estar PAGA para finalizar (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        if (manutencaoRepository.findBySolicitacaoId(solicitacaoId).isEmpty()) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " precisa ter manutencao registrada antes da finalizacao.");
+        }
+
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionario nao encontrado com ID: " + funcionarioId));
+
+        solicitacao.setStatus(StatusSolicitacao.FINALIZADA);
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.PAGA.name(),
+                StatusSolicitacao.FINALIZADA.name(),
+                funcionario.getUsuario(),
+                "Solicitacao finalizada pelo funcionario."
         );
 
         return paraResponse(solicitacaoSalva);
