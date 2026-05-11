@@ -3,6 +3,7 @@ package com.trabalhow2.backend.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,8 +44,8 @@ public class RelatorioReceitaController {
         return service.buscarPorPeriodo(dataInicio, dataFim);
     }
 
-    @GetMapping("/periodo/pdf")
-    public ResponseEntity<byte[]> gerarPdfPorPeriodo(
+    @GetMapping(value = "/periodo/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<ByteArrayResource> gerarPdfPorPeriodo(
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate dataInicio,
@@ -53,7 +54,8 @@ public class RelatorioReceitaController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate dataFim
     ) {
-        return pdf(service.gerarPdfPorPeriodo(dataInicio, dataFim), "relatorio-receitas-periodo.pdf");
+        byte[] arquivo = service.gerarPdfPorPeriodo(dataInicio, dataFim);
+        return pdf(arquivo, "relatorio-receitas-periodo.pdf");
     }
 
     @GetMapping("/categorias")
@@ -61,9 +63,10 @@ public class RelatorioReceitaController {
         return service.buscarPorCategoria();
     }
 
-    @GetMapping("/categorias/pdf")
-    public ResponseEntity<byte[]> gerarPdfPorCategoria() {
-        return pdf(service.gerarPdfPorCategoria(), "relatorio-receitas-categorias.pdf");
+    @GetMapping(value = "/categorias/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<ByteArrayResource> gerarPdfPorCategoria() {
+        byte[] arquivo = service.gerarPdfPorCategoria();
+        return pdf(arquivo, "relatorio-receitas-categorias.pdf");
     }
 
     @GetMapping("/geral")
@@ -71,16 +74,19 @@ public class RelatorioReceitaController {
         return service.buscarGeral();
     }
 
-    @GetMapping("/geral/pdf")
-    public ResponseEntity<byte[]> gerarPdfGeral() {
-        return pdf(service.gerarPdfGeral(), "relatorio-receitas-geral.pdf");
+    @GetMapping(value = "/geral/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<ByteArrayResource> gerarPdfGeral() {
+        byte[] arquivo = service.gerarPdfGeral();
+        return pdf(arquivo, "relatorio-receitas-geral.pdf");
     }
 
-    private ResponseEntity<byte[]> pdf(byte[] arquivo, String nomeArquivo) {
+    private ResponseEntity<ByteArrayResource> pdf(byte[] arquivo, String nomeArquivo) {
+        ByteArrayResource resource = new ByteArrayResource(arquivo);
+
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_PDF)
             .contentLength(arquivo.length)
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomeArquivo + "\"")
-            .body(arquivo);
+            .body(resource);
     }
 }
