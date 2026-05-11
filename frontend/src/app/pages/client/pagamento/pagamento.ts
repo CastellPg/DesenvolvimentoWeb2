@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
@@ -29,6 +29,7 @@ export interface SolicitacaoPagamento {
 export class PagamentoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   private solicitacaoService = inject(SolicitacaoService);
 
   solicitacaoId!: number;
@@ -68,22 +69,28 @@ export class PagamentoComponent implements OnInit {
   }
 
   buscarServicoArrumado(id: number): void {
-    this.carregando = true;
+    this.carregarServicoDoCache(id);
+    this.carregando = !this.servico;
     this.mensagemErro = null;
+    this.cdr.detectChanges();
 
     this.solicitacaoService.buscarPorId(id).pipe(
       timeout(10000),
-      finalize(() => this.carregando = false)
+      finalize(() => {
+        this.carregando = false;
+        this.cdr.detectChanges();
+      })
     ).subscribe({
       next: (solicitacao) => {
         this.servico = this.converterSolicitacao(solicitacao);
         this.atualizarSolicitacaoClienteNoCache(solicitacao);
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.carregarServicoDoCache(id);
         if (!this.servico) {
           this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados do pagamento.');
         }
+        this.cdr.detectChanges();
       }
     });
   }
@@ -103,7 +110,10 @@ export class PagamentoComponent implements OnInit {
 
     this.solicitacaoService.confirmarPagamento(this.solicitacaoId, clienteId, { valorPago }).pipe(
       timeout(10000),
-      finalize(() => this.enviando = false)
+      finalize(() => {
+        this.enviando = false;
+        this.cdr.detectChanges();
+      })
     ).subscribe({
       next: (solicitacaoAtualizada) => {
         this.servico = this.converterSolicitacao(solicitacaoAtualizada);
@@ -114,6 +124,7 @@ export class PagamentoComponent implements OnInit {
       },
       error: (err) => {
         this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao confirmar o pagamento.');
+        this.cdr.detectChanges();
       }
     });
   }
