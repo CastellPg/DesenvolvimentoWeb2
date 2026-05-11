@@ -15,12 +15,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "solicitacoes")
-@Getter
+@Table(name = "solicitacoes", indexes = {
+    @Index(name = "idx_solicitacao_estado", columnList = "estado"),
+    @Index(name = "idx_solicitacao_data", columnList = "data_hora_criacao"),
+    @Index(name = "idx_solicitacao_categoria", columnList = "categoria_id"),
+    @Index(name = "idx_solicitacao_funcionario", columnList = "funcionario_responsavel_id")
+})
 @Setter
 public class Solicitacao {
 

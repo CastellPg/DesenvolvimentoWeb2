@@ -3,6 +3,8 @@ package com.trabalhow2.backend.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,6 +139,29 @@ public class SolicitacaoService {
                 .stream()
                 .map(this::paraResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SolicitacaoResponse> buscarComFiltrosPaginado(
+            String status,
+            Long categoriaId,
+            Long funcionarioId,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            Pageable pageable) {
+        
+        StatusSolicitacao statusEnum = null;
+        if (status != null && !status.trim().isEmpty()) {
+            try {
+                statusEnum = StatusSolicitacao.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+            }
+        }
+
+        Page<Solicitacao> paginaSolicitacoes = solicitacaoRepository.buscarComFiltrosPaginado(
+                statusEnum, categoriaId, funcionarioId, dataInicio, dataFim, pageable);
+
+        return paginaSolicitacoes.map(this::paraResponse);
     }
 
     // RF005 — Busca o orçamento mais recente de uma solicitação com os itens detalhados
