@@ -2,13 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
+import { finalize, timeout } from 'rxjs';
 
 declare var bootstrap: any;
 
 interface Categoria {
   id: number;
   nome: string;
+}
+
+interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  messages?: string[];
 }
 
 @Component({
@@ -79,15 +85,18 @@ export class CategoriaEquipamentoComponent implements OnInit {
   listarCategorias() {
     this.carregando = true;
 
-    this.http.get<Categoria[]>(this.apiUrl)
-      .pipe(finalize(() => this.carregando = false))
+    this.http.get<ApiResponse<Categoria[]> | Categoria[]>(this.apiUrl)
+      .pipe(
+        timeout(10000),
+        finalize(() => this.carregando = false)
+      )
       .subscribe({
       next: (resposta) => {
-        this.categorias = this.ordenarCategorias(resposta);
+        this.categorias = this.ordenarCategorias(this.extrairLista(resposta));
         this.salvarCategoriasNoCache();
       },
-      error: () => {
-        this.mostrarAviso('Erro ao carregar categorias.');
+      error: (erro) => {
+        this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao carregar categorias.'));
       }
     });
   }
@@ -98,14 +107,17 @@ export class CategoriaEquipamentoComponent implements OnInit {
         nome: this.formCategoria.value.nome
       };
 
-      this.http.post<Categoria>(this.apiUrl, categoria).subscribe({
-        next: (categoriaCriada) => {
+      this.http.post<ApiResponse<Categoria> | Categoria>(this.apiUrl, categoria).pipe(
+        timeout(10000)
+      ).subscribe({
+        next: (response) => {
+          const categoriaCriada = this.extrairDados(response);
           this.formCategoria.reset();
           this.categorias = this.ordenarCategorias([...this.categorias, categoriaCriada]);
           this.salvarCategoriasNoCache();
           this.mostrarAviso('Categoria criada com sucesso!');
         },
-        error: () => this.mostrarAviso('Erro ao criar categoria.')
+        error: (erro) => this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao criar categoria.'))
       });
     }
   }
@@ -140,8 +152,11 @@ export class CategoriaEquipamentoComponent implements OnInit {
       this.salvarCategoriasNoCache();
       this.idParaEditar = null;
 
-      this.http.put<Categoria>(`${this.apiUrl}/${idAtualizado}`, categoria).subscribe({
-        next: (categoriaAtualizada) => {
+      this.http.put<ApiResponse<Categoria> | Categoria>(`${this.apiUrl}/${idAtualizado}`, categoria).pipe(
+        timeout(10000)
+      ).subscribe({
+        next: (response) => {
+          const categoriaAtualizada = this.extrairDados(response);
           this.categorias = this.ordenarCategorias(
             this.categorias.map(categoriaAtual =>
               categoriaAtual.id === categoriaAtualizada.id ? categoriaAtualizada : categoriaAtual
@@ -150,10 +165,10 @@ export class CategoriaEquipamentoComponent implements OnInit {
           this.salvarCategoriasNoCache();
           this.mostrarAviso('Categoria atualizada com sucesso!');
         },
-        error: () => {
+        error: (erro) => {
           this.categorias = categoriasAntesDaAtualizacao;
           this.salvarCategoriasNoCache();
-          this.mostrarAviso('Erro ao atualizar categoria.');
+          this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao atualizar categoria.'));
         }
       });
     }
@@ -177,6 +192,31 @@ export class CategoriaEquipamentoComponent implements OnInit {
 
   private ordenarCategorias(categorias: Categoria[]) {
     return [...categorias].sort((categoria1, categoria2) => categoria1.id - categoria2.id);
+  }
+
+  private extrairDados<T>(response: ApiResponse<T> | T): T {
+    if (response && typeof response === 'object' && 'data' in response) {
+      return (response as ApiResponse<T>).data;
+    }
+
+    return response as T;
+  }
+
+  private extrairLista(response: ApiResponse<Categoria[]> | Categoria[]): Categoria[] {
+    const dados = this.extrairDados(response);
+    return Array.isArray(dados) ? dados : [];
+  }
+
+  private extrairMensagemErro(erro: any, mensagemPadrao: string): string {
+    if (erro?.name === 'TimeoutError') {
+      return 'Backend demorou demais para responder.';
+    }
+
+    if (erro?.status === 0) {
+      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+    }
+
+    return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;
   }
 
   mostrarAviso(mensagem: string) {

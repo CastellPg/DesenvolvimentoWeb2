@@ -157,6 +157,13 @@ export class SolicitacaoService {
       .pipe(map(response => this.extrairDados(response)));
   }
 
+  confirmarPagamento(solicitacaoId: number, clienteId: number): Observable<SolicitacaoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
+    return this.http
+      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/pagamento`, {}, { headers })
+      .pipe(map(response => this.extrairDados(response)));
+  }
+
   // RF013 — Registra a manutenção realizada pelo técnico
   registrarManutencao(solicitacaoId: number, request: RegistrarManutencaoRequest, funcionarioId: number): Observable<SolicitacaoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
@@ -169,6 +176,13 @@ export class SolicitacaoService {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioOrigemId.toString() });
     return this.http
       .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/redirecionar`, request, { headers })
+      .pipe(map(response => this.extrairDados(response)));
+  }
+
+  finalizarSolicitacao(solicitacaoId: number, funcionarioId: number): Observable<SolicitacaoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
+    return this.http
+      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/finalizar`, {}, { headers })
       .pipe(map(response => this.extrairDados(response)));
   }
 

@@ -1,17 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
-import { FinalizarSolicitacao } from './finalizar-solicitacao';
+import { FinalizarSolicitacaoComponent } from './finalizar-solicitacao';
 
 describe('FinalizarSolicitacao', () => {
-  let component: FinalizarSolicitacao;
-  let fixture: ComponentFixture<FinalizarSolicitacao>;
+  let component: FinalizarSolicitacaoComponent;
+  let fixture: ComponentFixture<FinalizarSolicitacaoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FinalizarSolicitacao],
+      imports: [FinalizarSolicitacaoComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FinalizarSolicitacao);
+    fixture = TestBed.createComponent(FinalizarSolicitacaoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

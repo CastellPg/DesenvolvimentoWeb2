@@ -252,6 +252,42 @@ public class SolicitacaoService {
         return paraResponse(solicitacaoSalva);
     }
 
+    // RF014 - Confirma o pagamento pelo cliente. Pre-condicao: OS ARRUMADA.
+    @Transactional
+    public SolicitacaoResponse confirmarPagamento(Long solicitacaoId, Long clienteId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.ARRUMADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " deve estar ARRUMADA para confirmar pagamento (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        if (solicitacao.getCliente() == null || !solicitacao.getCliente().getId().equals(clienteId)) {
+            throw new IllegalArgumentException("Solicitacao nao pertence ao cliente informado.");
+        }
+
+        if (manutencaoRepository.findBySolicitacaoId(solicitacaoId).isEmpty()) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " precisa ter manutencao registrada antes do pagamento.");
+        }
+
+        Cliente cliente = solicitacao.getCliente();
+        solicitacao.setStatus(StatusSolicitacao.PAGA);
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.ARRUMADA.name(),
+                StatusSolicitacao.PAGA.name(),
+                cliente.getUsuario(),
+                "Pagamento confirmado pelo cliente."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
     // RF013 — Registra a manutenção realizada pelo técnico. Pré-condição: OS deve estar APROVADA ou REDIRECIONADA.
     @Transactional
     public SolicitacaoResponse registrarManutencao(Long solicitacaoId, RegistrarManutencaoRequest request, Long funcionarioId) {
@@ -331,6 +367,45 @@ public class SolicitacaoService {
                 StatusSolicitacao.REDIRECIONADA.name(),
                 funcionarioOrigem.getUsuario(),
                 "Manutenção redirecionada de " + origemNome + " para " + destinoNome + ". Motivo: " + request.motivo().trim()
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
+    // RF015 - Finaliza a OS. Pre-condicoes: pagamento confirmado e manutencao registrada.
+    @Transactional
+    public SolicitacaoResponse finalizarSolicitacao(Long solicitacaoId, Long funcionarioId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() == StatusSolicitacao.FINALIZADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " ja esta FINALIZADA e nao permite novas transicoes.");
+        }
+
+        if (solicitacao.getStatus() != StatusSolicitacao.PAGA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " deve estar PAGA para finalizar (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        if (manutencaoRepository.findBySolicitacaoId(solicitacaoId).isEmpty()) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " precisa ter manutencao registrada antes da finalizacao.");
+        }
+
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionario nao encontrado com ID: " + funcionarioId));
+
+        solicitacao.setStatus(StatusSolicitacao.FINALIZADA);
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.PAGA.name(),
+                StatusSolicitacao.FINALIZADA.name(),
+                funcionario.getUsuario(),
+                "Solicitacao finalizada pelo funcionario."
         );
 
         return paraResponse(solicitacaoSalva);

@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CategoriaResponse, SolicitacaoService } from '../../../services/solicitacao.service';
+import { finalize, timeout } from 'rxjs';
 
 declare var bootstrap: any;
 
@@ -20,10 +21,12 @@ export class NovaSolicitacaoComponent implements OnInit {
   categorias: CategoriaResponse[] = [];
   mensagemToast = '';
   enviando = false;
+  carregandoCategorias = false;
 
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private solicitacaoService = inject(SolicitacaoService);
+  private cdr = inject(ChangeDetectorRef);
 
   mostrarToast(mensagem: string) {
     this.mensagemToast = mensagem;
@@ -43,9 +46,23 @@ export class NovaSolicitacaoComponent implements OnInit {
     });
 
     // Carrega categorias ativas do backend para o dropdown
-    this.solicitacaoService.getCategorias().subscribe({
-      next: (cats) => this.categorias = cats,
-      error: () => this.mostrarToast('Erro ao carregar categorias.')
+    this.carregandoCategorias = true;
+    this.solicitacaoService.getCategorias().pipe(
+      timeout(10000),
+      finalize(() => {
+        this.carregandoCategorias = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (cats) => {
+        this.categorias = cats
+          .filter(categoria => categoria.id && categoria.nome)
+          .sort((categoria1, categoria2) => categoria1.nome.localeCompare(categoria2.nome));
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.mostrarToast(this.extrairMensagemErro(err, 'Erro ao carregar categorias.'));
+      }
     });
   }
 
@@ -80,5 +97,17 @@ export class NovaSolicitacaoComponent implements OnInit {
         this.mostrarToast(err.error?.messages?.[0] ?? 'Erro ao criar solicitação. Tente novamente.');
       }
     });
+  }
+
+  private extrairMensagemErro(err: any, mensagemPadrao: string): string {
+    if (err?.name === 'TimeoutError') {
+      return 'Backend demorou demais para responder.';
+    }
+
+    if (err?.status === 0) {
+      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+    }
+
+    return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;
   }
 }
