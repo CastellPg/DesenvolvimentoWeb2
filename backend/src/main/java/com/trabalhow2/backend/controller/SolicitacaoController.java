@@ -31,6 +31,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/solicitacoes")
@@ -186,5 +194,21 @@ public class SolicitacaoController {
             @PathVariable Long id,
             @RequestHeader("idUsuarioLogado") Long funcionarioId) {
         return ResponseEntity.ok(solicitacaoService.finalizarSolicitacao(id, funcionarioId));
+    }
+    // Filtros Avançados e Paginação no Dashboard
+    @Operation(summary = "Busca Avançada Paginada (Dashboard)", description = "Retorna uma lista paginada de solicitações aplicando filtros opcionais (status, data, categoria, funcionário). Padrão: 10 itens por página, ordenados pela data mais recente.")
+    @ApiResponse(responseCode = "200", description = "Página retornada com sucesso")
+    @GetMapping("/dashboard")
+    public ResponseEntity<Page<SolicitacaoResponse>> buscarComFiltrosPaginado(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) Long funcionarioId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFim,
+            @PageableDefault(size = 10, page = 0, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable pageable) {
+        
+        Page<SolicitacaoResponse> pagina = solicitacaoService.buscarComFiltrosPaginado(
+                status, categoriaId, funcionarioId, dataInicio, dataFim, pageable);
+        return ResponseEntity.ok(pagina);
     }
 }
