@@ -85,6 +85,16 @@
             <label class="text-muted d-block small mb-1">Valor do Orcamento</label>
             <span class="fw-medium text-dark">{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
           </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Pagamento Confirmado</label>
+            <span class="fw-medium text-dark">
+              {{ solicitacao.dataHoraPagamento ? (solicitacao.dataHoraPagamento | date:'dd/MM/yyyy, HH:mm') : '-' }}
+            </span>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Valor Pago</label>
+            <span class="fw-medium text-dark">{{ solicitacao.valorPago | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
+          </div>
           <div class="col-12 mb-3">
             <label class="text-muted d-block small mb-1">Descricao do Equipamento</label>
             <span class="fw-medium text-dark">{{ solicitacao.descricaoEquipamento }}</span>

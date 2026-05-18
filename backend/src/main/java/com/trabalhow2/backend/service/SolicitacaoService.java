@@ -448,6 +448,11 @@ public class SolicitacaoService {
                     "A solicitacao #" + solicitacaoId + " precisa ter manutencao registrada antes da finalizacao.");
         }
 
+        if (solicitacao.getDataHoraPagamento() == null || solicitacao.getValorPago() == null) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " precisa ter pagamento confirmado antes da finalizacao.");
+        }
+
         Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionario nao encontrado com ID: " + funcionarioId));
 

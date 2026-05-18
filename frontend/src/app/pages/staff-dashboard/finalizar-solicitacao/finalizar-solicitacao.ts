@@ -135,6 +135,9 @@ export class FinalizarSolicitacaoComponent implements OnInit {
         status: encontrada.status || 'PAGA',
         dataCriacao: encontrada.dataOriginal || encontrada.dataCriacao || new Date().toISOString(),
         valorOrcado: encontrada.valorOrcado ?? null,
+        valorPago: encontrada.valorPago ?? null,
+        dataHoraPagamento: encontrada.dataHoraPagamento ?? null,
+        pagamentoDivergente: encontrada.pagamentoDivergente ?? false,
         motivoRejeicao: encontrada.motivoRejeicao ?? null,
         cliente: encontrada.cliente ?? null
       };
@@ -162,6 +165,9 @@ export class FinalizarSolicitacaoComponent implements OnInit {
               status: solicitacaoAtualizada.status,
               acao: solicitacaoAtualizada.status === 'FINALIZADA' ? 'Concluida' : item.acao,
               valorOrcado: solicitacaoAtualizada.valorOrcado,
+              valorPago: solicitacaoAtualizada.valorPago,
+              dataHoraPagamento: solicitacaoAtualizada.dataHoraPagamento,
+              pagamentoDivergente: solicitacaoAtualizada.pagamentoDivergente,
               motivoRejeicao: solicitacaoAtualizada.motivoRejeicao,
             }
           : item
