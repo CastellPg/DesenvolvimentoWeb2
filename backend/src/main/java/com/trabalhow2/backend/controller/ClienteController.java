@@ -48,11 +48,11 @@ public class ClienteController {
     })
 
     @PostMapping("/cadastro")
-    public ResponseEntity<String> cadastroCliente(@RequestBody @Valid CadastroClienteRequest request) {
+    public ResponseEntity<Void> cadastroCliente(@RequestBody @Valid CadastroClienteRequest request) {
         log.info("Iniciando cadastro para o e-mail: {}", request.getEmail());
         clienteService.cadastrarCliente(request);
         log.info("Cliente cadastrado com sucesso!");
-        return ResponseEntity.ok("Cliente cadastrado com sucesso.");
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Buscar cliente por ID", description = "Retorna os detalhes completos de um cliente específico pelo seu ID.")
