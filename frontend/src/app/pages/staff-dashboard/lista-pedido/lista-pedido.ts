@@ -174,27 +174,6 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     }
   }
 
-  getClasseBadge(status: StatusSolicitacao): string {
-    switch (status) {
-      case 'ABERTA': return 'os-badge-aberta';
-      case 'PAGA': return 'os-badge-paga';
-      case 'APROVADA': return 'os-badge-aprovada';
-      case 'ORCADA': return 'os-badge-orcada';
-      case 'REDIRECIONADA': return 'os-badge-redirecionada';
-      case 'ARRUMADA': return 'os-badge-arrumada';
-      case 'FINALIZADA': return 'os-badge-finalizada';
-      case 'REJEITADA': return 'os-badge-rejeitada';
-      default: return '';
-    }
-  }
-
-  getClasseIndicador(status: StatusSolicitacao): string {
-    switch (status) {
-      case 'ARRUMADA': return 'os-indicador-arrumada';
-      case 'FINALIZADA': return 'os-indicador-finalizada';
-      default: return 'os-indicador-neutro';
-    }
-  }
 
   private iniciarAtualizacaoAutomatica(funcionarioId: number): void {
     this.atualizadorAutomatico = timer(0, 3000)

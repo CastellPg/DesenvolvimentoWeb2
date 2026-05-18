@@ -71,14 +71,13 @@
       </div>
 
       <div *ngFor="let solicitacao of solicitacoesFiltradas"
-           class="card mb-3 border rounded-4 shadow-none p-3 os-solicitacao-item"
+           class="card mb-3 rounded-4 shadow-sm p-3 os-solicitacao-item"
            [ngClass]="getClasseCard(solicitacao.status)">
 
         <div class="row align-items-start">
 
           <div class="col-12 mb-3 d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge px-3 py-2 small text-uppercase"
-                  [ngClass]="getClasseBadge(solicitacao.status)">
+            <span class="badge px-3 py-2 small text-uppercase">
               {{ solicitacao.status }}
             </span>
 
@@ -133,8 +132,7 @@
             </span>
 
             <span *ngIf="solicitacao.status === 'FINALIZADA'"
-                  class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-indicador-acao"
-                  [ngClass]="getClasseIndicador(solicitacao.status)">
+                  class="d-inline-block text-center fw-semibold py-2 px-3 rounded-3 w-100 os-indicador-acao">
               {{ solicitacao.acao }}
             </span>
           </div>

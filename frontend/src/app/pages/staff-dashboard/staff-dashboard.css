@@ -1,42 +1,66 @@
-.card {
-    border-radius: 12px;
-    border: 1px solid #f0f0f0; 
+.os-solicitacao-item {
+    --os-status-color: #6c757d;
+    --os-status-bg: #f1f3f5;
+    --os-status-hover-bg: #e9ecef;
+    --os-status-rgb: 108, 117, 125;
+    --os-status-contrast: #fff;
+
+    background-color: var(--os-status-bg) !important;
+    border: 2px solid var(--os-status-color) !important;
+    cursor: default;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
-.card.mb-3 {
-    background-color: #fff;
-    transition: transform 0.2s;
+.os-solicitacao-item:hover {
+    background-color: var(--os-status-hover-bg) !important;
+    box-shadow: 0 8px 20px rgba(var(--os-status-rgb), 0.18) !important;
+    transform: translateY(-2px);
 }
 
-.badge {
+.os-solicitacao-item label {
+    font-size: 0.75rem;
     font-weight: 500;
-    padding: 0.5em 1em;
-    border-radius: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.os-solicitacao-item .badge {
+    background-color: var(--os-status-color);
+    color: var(--os-status-contrast);
+    border-radius: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.os-card-aberta {
+    --os-status-color: #6c757d;
+    --os-status-bg: #f1f3f5;
+    --os-status-hover-bg: #e9ecef;
+    --os-status-rgb: 108, 117, 125;
+}
+
+.os-text-problema {
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.os-border-problema {
+    border-top: 1px dashed rgba(var(--os-status-rgb), 0.28) !important;
 }
 
 .btn-dark {
-    background-color: #0c0d12;
-    border-radius: 8px;
+    background-color: #111827;
     border: none;
-    font-size: 0.85rem;
-    transition: opacity 0.2s;
+    transition: background 0.2s ease;
 }
 
 .btn-dark:hover {
-    opacity: 0.9;
-    background-color: #0c0d12;
+    background-color: #1f2937 !important;
 }
 
-label {
-    font-size: 0.75rem;
-    color: #6c757d; 
-    margin-bottom: 0;
-    display: block;
-}
-
-.fw-medium {
-    font-size: 0.95rem;
-    color: #212529;
+.btn:focus {
+    box-shadow: none;
+    outline: none;
 }
