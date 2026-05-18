@@ -8,6 +8,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import org.springframework.core.io.Resource;
 
 import com.trabalhow2.backend.controller.response.ApiResponse;
 
@@ -29,6 +30,23 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             ServerHttpResponse response) {
 
         if (body instanceof ApiResponse<?>) {
+            return body;
+        }
+
+        if (body instanceof Resource) {
+            return body;
+        }
+
+          if (body instanceof byte[]) {
+            return body;
+        }
+
+        if (selectedContentType != null && selectedContentType.includes(MediaType.APPLICATION_PDF)) {
+            return body;
+        }
+
+        String path = request.getURI().getPath();
+        if (path.endsWith("/pdf")) {
             return body;
         }
 
