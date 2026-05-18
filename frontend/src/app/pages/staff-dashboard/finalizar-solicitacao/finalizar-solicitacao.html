@@ -85,6 +85,16 @@
             <label class="text-muted d-block small mb-1">Valor do Orcamento</label>
             <span class="fw-medium text-dark">{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
           </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Pagamento Confirmado</label>
+            <span class="fw-medium text-dark">
+              {{ solicitacao.dataHoraPagamento ? (solicitacao.dataHoraPagamento | date:'dd/MM/yyyy, HH:mm') : '-' }}
+            </span>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="text-muted d-block small mb-1">Valor Pago</label>
+            <span class="fw-medium text-dark">{{ solicitacao.valorPago | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
+          </div>
           <div class="col-12 mb-3">
             <label class="text-muted d-block small mb-1">Descricao do Equipamento</label>
             <span class="fw-medium text-dark">{{ solicitacao.descricaoEquipamento }}</span>
@@ -106,6 +116,31 @@
         <p class="text-muted mb-4">
           A solicitacao so pode ser finalizada quando estiver PAGA e com manutencao registrada.
         </p>
+
+        <div class="mb-4">
+          <p class="mb-2 text-muted small">Pre-condicoes do RF015</p>
+
+          <div class="row g-3">
+            <div class="col-md-4"
+                 *ngFor="let preCondicao of preCondicoesFinalizacao">
+              <div class="border rounded-3 p-3 h-100"
+                   [ngClass]="getPreCondicaoClass(preCondicao)">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi" [ngClass]="getPreCondicaoIcone(preCondicao)"></i>
+                  <span class="fw-bold small">{{ preCondicao.titulo }}</span>
+                </div>
+                <p class="small mb-0">
+                  {{ preCondicao.descricao }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!podeFinalizar && !enviando"
+             class="alert alert-warning rounded-3 mb-4">
+          {{ mensagemBloqueioFinalizacao }}
+        </div>
 
         <div class="mb-4 bg-white p-3 rounded-3 border">
           <p class="mb-1 text-muted small">Informacoes da Finalizacao</p>

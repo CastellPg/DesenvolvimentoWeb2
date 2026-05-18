@@ -4,6 +4,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
+interface PreCondicaoFinalizacao {
+  titulo: string;
+  descricao: string;
+  concluida: boolean;
+}
+
 @Component({
   selector: 'app-finalizar-solicitacao',
   standalone: true,
@@ -65,9 +71,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
 
   confirmarFinalizacao(): void {
     if (!this.solicitacao || !this.podeFinalizar) {
-      this.mensagemErro = this.solicitacao?.status === 'FINALIZADA'
-        ? 'Esta solicitacao ja esta finalizada.'
-        : 'A solicitacao precisa estar PAGA para ser finalizada.';
+      this.mensagemErro = this.mensagemBloqueioFinalizacao;
       return;
     }
 
@@ -100,7 +104,58 @@ export class FinalizarSolicitacaoComponent implements OnInit {
   }
 
   get podeFinalizar(): boolean {
-    return this.solicitacao?.status === 'PAGA' && !this.enviando;
+    return this.todasPreCondicoesAtendidas && !this.enviando;
+  }
+
+  get statusPago(): boolean {
+    return this.solicitacao?.status === 'PAGA';
+  }
+
+  get pagamentoConfirmado(): boolean {
+    return !!this.solicitacao?.dataHoraPagamento && this.solicitacao?.valorPago != null;
+  }
+
+  get manutencaoConcluidaNoFluxo(): boolean {
+    return this.solicitacao?.status === 'PAGA' || this.solicitacao?.status === 'FINALIZADA';
+  }
+
+  get solicitacaoJaFinalizada(): boolean {
+    return this.solicitacao?.status === 'FINALIZADA';
+  }
+
+  get todasPreCondicoesAtendidas(): boolean {
+    return this.statusPago && this.pagamentoConfirmado && this.manutencaoConcluidaNoFluxo;
+  }
+
+  get preCondicoesFinalizacao(): PreCondicaoFinalizacao[] {
+    return [
+      {
+        titulo: 'Status PAGA',
+        descricao: 'A OS precisa estar no estado PAGA antes da finalizacao.',
+        concluida: this.statusPago
+      },
+      {
+        titulo: 'Pagamento confirmado',
+        descricao: 'Valor e data/hora do pagamento devem estar registrados.',
+        concluida: this.pagamentoConfirmado
+      },
+      {
+        titulo: 'Manutencao concluida',
+        descricao: 'A OS so chega em PAGA depois de passar por ARRUMADA.',
+        concluida: this.manutencaoConcluidaNoFluxo
+      }
+    ];
+  }
+
+  get mensagemBloqueioFinalizacao(): string {
+    if (this.solicitacaoJaFinalizada) {
+      return 'Esta solicitacao ja esta finalizada e nao permite nova transicao.';
+    }
+
+    const pendente = this.preCondicoesFinalizacao.find(item => !item.concluida);
+    return pendente
+      ? `Pre-condicao pendente: ${pendente.titulo}.`
+      : 'A solicitacao ainda nao pode ser finalizada.';
   }
 
   getBadgeClass(status: string): string {
@@ -110,6 +165,16 @@ export class FinalizarSolicitacaoComponent implements OnInit {
       case 'ARRUMADA': return 'bg-primary';
       default: return 'bg-secondary';
     }
+  }
+
+  getPreCondicaoClass(preCondicao: PreCondicaoFinalizacao): string {
+    return preCondicao.concluida
+      ? 'border-success-subtle bg-success-subtle text-success'
+      : 'border-warning-subtle bg-warning-subtle text-warning-emphasis';
+  }
+
+  getPreCondicaoIcone(preCondicao: PreCondicaoFinalizacao): string {
+    return preCondicao.concluida ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
   }
 
   private carregarSolicitacaoDoCache(id: string): void {
@@ -135,6 +200,9 @@ export class FinalizarSolicitacaoComponent implements OnInit {
         status: encontrada.status || 'PAGA',
         dataCriacao: encontrada.dataOriginal || encontrada.dataCriacao || new Date().toISOString(),
         valorOrcado: encontrada.valorOrcado ?? null,
+        valorPago: encontrada.valorPago ?? null,
+        dataHoraPagamento: encontrada.dataHoraPagamento ?? null,
+        pagamentoDivergente: encontrada.pagamentoDivergente ?? false,
         motivoRejeicao: encontrada.motivoRejeicao ?? null,
         cliente: encontrada.cliente ?? null
       };
@@ -162,6 +230,9 @@ export class FinalizarSolicitacaoComponent implements OnInit {
               status: solicitacaoAtualizada.status,
               acao: solicitacaoAtualizada.status === 'FINALIZADA' ? 'Concluida' : item.acao,
               valorOrcado: solicitacaoAtualizada.valorOrcado,
+              valorPago: solicitacaoAtualizada.valorPago,
+              dataHoraPagamento: solicitacaoAtualizada.dataHoraPagamento,
+              pagamentoDivergente: solicitacaoAtualizada.pagamentoDivergente,
               motivoRejeicao: solicitacaoAtualizada.motivoRejeicao,
             }
           : item

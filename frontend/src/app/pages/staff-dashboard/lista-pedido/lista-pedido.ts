@@ -37,6 +37,9 @@ interface Solicitacao {
   problema: string;
   acao: string;
   valorOrcamento?: string;
+  valorPago?: number | null;
+  dataHoraPagamento?: string | null;
+  pagamentoDivergente?: boolean;
 }
 
 @Component({
@@ -245,6 +248,9 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
       valorOrcamento: solicitacao.valorOrcado != null
         ? solicitacao.valorOrcado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
         : undefined,
+      valorPago: solicitacao.valorPago,
+      dataHoraPagamento: solicitacao.dataHoraPagamento,
+      pagamentoDivergente: solicitacao.pagamentoDivergente,
       cliente: {
         nome: solicitacao.cliente?.nome || '-',
         email: solicitacao.cliente?.email || '-',
