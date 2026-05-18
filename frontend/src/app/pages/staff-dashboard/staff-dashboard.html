@@ -22,42 +22,51 @@
         Nenhuma solicitação aberta no momento.
       </div>
 
-      <div *ngFor="let item of solicitacoes" class="card mb-3 border rounded-3 shadow-none p-3">
-        <div class="row align-items-center">
-          
-          <div class="col-12 mb-2">
-            <span class="badge px-3 py-2 small me-2" 
-                  [ngClass]="getBadgeClass(item.status)"
-                  style="font-size: 0.7rem;">
+      <div *ngFor="let item of solicitacoes"
+           class="card mb-3 rounded-4 shadow-sm p-3 os-solicitacao-item os-card-aberta">
+        <div class="row align-items-start">
+
+          <div class="col-12 mb-3 d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge px-3 py-2 small text-uppercase">
               {{ item.status }}
             </span>
-            <small class="text-muted" style="font-size: 0.85rem;">{{ item.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</small>
+            <small class="text-muted">#{{ item.id }}</small>
+            <small class="text-muted">{{ item.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</small>
+          </div>
+
+          <div class="col-md-3">
+            <label class="text-muted d-block">Cliente</label>
+            <span class="fw-medium">{{ item.cliente?.nome || '-' }}</span>
+          </div>
+
+          <div class="col-md-3">
+            <label class="text-muted d-block">Categoria</label>
+            <span class="fw-medium">{{ item.categoria || '-' }}</span>
           </div>
 
           <div class="col-md-4">
-            <label class="text-muted d-block" style="font-size: 0.75rem;">Cliente</label>
-            <span class="fw-medium text-dark">{{ item.cliente?.nome }}</span>
+            <label class="text-muted d-block">Produto</label>
+            <span class="fw-medium">
+              {{ item.descricaoEquipamento.length > 30
+                ? (item.descricaoEquipamento | slice:0:30) + '...'
+                : item.descricaoEquipamento }}
+            </span>
           </div>
 
-         <div class="col-md-5">
-  <label class="text-muted d-block" style="font-size: 0.75rem;">Descrição do Produto</label>
-  <span class="fw-medium text-dark">
-    {{ item.descricaoEquipamento.length > 30
-      ? (item.descricaoEquipamento | slice:0:30) + '...'
-      : item.descricaoEquipamento }}
-  </span>
-</div>
+          <div class="col-md-2 text-md-end mt-3 mt-md-0">
+            <a [routerLink]="['/efetuar-orcamento', item.id]"
+               class="text-decoration-none text-white btn btn-dark px-3 py-2 rounded-3 shadow-sm w-100">
+              Efetuar Orçamento
+            </a>
+          </div>
 
-          <div class="col-md-3 text-end">
-              <a [routerLink]="['/efetuar-orcamento', item.id]" 
-   class="text-decoration-none text-white btn btn-dark px-4 py-2 rounded-3 shadow-sm">
-   Efetuar Orçamento
-</a>
+          <div class="col-12 mt-3 pt-3 border-top os-border-problema">
+            <label class="d-block text-secondary small">Problema</label>
+            <span class="fw-medium os-text-problema">{{ item.descricaoDefeito || '-' }}</span>
           </div>
 
         </div>
-      </div> 
       </div>
+    </div>
   </div>
-
 </div>

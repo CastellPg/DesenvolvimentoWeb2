@@ -1,11 +1,23 @@
 .os-solicitacao-item {
-    transition: transform 0.2s, box-shadow 0.2s;
+    --os-status-color: #6c757d;
+    --os-status-bg: #f1f3f5;
+    --os-status-hover-bg: #e9ecef;
+    --os-status-rgb: 108, 117, 125;
+    --os-status-contrast: #fff;
+
+    background-color: var(--os-status-bg) !important;
+    border: 2px solid var(--os-status-color) !important;
     cursor: default;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .os-solicitacao-item:hover {
+    background-color: var(--os-status-hover-bg) !important;
+    box-shadow: 0 8px 20px rgba(var(--os-status-rgb), 0.18) !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08) !important;
 }
 
 .os-solicitacao-item label {
@@ -14,153 +26,78 @@
     margin-bottom: 4px;
 }
 
+.os-solicitacao-item .badge {
+    background-color: var(--os-status-color);
+    color: var(--os-status-contrast);
+    border-radius: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
 .os-text-problema {
-    font-size: 0.95rem;
     color: #444;
+    font-size: 0.95rem;
 }
 
 .os-border-problema {
-    border-top: 1px dashed rgba(0, 0, 0, 0.12) !important;
+    border-top: 1px dashed rgba(var(--os-status-rgb), 0.28) !important;
 }
 
 .os-card-aberta {
-    background-color: #e5e7eb !important;
-    border: 2px solid #b8bec8 !important;
-}
-
-.os-badge-aberta {
-    background-color: #7b8594;
-    color: #fff;
-}
-
-.os-card-paga {
-    background-color: #f7e1c7 !important;
-    border: 2px solid #ff9800 !important;
-}
-
-.os-badge-paga {
-    background-color: #ff9800;
-    color: #1f1f1f;
-}
-
-.os-card-aprovada {
-    background-color: #f3edc9 !important;
-    border: 2px solid #fbc02d !important;
-}
-
-.os-badge-aprovada {
-    background-color: #fbc02d;
-    color: #111;
-}
-
-.os-card-manutencao {
-    background-color: #dbeafe !important;
-    border: 2px solid #3b82f6 !important;
-}
-
-.os-badge-manutencao {
-    background-color: #3b82f6;
-    color: #fff;
-}
-
-.os-card-arrumada {
-    background-color: #dbeafe !important;
-    border: 2px solid #60a5fa !important;
-}
-
-.os-badge-arrumada {
-    background-color: #3b82f6;
-    color: #fff;
-}
-
-.os-indicador-arrumada {
-    display: inline-block;
-    background-color: #f8fbff;
-    color: #2563eb;
-    border: 1px solid #60a5fa;
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.4;
-    min-width: 200px;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+    --os-status-color: #6c757d;
+    --os-status-bg: #f1f3f5;
+    --os-status-hover-bg: #e9ecef;
+    --os-status-rgb: 108, 117, 125;
 }
 
 .os-card-orcada {
-    background-color: #8a3b00 !important;
-    border: 2px solid #5f2500 !important;
-}
-
-.os-badge-orcada {
-    background-color: #8a3b00;
-    color: #fff;
-}
-
-.os-card-orcada label,
-.os-card-orcada .fw-semibold,
-.os-card-orcada .fw-medium,
-.os-card-orcada .text-muted,
-.os-card-orcada .os-text-problema,
-.os-card-orcada small,
-.os-card-orcada .col-md-3 span,
-.os-card-orcada .col-md-4 span,
-.os-card-orcada .col-12 span {
-    color: #f3f4f6 !important;
-}
-
-.os-card-orcada .badge {
-    background-color: #8a3b00 !important;
-    color: #ffffff !important;
-}
-
-.os-card-orcada .os-botao-status {
-    background-color: #e5e7eb;
-    color: #4b5563 !important;
-    border: 1px solid #cbd5e1;
-}
-
-.os-card-orcada .os-border-problema {
-    border-top: 1px dashed rgba(255, 255, 255, 0.18) !important;
-}
-
-.os-card-redirecionada {
-    background-color: #f2e4f8 !important;
-    border: 2px solid #8e24aa !important;
-}
-
-.os-badge-redirecionada {
-    background-color: #8e24aa;
-    color: #fff;
-}
-
-.os-card-finalizada {
-    background-color: #dcfce7 !important;
-    border: 2px solid #22c55e !important;
-}
-
-.os-badge-finalizada {
-    background-color: #22c55e;
-    color: #fff;
+    --os-status-color: #8b4513;
+    --os-status-bg: #f8ede5;
+    --os-status-hover-bg: #f2ddcf;
+    --os-status-rgb: 139, 69, 19;
 }
 
 .os-card-rejeitada {
-    background-color: #fee2e2 !important;
-    border: 2px solid #ef4444 !important;
+    --os-status-color: #dc3545;
+    --os-status-bg: #fdf1f3;
+    --os-status-hover-bg: #f9d9dd;
+    --os-status-rgb: 220, 53, 69;
 }
 
-.os-badge-rejeitada {
-    background-color: #ef4444;
-    color: #fff;
+.os-card-aprovada {
+    --os-status-color: #ffc107;
+    --os-status-bg: #fff8db;
+    --os-status-hover-bg: #fff1ad;
+    --os-status-rgb: 255, 193, 7;
+    --os-status-contrast: #1f2937;
 }
 
+.os-card-redirecionada {
+    --os-status-color: #6f42c1;
+    --os-status-bg: #f4efff;
+    --os-status-hover-bg: #e8ddff;
+    --os-status-rgb: 111, 66, 193;
+}
 
-.badge {
-    padding: 0.45rem 0.7rem;
-    font-size: 0.72rem;
-    font-weight: 700;
-    border-radius: 0.45rem;
+.os-card-arrumada {
+    --os-status-color: #0d6efd;
+    --os-status-bg: #edf5ff;
+    --os-status-hover-bg: #dcebff;
+    --os-status-rgb: 13, 110, 253;
+}
+
+.os-card-paga {
+    --os-status-color: #fd7e14;
+    --os-status-bg: #fff3e8;
+    --os-status-hover-bg: #ffe3c6;
+    --os-status-rgb: 253, 126, 20;
+}
+
+.os-card-finalizada {
+    --os-status-color: #198754;
+    --os-status-bg: #eef8f2;
+    --os-status-hover-bg: #daf0e3;
+    --os-status-rgb: 25, 135, 84;
 }
 
 .btn-dark {
@@ -173,35 +110,16 @@
     background-color: #1f2937 !important;
 }
 
+.os-botao-status,
 .os-indicador-acao {
+    background-color: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(var(--os-status-rgb), 0.32);
+    color: var(--os-status-color);
     font-size: 0.85rem;
-    border: 1px solid transparent;
-}
-
-.os-indicador-finalizada {
-    background-color: #ecfdf5;
-    color: #166534;
-    border-color: #86efac;
-}
-
-.os-indicador-neutro {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border-color: #d1d5db;
 }
 
 .os-botao-status {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
     cursor: not-allowed;
-    font-size: 0.85rem;
-}
-
-.os-card-orcada .os-botao-status {
-    background-color: #e5e7eb;
-    color: #4b5563 !important;
-    border: 1px solid #cbd5e1;
 }
 
 .form-select:focus,
@@ -209,8 +127,4 @@
 .btn:focus {
     box-shadow: none;
     outline: none;
-}
-
-.card {
-    background-color: #fff;
 }
