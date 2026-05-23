@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { NgxMaskDirective } from 'ngx-mask';
 import { timeout } from 'rxjs';
 import { SolicitacaoService, SolicitacaoResponse, ItemOrcamentoRequest } from '../../../services/solicitacao.service';
 
@@ -9,7 +10,7 @@ declare var bootstrap: any;
 
 @Component({
   selector: 'app-efetuar-orcamento',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxMaskDirective],
   templateUrl: './efetuar-orcamento.html',
   styleUrl: './efetuar-orcamento.css',
 })
@@ -24,9 +25,9 @@ export class EfetuarOrcamentoComponent implements OnInit {
   sucessoMensagem: string | null = null;
 
   tiposItem: { value: 'PECA' | 'MAO_OBRA' | 'SERVICO'; label: string }[] = [
-    { value: 'PECA', label: 'Peca' },
-    { value: 'MAO_OBRA', label: 'Mao de Obra' },
-    { value: 'SERVICO', label: 'Servico' },
+    { value: 'PECA', label: 'Peça' },
+    { value: 'MAO_OBRA', label: 'Mão de Obra' },
+    { value: 'SERVICO', label: 'Serviço' },
   ];
 
   constructor(
@@ -42,12 +43,12 @@ export class EfetuarOrcamentoComponent implements OnInit {
       tipo: ['PECA', Validators.required],
       descricao: ['', [Validators.required, Validators.minLength(3)]],
       quantidade: [1, [Validators.required, Validators.min(1)]],
-      valorUnitario: ['', [Validators.required, Validators.min(0.01)]],
+      valorUnitario: ['', Validators.required],
     });
 
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.erro = 'Solicitacao nao informada na rota.';
+      this.erro = 'Solicitação não informada na rota.';
       this.cdr.detectChanges();
       return;
     }
@@ -115,11 +116,18 @@ export class EfetuarOrcamentoComponent implements OnInit {
   adicionarItem(): void {
     if (this.formItem.invalid) return;
     const val = this.formItem.value;
+    const valorUnitario = this.converterValorMonetario(val.valorUnitario);
+
+    if (valorUnitario <= 0) {
+      this.formItem.get('valorUnitario')?.setErrors({ min: true });
+      return;
+    }
+
     this.itens.push({
       tipo: val.tipo,
       descricao: val.descricao,
       quantidade: Number(val.quantidade),
-      valorUnitario: Number(val.valorUnitario),
+      valorUnitario,
     });
     this.formItem.reset({ tipo: 'PECA', quantidade: 1 });
     this.cdr.detectChanges();
@@ -137,7 +145,7 @@ export class EfetuarOrcamentoComponent implements OnInit {
     const funcionarioId = funcionarioIdRaw ? Number(funcionarioIdRaw) : null;
 
     if (!funcionarioId) {
-      this.erro = 'Sessao invalida. Faca login novamente.';
+      this.erro = 'Sessão inválida. Faça login novamente.';
       this.cdr.detectChanges();
       return;
     }
@@ -151,7 +159,7 @@ export class EfetuarOrcamentoComponent implements OnInit {
       .subscribe({
         next: () => {
           this.enviando = false;
-          this.mostrarAviso('Orcamento registrado com sucesso!');
+          this.mostrarAviso('Orçamento registrado com sucesso!');
           this.cdr.detectChanges();
           setTimeout(() => this.router.navigate(['/staff']), 2000);
         },
@@ -172,13 +180,30 @@ export class EfetuarOrcamentoComponent implements OnInit {
     }
   }
 
+  getTipoLabel(tipo: string): string {
+    return this.tiposItem.find((item) => item.value === tipo)?.label || tipo;
+  }
+
+  private converterValorMonetario(valor: unknown): number {
+    if (typeof valor === 'number') {
+      return valor;
+    }
+
+    const texto = String(valor ?? '')
+      .replace(/[^\d,.-]/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+    const numero = Number(texto);
+    return Number.isFinite(numero) ? numero : 0;
+  }
+
   private extrairMensagemErro(err: any, mensagemPadrao: string): string {
     if (err?.name === 'TimeoutError') {
-      return 'O backend demorou demais para responder. Verifique se ele esta rodando e conectado ao banco.';
+      return 'O backend demorou demais para responder. Verifique se ele está rodando e conectado ao banco.';
     }
 
     if (err?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return err?.error?.messages?.join(' | ') || err?.error?.message || err?.error || mensagemPadrao;

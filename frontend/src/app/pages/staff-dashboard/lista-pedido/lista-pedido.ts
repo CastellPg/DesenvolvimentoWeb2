@@ -65,7 +65,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     const funcionarioId = Number(localStorage.getItem('usuarioId'));
 
     if (!funcionarioId) {
-      alert('Erro de sessao. Faca login novamente.');
+      alert('Erro de sessão. Faça login novamente.');
       return;
     }
 
@@ -83,7 +83,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     const funcionarioId = Number(localStorage.getItem('usuarioId'));
 
     if (!funcionarioId) {
-      alert('Erro de sessao. Faca login novamente.');
+      alert('Erro de sessão. Faça login novamente.');
       return;
     }
 
@@ -102,7 +102,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
       error: () => {
         this.carregando = false;
         if (usarCache) {
-          alert('Nao foi possivel carregar as solicitacoes do funcionario.');
+          alert('Não foi possível carregar as solicitações do funcionário.');
         }
         this.cdr.detectChanges();
       }
@@ -273,12 +273,12 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
 
   private definirAcao(status: StatusSolicitacao): string {
     switch (status) {
-      case 'ABERTA': return 'Efetuar Orcamento';
+      case 'ABERTA': return 'Efetuar Orçamento';
       case 'APROVADA':
       case 'REDIRECIONADA': return 'Efetuar Manutencao';
       case 'ORCADA': return 'Aguardando Resposta';
       case 'ARRUMADA': return 'Aguardando Pagamento';
-      case 'PAGA': return 'Finalizar Solicitacao';
+      case 'PAGA': return 'Finalizar Solicitação';
       case 'FINALIZADA': return 'Concluida';
       case 'REJEITADA': return 'Rejeitada';
       default: return '';

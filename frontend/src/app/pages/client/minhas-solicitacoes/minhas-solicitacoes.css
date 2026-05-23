@@ -22,3 +22,96 @@
   background-color: #1a1c23;
   color: white;
 }
+
+.os-solicitacao-item {
+  --os-status-color: #6c757d;
+  --os-status-bg: #f1f3f5;
+  --os-status-hover-bg: #e9ecef;
+  --os-status-rgb: 108, 117, 125;
+  --os-status-contrast: #fff;
+
+  background-color: var(--os-status-bg) !important;
+  border: 2px solid var(--os-status-color) !important;
+  cursor: default;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.os-solicitacao-item:hover {
+  background-color: var(--os-status-hover-bg) !important;
+  box-shadow: 0 8px 20px rgba(var(--os-status-rgb), 0.18) !important;
+  transform: translateY(-2px);
+}
+
+.os-solicitacao-item label,
+.os-solicitacao-item small {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.os-solicitacao-item .badge {
+  background-color: var(--os-status-color) !important;
+  color: var(--os-status-contrast) !important;
+  border-radius: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.os-card-aberta {
+  --os-status-color: #6c757d;
+  --os-status-bg: #f1f3f5;
+  --os-status-hover-bg: #e9ecef;
+  --os-status-rgb: 108, 117, 125;
+}
+
+.os-card-orcada {
+  --os-status-color: #8b4513;
+  --os-status-bg: #f8ede5;
+  --os-status-hover-bg: #f2ddcf;
+  --os-status-rgb: 139, 69, 19;
+}
+
+.os-card-rejeitada {
+  --os-status-color: #dc3545;
+  --os-status-bg: #fdf1f3;
+  --os-status-hover-bg: #f9d9dd;
+  --os-status-rgb: 220, 53, 69;
+}
+
+.os-card-aprovada {
+  --os-status-color: #ffc107;
+  --os-status-bg: #fff8db;
+  --os-status-hover-bg: #fff1ad;
+  --os-status-rgb: 255, 193, 7;
+  --os-status-contrast: #1f2937;
+}
+
+.os-card-redirecionada {
+  --os-status-color: #6f42c1;
+  --os-status-bg: #f4efff;
+  --os-status-hover-bg: #e8ddff;
+  --os-status-rgb: 111, 66, 193;
+}
+
+.os-card-arrumada {
+  --os-status-color: #0d6efd;
+  --os-status-bg: #edf5ff;
+  --os-status-hover-bg: #dcebff;
+  --os-status-rgb: 13, 110, 253;
+}
+
+.os-card-paga {
+  --os-status-color: #fd7e14;
+  --os-status-bg: #fff3e8;
+  --os-status-hover-bg: #ffe3c6;
+  --os-status-rgb: 253, 126, 20;
+}
+
+.os-card-finalizada {
+  --os-status-color: #198754;
+  --os-status-bg: #eef8f2;
+  --os-status-hover-bg: #daf0e3;
+  --os-status-rgb: 25, 135, 84;
+}

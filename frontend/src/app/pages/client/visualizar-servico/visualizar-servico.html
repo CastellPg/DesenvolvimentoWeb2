@@ -18,6 +18,14 @@
     <p class="text-muted">Visualize os dados e o histórico da sua solicitação</p>
   </div>
 
+  <div *ngIf="carregando && !solicitacao" class="text-center text-muted py-5">
+    Carregando detalhes da solicitação...
+  </div>
+
+  <div *ngIf="erro" class="alert alert-danger rounded-3">
+    {{ erro }}
+  </div>
+
   <div class="row g-4" *ngIf="solicitacao">
 
     <div class="col-12 col-lg-8">
@@ -33,7 +41,7 @@
             </div>
             <div class="text-end">
               <small class="text-muted d-block mb-1">Status Atual</small>
-              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(solicitacao.estado)">{{ solicitacao.estado }}</span>            </div>
+              <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(solicitacao.estado)">{{ getStatusLabel(solicitacao.estado) }}</span>            </div>
           </div>
 
           <div class="row mb-4">
@@ -91,11 +99,15 @@
           <h5 class="fw-bold mb-4"><i class="bi bi-clock-history me-2"></i>Histórico</h5>
 
           <div class="timeline d-flex flex-column gap-4 position-relative px-2">
+            <div *ngIf="solicitacao.historico.length === 0" class="text-muted small">
+              Nenhum histórico encontrado para esta solicitação.
+            </div>
+
             <div *ngFor="let item of solicitacao.historico" class="timeline-item">
               <div class="d-flex flex-column">
                 <small class="text-muted fw-bold mb-1">{{ item.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
                 <div class="bg-white p-3 rounded-3 shadow-sm border">
-                  <span class="badge mb-2" [ngClass]="getBadgeClass(item.estadoNovo)">{{ item.estadoNovo }}</span>                  <p class="mb-1 small fw-medium">{{ item.descricao }}</p>
+                  <span class="badge mb-2" [ngClass]="getBadgeClass(item.estadoNovo)">{{ getStatusLabel(item.estadoNovo) }}</span>                  <p class="mb-1 small fw-medium">{{ item.descricao }}</p>
                   <small class="text-muted" style="font-size: 0.70rem;">
                     <i class="bi bi-person me-1"></i> Por: {{ item.funcionario }}
                   </small>
@@ -110,7 +122,7 @@
 
   </div>
 
-  <div *ngIf="!solicitacao" class="text-center p-5 mt-4 card border-0 shadow-sm rounded-4">
+  <div *ngIf="!solicitacao && buscaFinalizada && !carregando && !erro" class="text-center p-5 mt-4 card border-0 shadow-sm rounded-4">
     <h4 class="text-muted mb-3">Solicitação não encontrada.</h4>
     <p class="text-muted mb-4">O código da solicitação que você tentou acessar não existe ou foi removido.</p>
     <div>

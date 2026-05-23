@@ -41,7 +41,7 @@ export class EfetuarManutencaoComponent implements OnInit {
     });
 
     if (!id) {
-      this.mensagemErro = 'Solicitacao nao informada na rota.';
+      this.mensagemErro = 'Solicitação não informada na rota.';
       return;
     }
 
@@ -68,7 +68,7 @@ export class EfetuarManutencaoComponent implements OnInit {
       },
       error: (err) => {
         if (!this.solicitacao) {
-          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitacao.');
+          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitação.');
         }
       }
     });
@@ -108,7 +108,7 @@ export class EfetuarManutencaoComponent implements OnInit {
         setTimeout(() => this.router.navigate(['/solicitacoes']), 1800);
       },
       error: (err) => {
-        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao registrar manutencao. Tente novamente.');
+        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao registrar manutenção. Tente novamente.');
       }
     });
   }
@@ -179,7 +179,7 @@ export class EfetuarManutencaoComponent implements OnInit {
     }
 
     if (err?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;

@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface ApiResponse<T> {
   status: number;
@@ -36,7 +37,7 @@ export class RelatorioReceitaService {
 
   constructor(private readonly http: HttpClient) {}
 
-  buscarPorPeriodo(dataInicio?: string, dataFim?: string): Observable<ApiResponse<ReceitaPorPeriodo[]>> {
+  buscarPorPeriodo(dataInicio?: string, dataFim?: string): Observable<ReceitaPorPeriodo[]> {
     let params = new HttpParams();
 
     if (dataInicio) {
@@ -47,10 +48,10 @@ export class RelatorioReceitaService {
       params = params.set('dataFim', dataFim);
     }
 
-    return this.http.get<ApiResponse<ReceitaPorPeriodo[]>>(`${this.apiUrl}/periodo`, {
+    return this.http.get<ApiResponse<ReceitaPorPeriodo[]> | ReceitaPorPeriodo[]>(`${this.apiUrl}/periodo`, {
       params,
       withCredentials: true
-    });
+    }).pipe(map((resposta) => this.extrairDados(resposta)));
   }
 
   gerarPdfPorPeriodo(dataInicio?: string, dataFim?: string): Observable<Blob> {
@@ -71,10 +72,10 @@ export class RelatorioReceitaService {
     });
   }
 
-  buscarPorCategoria(): Observable<ApiResponse<ReceitaPorCategoria[]>> {
-    return this.http.get<ApiResponse<ReceitaPorCategoria[]>>(`${this.apiUrl}/categorias`, {
+  buscarPorCategoria(): Observable<ReceitaPorCategoria[]> {
+    return this.http.get<ApiResponse<ReceitaPorCategoria[]> | ReceitaPorCategoria[]>(`${this.apiUrl}/categorias`, {
       withCredentials: true
-    });
+    }).pipe(map((resposta) => this.extrairDados(resposta)));
   }
 
   gerarPdfPorCategoria(): Observable<Blob> {
@@ -84,10 +85,10 @@ export class RelatorioReceitaService {
     });
   }
 
-  buscarGeral(): Observable<ApiResponse<ReceitaGeral>> {
-    return this.http.get<ApiResponse<ReceitaGeral>>(`${this.apiUrl}/geral`, {
+  buscarGeral(): Observable<ReceitaGeral> {
+    return this.http.get<ApiResponse<ReceitaGeral> | ReceitaGeral>(`${this.apiUrl}/geral`, {
       withCredentials: true
-    });
+    }).pipe(map((resposta) => this.extrairDados(resposta)));
   }
 
   gerarPdfGeral(): Observable<Blob> {
@@ -95,5 +96,13 @@ export class RelatorioReceitaService {
       responseType: 'blob',
       withCredentials: true
     });
+  }
+
+  private extrairDados<T>(resposta: ApiResponse<T> | T): T {
+    if (resposta && typeof resposta === 'object' && 'data' in resposta) {
+      return (resposta as ApiResponse<T>).data;
+    }
+
+    return resposta as T;
   }
 }

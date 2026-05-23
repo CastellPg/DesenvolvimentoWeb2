@@ -44,7 +44,7 @@ export class PagamentoComponent implements OnInit {
     this.solicitacaoId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!this.solicitacaoId) {
-      this.mensagemErro = 'Solicitacao nao informada na rota.';
+      this.mensagemErro = 'Solicitação não informada na rota.';
       return;
     }
 
@@ -99,7 +99,7 @@ export class PagamentoComponent implements OnInit {
     const clienteId = Number(localStorage.getItem('usuarioId'));
 
     if (!clienteId || !this.servico) {
-      this.mensagemErro = 'Sessao invalida. Faca login novamente.';
+      this.mensagemErro = 'Sessão inválida. Faça login novamente.';
       return;
     }
 
@@ -119,7 +119,7 @@ export class PagamentoComponent implements OnInit {
         this.servico = this.converterSolicitacao(solicitacaoAtualizada);
         this.atualizarSolicitacaoClienteNoCache(solicitacaoAtualizada);
         this.fecharModal();
-        this.mostrarToast('Pagamento confirmado com sucesso! O servico agora consta como PAGO.');
+        this.mostrarToast('Pagamento confirmado com sucesso! O serviço agora consta como PAGO.');
         setTimeout(() => this.router.navigate(['/client/dashboard']), 1800);
       },
       error: (err) => {
@@ -229,7 +229,7 @@ export class PagamentoComponent implements OnInit {
     }
 
     if (err?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;

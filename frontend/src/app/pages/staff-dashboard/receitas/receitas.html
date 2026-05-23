@@ -41,6 +41,10 @@
     {{ erro }}
   </div>
 
+  <div *ngIf="carregandoGeral && !geral" class="alert alert-info">
+    Carregando resumo geral...
+  </div>
+
   <div *ngIf="geral" class="row mb-4">
     <div class="col-md-4">
       <div class="card p-3">

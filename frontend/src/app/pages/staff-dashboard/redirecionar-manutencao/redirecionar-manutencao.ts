@@ -52,7 +52,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
     });
 
     if (!id) {
-      this.mensagemErro = 'Solicitacao nao informada na rota.';
+      this.mensagemErro = 'Solicitação não informada na rota.';
       return;
     }
 
@@ -68,7 +68,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
     const funcionarioOrigemId = Number(localStorage.getItem('usuarioId'));
     if (!funcionarioOrigemId) {
-      this.mensagemErro = 'Sessao invalida. Faca login novamente.';
+      this.mensagemErro = 'Sessão inválida. Faça login novamente.';
       return;
     }
 
@@ -89,11 +89,11 @@ export class RedirecionarManutencaoComponent implements OnInit {
     ).subscribe({
       next: (solicitacaoAtualizada) => {
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
-        this.mostrarAviso('Solicitacao redirecionada com sucesso!');
+        this.mostrarAviso('Solicitação redirecionada com sucesso!');
         setTimeout(() => this.router.navigate(['/solicitacoes']), 1800);
       },
       error: (err) => {
-        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao redirecionar manutencao.');
+        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao redirecionar manutenção.');
       }
     });
   }
@@ -129,7 +129,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
       },
       error: (err) => {
         if (!this.solicitacao) {
-          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitacao.');
+          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitação.');
         }
       }
     });
@@ -204,7 +204,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
 
   private extrairMensagemErro(err: any, mensagemPadrao: string): string {
     if (err?.name === 'TimeoutError') return 'Backend demorou demais para responder.';
-    if (err?.status === 0) return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+    if (err?.status === 0) return 'Não foi possível conectar ao backend em http://localhost:8080.';
     return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;
   }
 }

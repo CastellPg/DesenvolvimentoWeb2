@@ -251,7 +251,7 @@ public class SolicitacaoService {
                 StatusSolicitacao.ORCADA.name(),
                 StatusSolicitacao.APROVADA.name(),
                 cliente.getUsuario(),
-                "Orcamento aprovado pelo cliente."
+                "Orçamento aprovado pelo cliente."
         );
 
         return paraResponse(solicitacaoSalva);
@@ -274,7 +274,7 @@ public class SolicitacaoService {
                 StatusSolicitacao.ORCADA.name(),
                 StatusSolicitacao.REJEITADA.name(),
                 cliente.getUsuario(),
-                "Orcamento rejeitado pelo cliente. Motivo: " + motivo
+                "Orçamento rejeitado pelo cliente. Motivo: " + motivo
         );
 
         return paraResponse(solicitacaoSalva);
@@ -304,14 +304,14 @@ public class SolicitacaoService {
         BigDecimal valorOrcado = solicitacao.getValorOrcado();
         if (valorOrcado == null) {
             throw new TransicaoStatusInvalidaException(
-                    "A solicitacao #" + solicitacaoId + " nao possui orcamento aprovado para conciliacao do pagamento.");
+                    "A solicitação #" + solicitacaoId + " não possui orçamento aprovado para conciliação do pagamento.");
         }
 
         BigDecimal valorPago = request.valorPago();
         boolean pagamentoDivergente = valorPago.compareTo(valorOrcado) != 0;
         if (pagamentoDivergente) {
             log.warn(
-                    "RF014 - Divergencia no pagamento da solicitacao #{}: valor pago {} difere do orcamento aprovado {}.",
+                    "RF014 - Divergência no pagamento da solicitação #{}: valor pago {} difere do orçamento aprovado {}.",
                     solicitacaoId,
                     valorPago,
                     valorOrcado
@@ -328,7 +328,7 @@ public class SolicitacaoService {
 
         String observacao = pagamentoDivergente
                 ? "Pagamento confirmado pelo cliente com divergencia. Valor pago: R$ " + valorPago
-                        + ". Orcamento aprovado: R$ " + valorOrcado
+                        + ". Orçamento aprovado: R$ " + valorOrcado
                 : "Pagamento confirmado pelo cliente. Valor pago: R$ " + valorPago;
 
         registrarMudancaHistorico(
