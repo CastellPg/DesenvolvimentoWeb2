@@ -105,7 +105,7 @@ export class NovaSolicitacaoComponent implements OnInit {
     }
 
     if (err?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;

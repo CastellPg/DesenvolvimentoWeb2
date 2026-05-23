@@ -37,7 +37,7 @@ export class MinhasSolicitacoesComponent implements OnInit {
     const clienteId = Number(localStorage.getItem('usuarioId'));
 
     if (!clienteId) {
-      this.erro = 'Sessao invalida. Faca login novamente.';
+      this.erro = 'Sessão inválida. Faça login novamente.';
       return;
     }
 
@@ -85,6 +85,34 @@ export class MinhasSolicitacoesComponent implements OnInit {
     }
   }
 
+  getClasseCard(status: string): string {
+    switch (status) {
+      case 'ABERTA': return 'os-card-aberta';
+      case 'PAGA': return 'os-card-paga';
+      case 'APROVADA': return 'os-card-aprovada';
+      case 'ORCADA': return 'os-card-orcada';
+      case 'REJEITADA': return 'os-card-rejeitada';
+      case 'REDIRECIONADA': return 'os-card-redirecionada';
+      case 'ARRUMADA': return 'os-card-arrumada';
+      case 'FINALIZADA': return 'os-card-finalizada';
+      default: return '';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'ORCADA': return 'ORÇADA';
+      case 'ABERTA': return 'ABERTA';
+      case 'APROVADA': return 'APROVADA';
+      case 'REJEITADA': return 'REJEITADA';
+      case 'REDIRECIONADA': return 'REDIRECIONADA';
+      case 'ARRUMADA': return 'ARRUMADA';
+      case 'PAGA': return 'PAGA';
+      case 'FINALIZADA': return 'FINALIZADA';
+      default: return status;
+    }
+  }
+
   private converterSolicitacao(solicitacao: SolicitacaoResponse): Solicitacao {
     return {
       id: solicitacao.id,
@@ -117,13 +145,13 @@ export class MinhasSolicitacoesComponent implements OnInit {
 
   private extrairMensagemErro(err: any): string {
     if (err?.name === 'TimeoutError') {
-      return 'Backend demorou demais para responder ao buscar suas solicitacoes.';
+      return 'Backend demorou demais para responder ao buscar suas solicitações.';
     }
 
     if (err?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
-    return err?.error?.messages?.join(' | ') || err?.error?.message || 'Nao foi possivel carregar suas solicitacoes.';
+    return err?.error?.messages?.join(' | ') || err?.error?.message || 'Não foi possível carregar suas solicitações.';
   }
 }

@@ -33,7 +33,7 @@ export class OrcamentoComponent implements OnInit {
     this.solicitacaoId = this.route.snapshot.paramMap.get('id');
 
     if (!this.solicitacaoId) {
-      this.erroCarregamento = 'Solicitacao nao informada na rota.';
+      this.erroCarregamento = 'Solicitação não informada na rota.';
       this.carregando = false;
       this.cdr.detectChanges();
       return;
@@ -67,7 +67,7 @@ export class OrcamentoComponent implements OnInit {
       },
       error: (erro) => {
         if (!this.solicitacao) {
-          this.erroCarregamento = this.extrairMensagemErro(erro, 'Nao foi possivel carregar os dados da solicitacao.');
+          this.erroCarregamento = this.extrairMensagemErro(erro, 'Não foi possível carregar os dados da solicitação.');
         }
       },
     });
@@ -85,13 +85,13 @@ export class OrcamentoComponent implements OnInit {
       next: (solicitacaoAtualizada) => {
         this.solicitacao = solicitacaoAtualizada;
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
-        this.mensagemSucesso = 'Servico aprovado com sucesso.';
+        this.mensagemSucesso = 'Serviço aprovado com sucesso.';
         this.processandoDecisao = false;
         this.cdr.detectChanges();
         this.voltarParaListaAposDecisao();
       },
       error: (erro) => {
-        this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel aprovar o servico.');
+        this.mensagemErro = this.extrairMensagemErro(erro, 'Não foi possível aprovar o serviço.');
         this.processandoDecisao = false;
         this.cdr.detectChanges();
       }
@@ -104,7 +104,7 @@ export class OrcamentoComponent implements OnInit {
 
     const motivo = this.motivoRejeicao.trim();
     if (!motivo) {
-      this.mensagemErro = 'Informe o motivo da rejeicao.';
+      this.mensagemErro = 'Informe o motivo da rejeição.';
       this.cdr.detectChanges();
       return;
     }
@@ -119,13 +119,13 @@ export class OrcamentoComponent implements OnInit {
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
         this.motivoRejeicao = '';
         this.exibindoRejeicao = false;
-        this.mensagemSucesso = 'Servico rejeitado com sucesso.';
+        this.mensagemSucesso = 'Serviço rejeitado com sucesso.';
         this.processandoDecisao = false;
         this.cdr.detectChanges();
         this.voltarParaListaAposDecisao();
       },
       error: (erro) => {
-        this.mensagemErro = this.extrairMensagemErro(erro, 'Nao foi possivel rejeitar o servico.');
+        this.mensagemErro = this.extrairMensagemErro(erro, 'Não foi possível rejeitar o serviço.');
         this.processandoDecisao = false;
         this.cdr.detectChanges();
       }
@@ -148,21 +148,21 @@ export class OrcamentoComponent implements OnInit {
   }
 
   tituloStatus(): string {
-    if (this.solicitacao?.status === 'APROVADA') return 'Servico aprovado';
-    if (this.solicitacao?.status === 'REJEITADA') return 'Servico rejeitado';
-    return 'Aguardando decisao';
+    if (this.solicitacao?.status === 'APROVADA') return 'Serviço aprovado';
+    if (this.solicitacao?.status === 'REJEITADA') return 'Serviço rejeitado';
+    return 'Aguardando decisão';
   }
 
   textoStatus(): string {
     if (this.solicitacao?.status === 'APROVADA') {
-      return 'O servico foi autorizado e agora pode seguir para manutencao.';
+      return 'O serviço foi autorizado e agora pode seguir para manutenção.';
     }
 
     if (this.solicitacao?.status === 'REJEITADA') {
-      return 'O orcamento foi recusado. O motivo fica registrado no historico da solicitacao.';
+      return 'O orçamento foi recusado. O motivo fica registrado no histórico da solicitação.';
     }
 
-    return 'Confira o valor e os itens do orcamento antes de aprovar ou rejeitar.';
+    return 'Confira o valor e os itens do orçamento antes de aprovar ou rejeitar.';
   }
 
   getBadgeClass(status: string): string {
@@ -176,6 +176,29 @@ export class OrcamentoComponent implements OnInit {
       case 'PAGA': return 'bg-laranja';
       case 'FINALIZADA': return 'bg-success';
       default: return 'bg-secondary';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'ORCADA': return 'ORÇADA';
+      case 'ABERTA': return 'ABERTA';
+      case 'APROVADA': return 'APROVADA';
+      case 'REJEITADA': return 'REJEITADA';
+      case 'REDIRECIONADA': return 'REDIRECIONADA';
+      case 'ARRUMADA': return 'ARRUMADA';
+      case 'PAGA': return 'PAGA';
+      case 'FINALIZADA': return 'FINALIZADA';
+      default: return status;
+    }
+  }
+
+  getTipoItemLabel(tipo: string): string {
+    switch (tipo) {
+      case 'PECA': return 'Peça';
+      case 'MAO_OBRA': return 'Mão de Obra';
+      case 'SERVICO': return 'Serviço';
+      default: return tipo;
     }
   }
 
@@ -199,7 +222,7 @@ export class OrcamentoComponent implements OnInit {
     const clienteId = Number(localStorage.getItem('usuarioId'));
 
     if (!solicitacaoId || !clienteId) {
-      this.mensagemErro = 'Nao foi possivel identificar a solicitacao ou o cliente logado.';
+      this.mensagemErro = 'Não foi possível identificar a solicitação ou o cliente logado.';
       this.cdr.detectChanges();
       return null;
     }
@@ -285,11 +308,11 @@ export class OrcamentoComponent implements OnInit {
     }
 
     if (erro?.status === 409) {
-      return erro.error?.messages?.join(' | ') || 'Essa solicitacao nao esta mais ORCADA.';
+      return erro.error?.messages?.join(' | ') || 'Essa solicitação não está mais ORCADA.';
     }
 
     if (erro?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;

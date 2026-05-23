@@ -1,5 +1,6 @@
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { finalize, timeout } from 'rxjs';
 import {
   ReceitaPorCategoria,
   RelatorioReceitaService
@@ -18,7 +19,10 @@ export class ReceitasCategoriaComponent implements OnInit {
   erro = '';
   carregando = false;
 
-  constructor(private relatorioService: RelatorioReceitaService) {}
+  constructor(
+    private relatorioService: RelatorioReceitaService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.carregarRelatorio();
@@ -27,15 +31,23 @@ export class ReceitasCategoriaComponent implements OnInit {
   carregarRelatorio(): void {
     this.erro = '';
     this.carregando = true;
+    this.cdr.detectChanges();
 
-    this.relatorioService.buscarPorCategoria().subscribe({
-      next: (resposta) => {
-        this.categorias = resposta.data;
+    this.relatorioService.buscarPorCategoria().pipe(
+      timeout(10000),
+      finalize(() => {
         this.carregando = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (categorias) => {
+        this.categorias = categorias;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.erro = 'Erro ao carregar relatório por categoria.';
-        this.carregando = false;
+      error: (erro) => {
+        this.erro = this.extrairMensagemErro(erro, 'Erro ao carregar relatório por categoria.');
+        this.categorias = [];
+        this.cdr.detectChanges();
       }
     });
   }
@@ -45,8 +57,8 @@ export class ReceitasCategoriaComponent implements OnInit {
       next: (arquivo) => {
         this.baixarPdf(arquivo, 'relatorio-receitas-categorias.pdf');
       },
-      error: () => {
-        this.erro = 'Erro ao gerar PDF por categoria.';
+      error: (erro) => {
+        this.erro = this.extrairMensagemErro(erro, 'Erro ao gerar PDF por categoria.');
       }
     });
   }
@@ -60,5 +72,17 @@ export class ReceitasCategoriaComponent implements OnInit {
     link.click();
 
     window.URL.revokeObjectURL(url);
+  }
+
+  private extrairMensagemErro(erro: any, mensagemPadrao: string): string {
+    if (erro?.name === 'TimeoutError') {
+      return 'Backend demorou demais para responder.';
+    }
+
+    if (erro?.status === 0) {
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
+    }
+
+    return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;
   }
 }

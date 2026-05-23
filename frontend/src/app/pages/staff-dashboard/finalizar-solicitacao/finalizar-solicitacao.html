@@ -7,7 +7,7 @@
   </div>
 
   <div class="header mb-4">
-    <h1 class="h3 fw-bold">Finalizar Solicitacao</h1>
+    <h1 class="h3 fw-bold">Finalizar Solicitação</h1>
   </div>
 
   <div *ngIf="carregando && !solicitacao" class="text-center text-muted py-5">
@@ -51,7 +51,7 @@
 
         <div class="row mt-2">
           <div class="col-12">
-            <label class="text-muted d-block small mb-1">Endereco</label>
+            <label class="text-muted d-block small mb-1">Endereço</label>
             <span class="fw-medium text-dark">{{ solicitacao.cliente?.endereco || '-' }}</span>
           </div>
         </div>
@@ -60,10 +60,10 @@
 
     <div class="card border-light shadow-sm rounded-4 mb-4">
       <div class="card-body p-4">
-        <h2 class="h6 fw-bold mb-4">Resumo da Solicitacao</h2>
+        <h2 class="h6 fw-bold mb-4">Resumo da Solicitação</h2>
 
         <div class="mb-3">
-          <span class="fw-bold">Solicitacao #{{ solicitacao.id }}</span>
+          <span class="fw-bold">Solicitação #{{ solicitacao.id }}</span>
           <span class="badge px-3 py-1 small ms-3" [ngClass]="getBadgeClass(solicitacao.status)" style="font-size: 0.7rem;">
             {{ solicitacao.status }}
           </span>
@@ -82,7 +82,7 @@
             <span class="fw-medium text-dark">{{ solicitacao.categoria || '-' }}</span>
           </div>
           <div class="col-md-6 mb-3">
-            <label class="text-muted d-block small mb-1">Valor do Orcamento</label>
+            <label class="text-muted d-block small mb-1">Valor do Orçamento</label>
             <span class="fw-medium text-dark">{{ solicitacao.valorOrcado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
           </div>
           <div class="col-md-6 mb-3">
@@ -96,11 +96,11 @@
             <span class="fw-medium text-dark">{{ solicitacao.valorPago | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
           </div>
           <div class="col-12 mb-3">
-            <label class="text-muted d-block small mb-1">Descricao do Equipamento</label>
+            <label class="text-muted d-block small mb-1">Descrição do Equipamento</label>
             <span class="fw-medium text-dark">{{ solicitacao.descricaoEquipamento }}</span>
           </div>
           <div class="col-12 mb-3">
-            <label class="text-muted d-block small mb-1">Descricao do Defeito</label>
+            <label class="text-muted d-block small mb-1">Descrição do Defeito</label>
             <span class="fw-medium text-dark">{{ solicitacao.descricaoDefeito }}</span>
           </div>
         </div>
@@ -110,32 +110,8 @@
     <div class="card border-success-subtle shadow-sm rounded-4 mb-4 box-confirmacao">
       <div class="card-body p-4">
         <h2 class="h6 fw-bold mb-3 text-success">
-          <i class="bi bi-check-circle me-2"></i>Confirmar Finalizacao
+          <i class="bi bi-check-circle me-2"></i>Confirmar Finalização
         </h2>
-
-        <p class="text-muted mb-4">
-          A solicitacao so pode ser finalizada quando estiver PAGA e com manutencao registrada.
-        </p>
-
-        <div class="mb-4">
-          <p class="mb-2 text-muted small">Pre-condicoes do RF015</p>
-
-          <div class="row g-3">
-            <div class="col-md-4"
-                 *ngFor="let preCondicao of preCondicoesFinalizacao">
-              <div class="border rounded-3 p-3 h-100"
-                   [ngClass]="getPreCondicaoClass(preCondicao)">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <i class="bi" [ngClass]="getPreCondicaoIcone(preCondicao)"></i>
-                  <span class="fw-bold small">{{ preCondicao.titulo }}</span>
-                </div>
-                <p class="small mb-0">
-                  {{ preCondicao.descricao }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div *ngIf="!podeFinalizar && !enviando"
              class="alert alert-warning rounded-3 mb-4">
@@ -143,8 +119,8 @@
         </div>
 
         <div class="mb-4 bg-white p-3 rounded-3 border">
-          <p class="mb-1 text-muted small">Informacoes da Finalizacao</p>
-          <p class="mb-1">Funcionario: {{ nomeUsuario }}</p>
+          <p class="mb-1 text-muted small">Informações da Finalização</p>
+          <p class="mb-1">Funcionário: {{ nomeUsuario }}</p>
           <p class="mb-0">Data/Hora: {{ dataHoraAtual | date:'dd/MM/yyyy, HH:mm:ss' }}</p>
         </div>
 
@@ -154,7 +130,7 @@
                   [disabled]="!podeFinalizar"
                   (click)="confirmarFinalizacao()">
             <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2" role="status"></span>
-            Finalizar Solicitacao
+            Finalizar Solicitação
           </button>
 
           <a routerLink="/solicitacoes" class="btn btn-outline-secondary px-4 py-2 rounded-3">

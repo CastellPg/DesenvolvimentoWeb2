@@ -81,6 +81,14 @@ export interface OrcamentoResponse {
   valorTotal: number;
 }
 
+export interface HistoricoSolicitacaoResponse {
+  estadoAnterior: string | null;
+  estadoNovo: string;
+  dataHora: string;
+  nomeResponsavel: string;
+  observacoes: string | null;
+}
+
 export interface RegistrarManutencaoRequest {
   descricaoManutencao: string;
   orientacoesCliente: string;
@@ -142,6 +150,12 @@ export class SolicitacaoService {
       .pipe(map(response => this.extrairDados(response)));
   }
 
+  buscarHistorico(id: string | number): Observable<HistoricoSolicitacaoResponse[]> {
+    return this.http
+      .get<ApiResponse<HistoricoSolicitacaoResponse[]> | HistoricoSolicitacaoResponse[] | null>(`${this.apiUrl}/${id}/historico`)
+      .pipe(map(response => this.extrairLista(response)));
+  }
+
   // RF010 — Efetua orçamento de uma solicitação
   efetuarOrcamento(solicitacaoId: number, request: EfetuarOrcamentoRequest, funcionarioId: number): Observable<OrcamentoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
@@ -201,7 +215,7 @@ export class SolicitacaoService {
     return response as T;
   }
 
-  private extrairLista<T>(response: ApiResponse<T[]> | T[]): T[] {
+  private extrairLista<T>(response: ApiResponse<T[]> | T[] | null): T[] {
     const dados = this.extrairDados(response);
     return Array.isArray(dados) ? dados : [];
   }

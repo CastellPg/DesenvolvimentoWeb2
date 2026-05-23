@@ -213,7 +213,7 @@ export class CategoriaEquipamentoComponent implements OnInit {
     }
 
     if (erro?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;

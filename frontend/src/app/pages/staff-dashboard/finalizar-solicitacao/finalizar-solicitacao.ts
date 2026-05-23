@@ -4,12 +4,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
-interface PreCondicaoFinalizacao {
-  titulo: string;
-  descricao: string;
-  concluida: boolean;
-}
-
 @Component({
   selector: 'app-finalizar-solicitacao',
   standalone: true,
@@ -24,7 +18,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
 
   solicitacao: SolicitacaoResponse | null = null;
-  nomeUsuario = localStorage.getItem('nomeUsuario') ?? 'Funcionario';
+  nomeUsuario = localStorage.getItem('nomeUsuario') ?? 'Funcionário';
   funcionarioId = Number(localStorage.getItem('usuarioId'));
   dataHoraAtual = new Date();
 
@@ -37,7 +31,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (!id) {
-      this.mensagemErro = 'Solicitacao nao informada na rota.';
+      this.mensagemErro = 'Solicitação não informada na rota.';
       return;
     }
 
@@ -63,7 +57,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
       },
       error: (err) => {
         if (!this.solicitacao) {
-          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitacao.');
+          this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar os dados da solicitação.');
         }
       }
     });
@@ -76,7 +70,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
     }
 
     if (!this.funcionarioId) {
-      this.mensagemErro = 'Sessao invalida. Faca login novamente.';
+      this.mensagemErro = 'Sessão inválida. Faça login novamente.';
       return;
     }
 
@@ -94,11 +88,11 @@ export class FinalizarSolicitacaoComponent implements OnInit {
       next: (solicitacaoAtualizada) => {
         this.solicitacao = solicitacaoAtualizada;
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
-        this.mensagemSucesso = 'Solicitacao finalizada com sucesso!';
+        this.mensagemSucesso = 'Solicitação finalizada com sucesso!';
         setTimeout(() => this.router.navigate(['/solicitacoes']), 1800);
       },
       error: (err) => {
-        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao finalizar a solicitacao.');
+        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao finalizar a solicitação.');
       }
     });
   }
@@ -127,35 +121,12 @@ export class FinalizarSolicitacaoComponent implements OnInit {
     return this.statusPago && this.pagamentoConfirmado && this.manutencaoConcluidaNoFluxo;
   }
 
-  get preCondicoesFinalizacao(): PreCondicaoFinalizacao[] {
-    return [
-      {
-        titulo: 'Status PAGA',
-        descricao: 'A OS precisa estar no estado PAGA antes da finalizacao.',
-        concluida: this.statusPago
-      },
-      {
-        titulo: 'Pagamento confirmado',
-        descricao: 'Valor e data/hora do pagamento devem estar registrados.',
-        concluida: this.pagamentoConfirmado
-      },
-      {
-        titulo: 'Manutencao concluida',
-        descricao: 'A OS so chega em PAGA depois de passar por ARRUMADA.',
-        concluida: this.manutencaoConcluidaNoFluxo
-      }
-    ];
-  }
-
   get mensagemBloqueioFinalizacao(): string {
     if (this.solicitacaoJaFinalizada) {
-      return 'Esta solicitacao ja esta finalizada e nao permite nova transicao.';
+      return 'Esta solicitação já está finalizada e não permite nova transição.';
     }
 
-    const pendente = this.preCondicoesFinalizacao.find(item => !item.concluida);
-    return pendente
-      ? `Pre-condicao pendente: ${pendente.titulo}.`
-      : 'A solicitacao ainda nao pode ser finalizada.';
+    return 'A solicitação ainda não pode ser finalizada.';
   }
 
   getBadgeClass(status: string): string {
@@ -165,16 +136,6 @@ export class FinalizarSolicitacaoComponent implements OnInit {
       case 'ARRUMADA': return 'bg-primary';
       default: return 'bg-secondary';
     }
-  }
-
-  getPreCondicaoClass(preCondicao: PreCondicaoFinalizacao): string {
-    return preCondicao.concluida
-      ? 'border-success-subtle bg-success-subtle text-success'
-      : 'border-warning-subtle bg-warning-subtle text-warning-emphasis';
-  }
-
-  getPreCondicaoIcone(preCondicao: PreCondicaoFinalizacao): string {
-    return preCondicao.concluida ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
   }
 
   private carregarSolicitacaoDoCache(id: string): void {
@@ -228,7 +189,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
           ? {
               ...item,
               status: solicitacaoAtualizada.status,
-              acao: solicitacaoAtualizada.status === 'FINALIZADA' ? 'Concluida' : item.acao,
+              acao: solicitacaoAtualizada.status === 'FINALIZADA' ? 'Concluída' : item.acao,
               valorOrcado: solicitacaoAtualizada.valorOrcado,
               valorPago: solicitacaoAtualizada.valorPago,
               dataHoraPagamento: solicitacaoAtualizada.dataHoraPagamento,
@@ -250,7 +211,7 @@ export class FinalizarSolicitacaoComponent implements OnInit {
     }
 
     if (err?.status === 0) {
-      return 'Nao foi possivel conectar ao backend em http://localhost:8080.';
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
     }
 
     return err?.error?.messages?.join(' | ') || err?.error?.message || mensagemPadrao;

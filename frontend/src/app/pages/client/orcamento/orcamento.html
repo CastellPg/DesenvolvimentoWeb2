@@ -13,8 +13,8 @@
   </a>
 
   <div class="mb-4">
-    <h3 class="fw-bold mb-1">Avaliar Orcamento</h3>
-    <p class="text-muted">Analise os detalhes e decida sobre a aprovacao do servico</p>
+    <h3 class="fw-bold mb-1">Avaliar Orçamento</h3>
+    <p class="text-muted">Analise os detalhes e decida sobre a aprovação do serviço</p>
   </div>
 
   <div class="row g-4" *ngIf="solicitacao && !carregando">
@@ -30,7 +30,7 @@
             <div class="text-end">
               <small class="text-muted d-block mb-1">Status</small>
               <span class="badge px-3 py-2 fs-6" [ngClass]="getBadgeClass(solicitacao.status)">
-                {{ solicitacao.status }}
+                {{ getStatusLabel(solicitacao.status) }}
               </span>
             </div>
           </div>
@@ -66,7 +66,7 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let item of orcamentoDetalhado.itens">
-                    <td><span class="badge bg-secondary">{{ item.tipo }}</span></td>
+                    <td><span class="badge bg-secondary">{{ getTipoItemLabel(item.tipo) }}</span></td>
                     <td>{{ item.descricao }}</td>
                     <td class="text-center">{{ item.quantidade }}</td>
                     <td class="text-end">{{ item.valorUnitario | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
@@ -90,19 +90,19 @@
 
           <div class="alert alert-warning border-0 bg-warning bg-opacity-25 text-dark p-3 mb-5 rounded-3 d-flex align-items-center gap-3">
             <i class="bi bi-info-circle-fill text-warning fs-4"></i>
-            <span class="small fw-medium">Ao aprovar o servico, voce concorda com o valor orcado e autoriza o inicio da manutencao.</span>
+            <span class="small fw-medium">Ao aprovar o serviço, você concorda com o valor orçado e autoriza o início da manutenção.</span>
           </div>
 
           <div *ngIf="podeDecidir()" class="border rounded-4 p-4 bg-light">
-            <h5 class="fw-bold mb-3">Decisao do cliente</h5>
+            <h5 class="fw-bold mb-3">Decisão do cliente</h5>
 
-            <label for="motivoRejeicao" class="form-label fw-semibold small">Motivo da rejeicao</label>
+            <label for="motivoRejeicao" class="form-label fw-semibold small">Motivo da rejeição</label>
             <textarea
               id="motivoRejeicao"
               class="form-control mb-3"
               rows="3"
               [(ngModel)]="motivoRejeicao"
-              placeholder="Obrigatorio apenas se for rejeitar o orcamento"></textarea>
+              placeholder="Obrigatório apenas se for rejeitar o orçamento"></textarea>
 
             <div class="d-flex flex-column flex-md-row gap-2">
               <button
@@ -124,7 +124,7 @@
           </div>
 
           <div *ngIf="!podeDecidir()" class="alert alert-secondary border-0 rounded-3 mb-0">
-            Este orcamento ja foi avaliado ou nao esta disponivel para decisao.
+            Este orçamento já foi avaliado ou não está disponível para decisão.
           </div>
 
         </div>

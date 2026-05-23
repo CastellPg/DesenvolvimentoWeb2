@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs';
 import {
   ReceitaGeral,
   ReceitaPorPeriodo,
@@ -23,8 +24,12 @@ export class ReceitasComponent implements OnInit {
 
   erro = '';
   carregando = false;
+  carregandoGeral = false;
 
-  constructor(private relatorioService: RelatorioReceitaService) {}
+  constructor(
+    private relatorioService: RelatorioReceitaService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.carregarRelatorio();
@@ -34,26 +39,45 @@ export class ReceitasComponent implements OnInit {
   carregarRelatorio(): void {
     this.erro = '';
     this.carregando = true;
+    this.cdr.detectChanges();
 
-    this.relatorioService.buscarPorPeriodo(this.dataInicio, this.dataFim).subscribe({
-      next: (resposta) => {
-        this.receitas = resposta.data;
+    this.relatorioService.buscarPorPeriodo(this.dataInicio, this.dataFim).pipe(
+      timeout(10000),
+      finalize(() => {
         this.carregando = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (receitas) => {
+        this.receitas = receitas;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.erro = 'Erro ao carregar relatório de receitas.';
-        this.carregando = false;
+      error: (erro) => {
+        this.erro = this.extrairMensagemErro(erro, 'Erro ao carregar relatório de receitas.');
+        this.receitas = [];
+        this.cdr.detectChanges();
       }
     });
   }
 
   carregarGeral(): void {
-    this.relatorioService.buscarGeral().subscribe({
-      next: (resposta) => {
-        this.geral = resposta.data;
+    this.carregandoGeral = true;
+    this.cdr.detectChanges();
+
+    this.relatorioService.buscarGeral().pipe(
+      timeout(10000),
+      finalize(() => {
+        this.carregandoGeral = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (geral) => {
+        this.geral = geral;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.erro = 'Erro ao carregar relatório geral.';
+      error: (erro) => {
+        this.erro = this.extrairMensagemErro(erro, 'Erro ao carregar relatório geral.');
+        this.cdr.detectChanges();
       }
     });
   }
@@ -63,8 +87,8 @@ export class ReceitasComponent implements OnInit {
       next: (arquivo) => {
         this.baixarPdf(arquivo, 'relatorio-receitas-periodo.pdf');
       },
-      error: () => {
-        this.erro = 'Erro ao gerar PDF por período.';
+      error: (erro) => {
+        this.erro = this.extrairMensagemErro(erro, 'Erro ao gerar PDF por período.');
       }
     });
   }
@@ -74,8 +98,8 @@ export class ReceitasComponent implements OnInit {
       next: (arquivo) => {
         this.baixarPdf(arquivo, 'relatorio-receitas-geral.pdf');
       },
-      error: () => {
-        this.erro = 'Erro ao gerar PDF geral.';
+      error: (erro) => {
+        this.erro = this.extrairMensagemErro(erro, 'Erro ao gerar PDF geral.');
       }
     });
   }
@@ -89,5 +113,17 @@ export class ReceitasComponent implements OnInit {
     link.click();
 
     window.URL.revokeObjectURL(url);
+  }
+
+  private extrairMensagemErro(erro: any, mensagemPadrao: string): string {
+    if (erro?.name === 'TimeoutError') {
+      return 'Backend demorou demais para responder.';
+    }
+
+    if (erro?.status === 0) {
+      return 'Não foi possível conectar ao backend em http://localhost:8080.';
+    }
+
+    return erro?.error?.messages?.join(' | ') || erro?.error?.message || mensagemPadrao;
   }
 }

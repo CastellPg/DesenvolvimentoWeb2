@@ -7,22 +7,34 @@
     </div>
   </div>
 
-  <div class="alert alert-danger d-flex align-items-center border-0 bg-danger-subtle text-danger p-3 mb-4 rounded-3" role="alert">
+  <div *ngIf="erro" class="alert alert-danger rounded-3">
+    {{ erro }}
+  </div>
+
+  <div *ngIf="carregando && solicitacoes.length === 0" class="text-center text-muted py-5">
+    Carregando pendências...
+  </div>
+
+  <div *ngIf="!carregando && !erro && solicitacoes.length === 0" class="text-center text-muted py-5">
+    Nenhuma pendência encontrada para este cliente.
+  </div>
+
+  <div *ngIf="solicitacoes.length > 0 && !erro" class="alert alert-danger d-flex align-items-center border-0 bg-danger-subtle text-danger p-3 mb-4 rounded-3" role="alert">
     <i class="bi bi-exclamation-circle me-2 fs-5"></i>
     <div>
-      <h6 class="mb-0 fw-bold">Solicitações Abertas - Atenção Imediata</h6>
+      <h6 class="mb-0 fw-bold">Pendências - Atenção Imediata</h6>
       <small>Existem solicitações aguardando sua ação.</small>
     </div>
   </div>
 
-  <div class="d-flex flex-column gap-3">
-    <div class="card border-0 shadow-sm rounded-4" *ngFor="let req of solicitacoes">
+  <div class="d-flex flex-column gap-3" *ngIf="solicitacoes.length > 0 && !erro">
+    <div class="card shadow-sm rounded-4 os-solicitacao-item" *ngFor="let req of solicitacoes" [ngClass]="getClasseCard(req.status)">
       <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
 
         <div class="flex-grow-1 row align-items-center w-100">
           <div class="col-12 col-md-6 mb-3 mb-md-0">
             <div class="d-flex align-items-center gap-2 mb-2">
-              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.status)">{{ req.status }}</span>
+              <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.status)">{{ getStatusLabel(req.status) }}</span>
               <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataCriacao | date:'dd/MM/yyyy' }}</small>
             </div>
             
@@ -35,9 +47,9 @@
             </div>
           </div>
 
-          <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-center justify-content-center">
+          <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-center justify-content-center os-border-problema">
             <small class="text-muted d-block" style="font-size: 0.75rem;">Defeito Relatado</small>
-            <span class="fw-medium">{{ req.descricaoDefeito || 'N/A' }}</span>
+            <span class="fw-medium os-text-problema">{{ req.descricaoDefeito || 'N/A' }}</span>
           </div>
         </div>
 
