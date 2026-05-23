@@ -63,11 +63,11 @@
       </div>
 
       <div *ngIf="carregando" class="text-center text-muted py-4">
-        Carregando solicitacoes...
+        Carregando solicitações...
       </div>
 
       <div *ngIf="!carregando && solicitacoesFiltradas.length === 0" class="text-center text-muted py-4">
-        Nenhuma solicitacao encontrada para este funcionario.
+        Nenhuma solicitação encontrada para este funcionário.
       </div>
 
       <div *ngFor="let solicitacao of solicitacoesFiltradas"
@@ -78,7 +78,7 @@
 
           <div class="col-12 mb-3 d-flex align-items-center gap-2 flex-wrap">
             <span class="badge px-3 py-2 small text-uppercase">
-              {{ solicitacao.status }}
+              {{ getStatusLabel(solicitacao.status) }}
             </span>
 
             <small class="text-muted">#{{ solicitacao.id }}</small>

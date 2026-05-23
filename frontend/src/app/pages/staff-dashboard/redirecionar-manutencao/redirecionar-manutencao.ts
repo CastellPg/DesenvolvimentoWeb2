@@ -29,7 +29,7 @@ export class RedirecionarManutencaoComponent implements OnInit {
   solicitacao: SolicitacaoResponse | null = null;
   formRedirecionamento!: FormGroup;
 
-  tecnicoOrigem = localStorage.getItem('nomeUsuario') ?? 'Tecnico';
+  tecnicoOrigem = localStorage.getItem('nomeUsuario') ?? 'Técnico';
   dataHoraAtual = new Date().toLocaleString('pt-BR');
   funcionarios: FuncionarioApi[] = [];
   carregando = false;
@@ -147,9 +147,13 @@ export class RedirecionarManutencaoComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar funcionarios.');
+        this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao carregar funcionários.');
       }
     });
+  }
+
+  getStatusLabel(status: string | undefined): string {
+    return status === 'ORCADA' ? 'ORÇADA' : (status || '-');
   }
 
   private carregarSolicitacaoDoCache(id: string): void {

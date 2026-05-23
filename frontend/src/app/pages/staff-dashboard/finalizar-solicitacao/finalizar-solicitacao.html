@@ -65,7 +65,7 @@
         <div class="mb-3">
           <span class="fw-bold">Solicitação #{{ solicitacao.id }}</span>
           <span class="badge px-3 py-1 small ms-3" [ngClass]="getBadgeClass(solicitacao.status)" style="font-size: 0.7rem;">
-            {{ solicitacao.status }}
+            {{ getStatusLabel(solicitacao.status) }}
           </span>
         </div>
 
