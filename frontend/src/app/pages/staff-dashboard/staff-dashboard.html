@@ -28,7 +28,7 @@
 
           <div class="col-12 mb-3 d-flex align-items-center gap-2 flex-wrap">
             <span class="badge px-3 py-2 small text-uppercase">
-              {{ item.status }}
+              {{ getStatusLabel(item.status) }}
             </span>
             <small class="text-muted">#{{ item.id }}</small>
             <small class="text-muted">{{ item.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</small>

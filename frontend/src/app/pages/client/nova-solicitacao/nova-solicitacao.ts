@@ -20,6 +20,7 @@ export class NovaSolicitacaoComponent implements OnInit {
   // Categorias carregadas da API — exibem nome, enviam ID como FK
   categorias: CategoriaResponse[] = [];
   mensagemToast = '';
+  tipoToast: 'success' | 'danger' = 'success';
   enviando = false;
   carregandoCategorias = false;
 
@@ -28,8 +29,11 @@ export class NovaSolicitacaoComponent implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private cdr = inject(ChangeDetectorRef);
 
-  mostrarToast(mensagem: string) {
+  mostrarToast(mensagem: string, tipo: 'success' | 'danger' = 'success') {
     this.mensagemToast = mensagem;
+    this.tipoToast = tipo;
+    this.cdr.detectChanges();
+
     const toastElement = document.getElementById('avisoSucesso')!;
     if (toastElement) {
       const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
@@ -61,7 +65,7 @@ export class NovaSolicitacaoComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.mostrarToast(this.extrairMensagemErro(err, 'Erro ao carregar categorias.'));
+        this.mostrarToast(this.extrairMensagemErro(err, 'Erro ao carregar categorias.'), 'danger');
       }
     });
   }
@@ -75,7 +79,7 @@ export class NovaSolicitacaoComponent implements OnInit {
     // Lê o ID do cliente salvo no localStorage após o login
     const clienteId = Number(localStorage.getItem('usuarioId'));
     if (!clienteId) {
-      this.mostrarToast('Erro de sessão. Faça login novamente.');
+      this.mostrarToast('Erro de sessão. Faça login novamente.', 'danger');
       return;
     }
 
@@ -94,7 +98,7 @@ export class NovaSolicitacaoComponent implements OnInit {
       error: (err) => {
         this.enviando = false;
         // RF004 — exibe mensagem de validação retornada pelo backend, ou mensagem genérica
-        this.mostrarToast(err.error?.messages?.[0] ?? 'Erro ao criar solicitação. Tente novamente.');
+        this.mostrarToast(err.error?.messages?.[0] ?? 'Erro ao criar solicitação. Tente novamente.', 'danger');
       }
     });
   }

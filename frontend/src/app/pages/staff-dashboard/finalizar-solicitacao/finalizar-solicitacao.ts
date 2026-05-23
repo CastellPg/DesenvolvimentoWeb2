@@ -138,6 +138,10 @@ export class FinalizarSolicitacaoComponent implements OnInit {
     }
   }
 
+  getStatusLabel(status: string): string {
+    return status === 'ORCADA' ? 'ORÇADA' : status;
+  }
+
   private carregarSolicitacaoDoCache(id: string): void {
     const funcionarioId = localStorage.getItem('usuarioId');
     if (!funcionarioId) return;

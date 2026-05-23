@@ -22,7 +22,7 @@ export class EfetuarManutencaoComponent implements OnInit {
   solicitacao: SolicitacaoResponse | null = null;
   formManutencao!: FormGroup;
 
-  nomeUsuario = localStorage.getItem('nomeUsuario') ?? 'Tecnico';
+  nomeUsuario = localStorage.getItem('nomeUsuario') ?? 'Técnico';
   funcionarioId = Number(localStorage.getItem('usuarioId'));
 
   carregando = false;
@@ -104,13 +104,17 @@ export class EfetuarManutencaoComponent implements OnInit {
       next: (solicitacaoAtualizada) => {
         this.solicitacao = solicitacaoAtualizada;
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
-        this.mensagemSucesso = 'Manutencao registrada com sucesso!';
+        this.mensagemSucesso = 'Manutenção registrada com sucesso!';
         setTimeout(() => this.router.navigate(['/solicitacoes']), 1800);
       },
       error: (err) => {
         this.mensagemErro = this.extrairMensagemErro(err, 'Erro ao registrar manutenção. Tente novamente.');
       }
     });
+  }
+
+  getStatusLabel(status: string | undefined): string {
+    return status === 'ORCADA' ? 'ORÇADA' : (status || '-');
   }
 
   private carregarSolicitacaoDoCache(id: string): void {

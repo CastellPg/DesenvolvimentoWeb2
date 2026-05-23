@@ -70,7 +70,7 @@
         <div class="mb-3">
           <span class="fw-bold">Solicitação #{{ solicitacao?.id }}</span>
           <span class="badge bg-warning text-dark px-3 py-1 small ms-3" style="font-size: 0.7rem;">
-            {{ solicitacao?.status }}
+            {{ getStatusLabel(solicitacao?.status) }}
           </span>
         </div>
 

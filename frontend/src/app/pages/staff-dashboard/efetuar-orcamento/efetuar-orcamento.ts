@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgxMaskDirective } from 'ngx-mask';
-import { timeout } from 'rxjs';
+import { finalize, timeout } from 'rxjs';
 import { SolicitacaoService, SolicitacaoResponse, ItemOrcamentoRequest } from '../../../services/solicitacao.service';
 
 declare var bootstrap: any;
@@ -61,15 +61,21 @@ export class EfetuarOrcamentoComponent implements OnInit {
     this.carregando = !this.solicitacao;
     this.erro = null;
     this.solicitacaoService.buscarPorId(id)
-      .pipe(timeout(15000))
+      .pipe(
+        timeout(15000),
+        finalize(() => {
+          this.carregando = false;
+          this.cdr.detectChanges();
+        })
+      )
       .subscribe({
         next: (data) => {
           this.solicitacao = data;
-          this.carregando = false;
         },
-        error: () => {
-          this.erro = 'Não foi possível carregar a solicitação. Verifique se o servidor está ativo.';
-          this.carregando = false;
+        error: (err) => {
+          if (!this.solicitacao) {
+            this.erro = this.extrairMensagemErro(err, 'Não foi possível carregar a solicitação. Verifique se o servidor está ativo.');
+          }
         },
       });
   }
@@ -182,6 +188,10 @@ export class EfetuarOrcamentoComponent implements OnInit {
 
   getTipoLabel(tipo: string): string {
     return this.tiposItem.find((item) => item.value === tipo)?.label || tipo;
+  }
+
+  getStatusLabel(status: string): string {
+    return status === 'ORCADA' ? 'ORÇADA' : status;
   }
 
   private converterValorMonetario(valor: unknown): number {

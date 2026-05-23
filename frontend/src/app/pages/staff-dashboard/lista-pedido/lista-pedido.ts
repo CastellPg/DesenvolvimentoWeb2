@@ -177,6 +177,10 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     }
   }
 
+  getStatusLabel(status: StatusSolicitacao): string {
+    return status === 'ORCADA' ? 'ORÇADA' : status;
+  }
+
 
   private iniciarAtualizacaoAutomatica(funcionarioId: number): void {
     this.atualizadorAutomatico = timer(0, 3000)
@@ -275,11 +279,11 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     switch (status) {
       case 'ABERTA': return 'Efetuar Orçamento';
       case 'APROVADA':
-      case 'REDIRECIONADA': return 'Efetuar Manutencao';
+      case 'REDIRECIONADA': return 'Efetuar Manutenção';
       case 'ORCADA': return 'Aguardando Resposta';
       case 'ARRUMADA': return 'Aguardando Pagamento';
       case 'PAGA': return 'Finalizar Solicitação';
-      case 'FINALIZADA': return 'Concluida';
+      case 'FINALIZADA': return 'Concluída';
       case 'REJEITADA': return 'Rejeitada';
       default: return '';
     }
