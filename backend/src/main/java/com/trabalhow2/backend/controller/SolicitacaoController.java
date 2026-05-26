@@ -92,6 +92,13 @@ public class SolicitacaoController {
         return ResponseEntity.ok(solicitacaoService.listarPorFuncionario(funcionarioId));
     }
 
+    @Operation(summary = "Listar solicitações abertas (RF011)", description = "Retorna todas as solicitações no estado ABERTA para a página inicial do funcionário.")
+    @ApiResponse(responseCode = "200", description = "Listagem retornada com sucesso")
+    @GetMapping("/abertas")
+    public ResponseEntity<List<SolicitacaoResponse>> listarAbertas() {
+        return ResponseEntity.ok(solicitacaoService.listarAbertas());
+    }
+    
     //ENDPOINT RF008 — Busca o histórico de alterações de estado de uma solicitação
 
     @Operation(summary = "Visualizar Histórico do Serviço (RF008)", description = "Retorna a linha do tempo (timeline) completa de todas as mudanças de estado da solicitação (Data, Hora e Responsável).")

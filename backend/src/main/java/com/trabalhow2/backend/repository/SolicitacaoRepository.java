@@ -21,7 +21,9 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     Optional<Solicitacao> findByIdAndAtivoTrue(Long id);
 
     List<Solicitacao> findByClienteIdAndAtivoTrueOrderByDataCriacaoAsc(Long clienteId);
-
+    
+    List<Solicitacao> findByStatusAndAtivoTrueOrderByDataCriacaoAsc(StatusSolicitacao status);
+    
     List<Solicitacao> findByFuncionarioIdAndAtivoTrueOrderByDataCriacaoAsc(Long funcionarioId);
 
     @Query("SELECT s FROM Solicitacao s WHERE s.ativo = true " +

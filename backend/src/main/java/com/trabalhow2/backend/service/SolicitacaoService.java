@@ -143,6 +143,13 @@ public class SolicitacaoService {
                 .map(this::paraResponse)
                 .toList();
     }
+    @Transactional(readOnly = true)
+        public List<SolicitacaoResponse> listarAbertas() {
+        return solicitacaoRepository.findByStatusAndAtivoTrueOrderByDataCriacaoAsc(StatusSolicitacao.ABERTA)
+                .stream()
+                .map(this::paraResponse)
+                .toList();
+        }
 
     @Transactional(readOnly = true)
     public Page<SolicitacaoResponse> buscarComFiltrosPaginado(
