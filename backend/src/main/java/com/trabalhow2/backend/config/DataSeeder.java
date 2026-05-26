@@ -64,16 +64,16 @@ public class DataSeeder implements CommandLineRunner {
 
         Map<String, Categoria> categorias = seedCategorias();
 
-        Funcionario ana = seedFuncionario(
-                "Ana Técnica",
-                "ana.tecnica@devweb2.com",
+        Funcionario mariaFuncionario = seedFuncionario(
+                "Maria",
+                "maria.funcionario@devweb2.com",
                 "1111",
                 LocalDate.of(1995, 3, 14)
         );
 
-        Funcionario bruno = seedFuncionario(
-                "Bruno Manutenção",
-                "bruno.manutencao@devweb2.com",
+        Funcionario marioFuncionario = seedFuncionario(
+                "Mário",
+                "mario.funcionario@devweb2.com",
                 "2222",
                 LocalDate.of(1992, 8, 22)
         );
@@ -92,26 +92,11 @@ public class DataSeeder implements CommandLineRunner {
                 LocalDate.of(1990, 11, 5)
         );
 
-        Cliente maria = seedCliente(
-                "Maria Oliveira",
-                "maria.cliente@devweb2.com",
-                "1234",
-                "12345678901",
-                "(41) 99999-1001",
-                "80010000",
-                "Rua XV de Novembro",
-                "100",
-                "Apto 301",
-                "Centro",
-                "Curitiba",
-                "PR"
-        );
-
         Cliente joao = seedCliente(
-                "João Pereira",
+                "João",
                 "joao.cliente@devweb2.com",
                 "2345",
-                "23456789012",
+                "12345678901",
                 "(41) 98888-2002",
                 "80240030",
                 "Avenida República Argentina",
@@ -122,26 +107,26 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente camila = seedCliente(
-                "Camila Santos",
-                "camila.cliente@devweb2.com",
+        Cliente jose = seedCliente(
+                "José",
+                "jose.cliente@devweb2.com",
                 "3456",
-                "34567890123",
+                "23456789012",
                 "(41) 97777-3003",
                 "80530000",
                 "Rua Padre Anchieta",
                 "850",
-                "Bloco B",
+                "Casa",
                 "Bigorrilho",
                 "Curitiba",
                 "PR"
         );
 
-        Cliente pedro = seedCliente(
-                "Pedro Almeida",
-                "pedro.cliente@devweb2.com",
+        Cliente joana = seedCliente(
+                "Joana",
+                "joana.cliente@devweb2.com",
                 "4567",
-                "45678901234",
+                "34567890123",
                 "(41) 96666-4004",
                 "82800000",
                 "Rua da Cidadania",
@@ -152,11 +137,11 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente lucas = seedCliente(
-                "Lucas Martins",
-                "lucas.cliente@devweb2.com",
+        Cliente joaquina = seedCliente(
+                "Joaquina",
+                "joaquina.cliente@devweb2.com",
                 "5678",
-                "56789012345",
+                "45678901234",
                 "(41) 95555-5005",
                 "81020000",
                 "Rua João Bettega",
@@ -167,11 +152,11 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente fernanda = seedCliente(
-                "Fernanda Lima",
-                "fernanda.cliente@devweb2.com",
+        Cliente lucas = seedCliente(
+                "Lucas Martins",
+                "lucas.cliente@devweb2.com",
                 "6789",
-                "67890123456",
+                "56789012345",
                 "(41) 94444-6006",
                 "80620000",
                 "Rua Professor Pedro Viriato Parigot de Souza",
@@ -182,11 +167,11 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente rafael = seedCliente(
-                "Rafael Costa",
-                "rafael.cliente@devweb2.com",
+        Cliente fernanda = seedCliente(
+                "Fernanda Lima",
+                "fernanda.cliente@devweb2.com",
                 "7890",
-                "78901234567",
+                "67890123456",
                 "(41) 93333-7007",
                 "81530000",
                 "Avenida das Torres",
@@ -197,11 +182,11 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente juliana = seedCliente(
-                "Juliana Rocha",
-                "juliana.cliente@devweb2.com",
+        Cliente rafael = seedCliente(
+                "Rafael Costa",
+                "rafael.cliente@devweb2.com",
                 "8901",
-                "89012345678",
+                "78901234567",
                 "(41) 92222-8008",
                 "82200000",
                 "Rua Mateus Leme",
@@ -212,11 +197,11 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente gustavo = seedCliente(
-                "Gustavo Henrique",
-                "gustavo.cliente@devweb2.com",
+        Cliente juliana = seedCliente(
+                "Juliana Rocha",
+                "juliana.cliente@devweb2.com",
                 "9012",
-                "90123456789",
+                "89012345678",
                 "(41) 91111-9009",
                 "80710000",
                 "Rua Desembargador Motta",
@@ -227,11 +212,11 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        Cliente beatriz = seedCliente(
-                "Beatriz Ferreira",
-                "beatriz.cliente@devweb2.com",
+        Cliente gustavo = seedCliente(
+                "Gustavo Henrique",
+                "gustavo.cliente@devweb2.com",
                 "0123",
-                "01234567890",
+                "90123456789",
                 "(41) 90000-1010",
                 "82590000",
                 "Rua Fagundes Varela",
@@ -242,16 +227,25 @@ public class DataSeeder implements CommandLineRunner {
                 "PR"
         );
 
-        if (solicitacaoRepository.count() == 0) {
-            seedSolicitacoes(categorias, ana, bruno, maria, joao, camila, pedro);
+        Cliente beatriz = seedCliente(
+                "Beatriz Ferreira",
+                "beatriz.cliente@devweb2.com",
+                "1357",
+                "01234567890",
+                "(41) 99999-1010",
+                "80010000",
+                "Rua XV de Novembro",
+                "100",
+                "Apto 301",
+                "Centro",
+                "Curitiba",
+                "PR"
+        );
+        if (solicitacaoRepository.count() < 10) {
+            seedSolicitacoes(categorias, mariaFuncionario, marioFuncionario, joao, jose, joana, joaquina);
             seedSolicitacoesExtras(categorias, carla, diego, lucas, fernanda, rafael, juliana, gustavo, beatriz);
+            seedSolicitacoesComplementares(categorias, mariaFuncionario, marioFuncionario, joao, jose, joana, joaquina);
         }
-
-        System.out.println("Seeder executado: categorias, funcionários, clientes e solicitações de exemplo disponíveis.");
-        System.out.println("Funcionários: ana.tecnica@devweb2.com / 1111 | bruno.manutencao@devweb2.com / 2222");
-        System.out.println("Funcionários extras: carla.suporte@devweb2.com / 3333 | diego.tecnico@devweb2.com / 4444");
-        System.out.println("Clientes: maria.cliente@devweb2.com / 1234 | joao.cliente@devweb2.com / 2345 | camila.cliente@devweb2.com / 3456 | pedro.cliente@devweb2.com / 4567");
-        System.out.println("Clientes extras: lucas.cliente@devweb2.com / 5678 | fernanda.cliente@devweb2.com / 6789 | rafael.cliente@devweb2.com / 7890 | juliana.cliente@devweb2.com / 8901 | gustavo.cliente@devweb2.com / 9012 | beatriz.cliente@devweb2.com / 0123");
     }
 
     private Map<String, Categoria> seedCategorias() {
@@ -260,8 +254,8 @@ public class DataSeeder implements CommandLineRunner {
         categorias.put("Notebook", seedCategoria("Notebook"));
         categorias.put("Desktop", seedCategoria("Desktop"));
         categorias.put("Impressora", seedCategoria("Impressora"));
-        categorias.put("Smartphone", seedCategoria("Smartphone"));
-        categorias.put("Rede", seedCategoria("Rede"));
+        categorias.put("Mouse", seedCategoria("Mouse"));
+        categorias.put("Teclado", seedCategoria("Teclado"));
 
         return categorias;
     }
@@ -332,6 +326,26 @@ public class DataSeeder implements CommandLineRunner {
         String emailNormalizado = email.trim().toLowerCase();
 
         return usuarioRepository.findByEmail(emailNormalizado)
+                .map(usuario -> {
+                    boolean alterado = false;
+
+                    if (!nome.equals(usuario.getNome())) {
+                        usuario.setNome(nome);
+                        alterado = true;
+                    }
+
+                    if (!perfil.equals(usuario.getPerfil())) {
+                        usuario.setPerfil(perfil);
+                        alterado = true;
+                    }
+
+                    if (!usuario.isAtivo()) {
+                        usuario.setAtivo(true);
+                        alterado = true;
+                    }
+
+                    return alterado ? usuarioRepository.save(usuario) : usuario;
+                })
                 .orElseGet(() -> {
                     String salt = gerarSalt();
                     String hash = gerarHash(senha, salt);
@@ -350,174 +364,174 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedSolicitacoes(
             Map<String, Categoria> categorias,
-            Funcionario ana,
-            Funcionario bruno,
-            Cliente maria,
+            Funcionario mariaFuncionario,
+            Funcionario marioFuncionario,
             Cliente joao,
-            Cliente camila,
-            Cliente pedro
+            Cliente jose,
+            Cliente joana,
+            Cliente joaquina
     ) {
         Solicitacao aberta = criarSolicitacao(
-                maria,
+                joao,
                 categorias.get("Notebook"),
-                ana,
+                mariaFuncionario,
                 "Notebook Dell Inspiron",
                 "Equipamento não liga após queda de energia.",
                 StatusSolicitacao.ABERTA,
                 LocalDateTime.now().minusDays(8),
                 null
         );
-        registrarHistorico(aberta, null, StatusSolicitacao.ABERTA, maria.getUsuario(), "Solicitação aberta pelo cliente.");
+        registrarHistorico(aberta, null, StatusSolicitacao.ABERTA, joao.getUsuario(), "Solicitação aberta pelo cliente.");
 
         Solicitacao orcada = criarSolicitacao(
-                joao,
+                jose,
                 categorias.get("Desktop"),
-                bruno,
+                marioFuncionario,
                 "Desktop gamer",
                 "Computador liga, mas não apresenta imagem no monitor.",
                 StatusSolicitacao.ORCADA,
                 LocalDateTime.now().minusDays(7),
                 null
         );
-        registrarHistorico(orcada, null, StatusSolicitacao.ABERTA, joao.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoOrcada = criarOrcamento(orcada, bruno, LocalDateTime.now().minusDays(6),
+        registrarHistorico(orcada, null, StatusSolicitacao.ABERTA, jose.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoOrcada = criarOrcamento(orcada, marioFuncionario, LocalDateTime.now().minusDays(6),
                 new ItemSeed(TipoItem.SERVICO, "Diagnóstico técnico", 1, "80.00"),
                 new ItemSeed(TipoItem.PECA, "Cabo HDMI novo", 1, "35.00")
         );
         orcada.setValorOrcado(orcamentoOrcada.getValorTotal());
         solicitacaoRepository.save(orcada);
-        registrarHistorico(orcada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, bruno.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(orcada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, marioFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
 
         Solicitacao aprovada = criarSolicitacao(
-                camila,
-                categorias.get("Smartphone"),
-                ana,
-                "iPhone 11",
-                "Tela quebrada e touch falhando no canto superior.",
+                joana,
+                categorias.get("Mouse"),
+                mariaFuncionario,
+                "Mouse Logitech G203",
+                "Mouse apresenta duplo clique e falha no botão esquerdo.",
                 StatusSolicitacao.APROVADA,
                 LocalDateTime.now().minusDays(6),
                 null
         );
-        registrarHistorico(aprovada, null, StatusSolicitacao.ABERTA, camila.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoAprovada = criarOrcamento(aprovada, ana, LocalDateTime.now().minusDays(5),
-                new ItemSeed(TipoItem.PECA, "Tela compatível", 1, "280.00"),
-                new ItemSeed(TipoItem.MAO_OBRA, "Troca da tela", 1, "120.00")
+        registrarHistorico(aprovada, null, StatusSolicitacao.ABERTA, joana.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoAprovada = criarOrcamento(aprovada, mariaFuncionario, LocalDateTime.now().minusDays(5),
+                new ItemSeed(TipoItem.PECA, "Micro switch", 2, "25.00"),
+                new ItemSeed(TipoItem.MAO_OBRA, "Reparo dos botões", 1, "80.00")
         );
         aprovada.setValorOrcado(orcamentoAprovada.getValorTotal());
         solicitacaoRepository.save(aprovada);
-        registrarHistorico(aprovada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, ana.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(aprovada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, camila.getUsuario(), "Orçamento aprovado pelo cliente.");
+        registrarHistorico(aprovada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, mariaFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(aprovada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joana.getUsuario(), "Orçamento aprovado pelo cliente.");
 
         Solicitacao rejeitada = criarSolicitacao(
-                pedro,
+                joaquina,
                 categorias.get("Impressora"),
-                bruno,
+                marioFuncionario,
                 "Impressora HP DeskJet",
                 "Impressora puxa papel torto e faz barulho ao imprimir.",
                 StatusSolicitacao.REJEITADA,
                 LocalDateTime.now().minusDays(6),
                 "Valor acima do esperado pelo cliente."
         );
-        registrarHistorico(rejeitada, null, StatusSolicitacao.ABERTA, pedro.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoRejeitada = criarOrcamento(rejeitada, bruno, LocalDateTime.now().minusDays(5),
+        registrarHistorico(rejeitada, null, StatusSolicitacao.ABERTA, joaquina.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoRejeitada = criarOrcamento(rejeitada, marioFuncionario, LocalDateTime.now().minusDays(5),
                 new ItemSeed(TipoItem.PECA, "Kit tracionador de papel", 1, "180.00"),
                 new ItemSeed(TipoItem.MAO_OBRA, "Limpeza e substituição do kit", 1, "90.00")
         );
         rejeitada.setValorOrcado(orcamentoRejeitada.getValorTotal());
         solicitacaoRepository.save(rejeitada);
-        registrarHistorico(rejeitada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, bruno.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(rejeitada, StatusSolicitacao.ORCADA, StatusSolicitacao.REJEITADA, pedro.getUsuario(), "Orçamento rejeitado pelo cliente.");
+        registrarHistorico(rejeitada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, marioFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(rejeitada, StatusSolicitacao.ORCADA, StatusSolicitacao.REJEITADA, joaquina.getUsuario(), "Orçamento rejeitado pelo cliente.");
 
         Solicitacao redirecionada = criarSolicitacao(
-                maria,
-                categorias.get("Rede"),
-                bruno,
-                "Roteador TP-Link",
-                "Internet cai várias vezes ao dia e o roteador reinicia sozinho.",
+                joao,
+                categorias.get("Teclado"),
+                marioFuncionario,
+                "Teclado mecânico",
+                "Teclado apresenta falhas nas teclas A, S e D.",
                 StatusSolicitacao.REDIRECIONADA,
                 LocalDateTime.now().minusDays(5),
                 null
         );
-        registrarHistorico(redirecionada, null, StatusSolicitacao.ABERTA, maria.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoRedirecionada = criarOrcamento(redirecionada, ana, LocalDateTime.now().minusDays(4),
-                new ItemSeed(TipoItem.SERVICO, "Análise de rede local", 1, "100.00"),
-                new ItemSeed(TipoItem.SERVICO, "Reconfiguração de roteador", 1, "85.00")
+        registrarHistorico(redirecionada, null, StatusSolicitacao.ABERTA, joao.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoRedirecionada = criarOrcamento(redirecionada, mariaFuncionario, LocalDateTime.now().minusDays(4),
+                new ItemSeed(TipoItem.SERVICO, "Análise dos contatos das teclas", 1, "70.00"),
+                new ItemSeed(TipoItem.SERVICO, "Limpeza interna do teclado", 1, "65.00")
         );
         redirecionada.setValorOrcado(orcamentoRedirecionada.getValorTotal());
         solicitacaoRepository.save(redirecionada);
-        registrarHistorico(redirecionada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, ana.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(redirecionada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, maria.getUsuario(), "Orçamento aprovado pelo cliente.");
-        registrarHistorico(redirecionada, StatusSolicitacao.APROVADA, StatusSolicitacao.REDIRECIONADA, ana.getUsuario(), "Solicitação redirecionada para outro técnico.");
+        registrarHistorico(redirecionada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, mariaFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(redirecionada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joao.getUsuario(), "Orçamento aprovado pelo cliente.");
+        registrarHistorico(redirecionada, StatusSolicitacao.APROVADA, StatusSolicitacao.REDIRECIONADA, mariaFuncionario.getUsuario(), "Solicitação redirecionada para outro técnico.");
 
         Solicitacao arrumada = criarSolicitacao(
-                joao,
+                jose,
                 categorias.get("Notebook"),
-                ana,
+                mariaFuncionario,
                 "Notebook Lenovo IdeaPad",
                 "Teclado com várias teclas sem resposta.",
                 StatusSolicitacao.ARRUMADA,
                 LocalDateTime.now().minusDays(4),
                 null
         );
-        registrarHistorico(arrumada, null, StatusSolicitacao.ABERTA, joao.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoArrumada = criarOrcamento(arrumada, ana, LocalDateTime.now().minusDays(3),
+        registrarHistorico(arrumada, null, StatusSolicitacao.ABERTA, jose.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoArrumada = criarOrcamento(arrumada, mariaFuncionario, LocalDateTime.now().minusDays(3),
                 new ItemSeed(TipoItem.PECA, "Teclado compatível", 1, "160.00"),
                 new ItemSeed(TipoItem.MAO_OBRA, "Substituição do teclado", 1, "100.00")
         );
         arrumada.setValorOrcado(orcamentoArrumada.getValorTotal());
         solicitacaoRepository.save(arrumada);
-        registrarHistorico(arrumada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, ana.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(arrumada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joao.getUsuario(), "Orçamento aprovado pelo cliente.");
-        criarManutencao(arrumada, ana, LocalDateTime.now().minusDays(2), "Teclado substituído e equipamento testado.", "Evitar líquidos próximos ao notebook.", "Teclado ABNT2", 75);
-        registrarHistorico(arrumada, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, ana.getUsuario(), "Manutenção registrada pelo técnico.");
+        registrarHistorico(arrumada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, mariaFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(arrumada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, jose.getUsuario(), "Orçamento aprovado pelo cliente.");
+        criarManutencao(arrumada, mariaFuncionario, LocalDateTime.now().minusDays(2), "Teclado substituído e equipamento testado.", "Evitar líquidos próximos ao notebook.", "Teclado ABNT2", 75);
+        registrarHistorico(arrumada, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, mariaFuncionario.getUsuario(), "Manutenção registrada pelo técnico.");
 
         Solicitacao paga = criarSolicitacao(
-                camila,
+                joana,
                 categorias.get("Desktop"),
-                bruno,
+                marioFuncionario,
                 "PC escritório",
                 "Sistema muito lento e travando ao abrir programas.",
                 StatusSolicitacao.PAGA,
                 LocalDateTime.now().minusDays(3),
                 null
         );
-        registrarHistorico(paga, null, StatusSolicitacao.ABERTA, camila.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoPaga = criarOrcamento(paga, bruno, LocalDateTime.now().minusDays(2),
+        registrarHistorico(paga, null, StatusSolicitacao.ABERTA, joana.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoPaga = criarOrcamento(paga, marioFuncionario, LocalDateTime.now().minusDays(2),
                 new ItemSeed(TipoItem.PECA, "SSD 480GB", 1, "240.00"),
                 new ItemSeed(TipoItem.SERVICO, "Migração de sistema", 1, "150.00"),
                 new ItemSeed(TipoItem.MAO_OBRA, "Limpeza interna", 1, "70.00")
         );
         paga.setValorOrcado(orcamentoPaga.getValorTotal());
         solicitacaoRepository.save(paga);
-        registrarHistorico(paga, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, bruno.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(paga, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, camila.getUsuario(), "Orçamento aprovado pelo cliente.");
-        criarManutencao(paga, bruno, LocalDateTime.now().minusDays(1), "SSD instalado, sistema migrado e limpeza realizada.", "Manter backup periódico dos arquivos importantes.", "SSD 480GB", 130);
-        registrarHistorico(paga, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, bruno.getUsuario(), "Manutenção registrada pelo técnico.");
-        registrarHistorico(paga, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, camila.getUsuario(), "Pagamento confirmado pelo cliente.");
+        registrarHistorico(paga, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, marioFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(paga, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joana.getUsuario(), "Orçamento aprovado pelo cliente.");
+        criarManutencao(paga, marioFuncionario, LocalDateTime.now().minusDays(1), "SSD instalado, sistema migrado e limpeza realizada.", "Manter backup periódico dos arquivos importantes.", "SSD 480GB", 130);
+        registrarHistorico(paga, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, marioFuncionario.getUsuario(), "Manutenção registrada pelo técnico.");
+        registrarHistorico(paga, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, joana.getUsuario(), "Pagamento confirmado pelo cliente.");
 
         Solicitacao finalizada = criarSolicitacao(
-                pedro,
-                categorias.get("Smartphone"),
-                ana,
-                "Samsung Galaxy A52",
-                "Bateria descarregando muito rápido.",
+                joaquina,
+                categorias.get("Mouse"),
+                mariaFuncionario,
+                "Mouse sem fio Dell",
+                "Mouse descarrega rapidamente e falha durante o uso.",
                 StatusSolicitacao.FINALIZADA,
                 LocalDateTime.now().minusDays(10),
                 null
         );
-        registrarHistorico(finalizada, null, StatusSolicitacao.ABERTA, pedro.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoFinalizada = criarOrcamento(finalizada, ana, LocalDateTime.now().minusDays(9),
-                new ItemSeed(TipoItem.PECA, "Bateria compatível", 1, "190.00"),
-                new ItemSeed(TipoItem.MAO_OBRA, "Troca da bateria", 1, "110.00")
+        registrarHistorico(finalizada, null, StatusSolicitacao.ABERTA, joaquina.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoFinalizada = criarOrcamento(finalizada, mariaFuncionario, LocalDateTime.now().minusDays(9),
+                new ItemSeed(TipoItem.PECA, "Sensor óptico compatível", 1, "90.00"),
+                new ItemSeed(TipoItem.MAO_OBRA, "Reparo do circuito interno", 1, "80.00")
         );
         finalizada.setValorOrcado(orcamentoFinalizada.getValorTotal());
         solicitacaoRepository.save(finalizada);
-        registrarHistorico(finalizada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, ana.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(finalizada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, pedro.getUsuario(), "Orçamento aprovado pelo cliente.");
-        criarManutencao(finalizada, ana, LocalDateTime.now().minusDays(8), "Bateria substituída e ciclos de carga testados.", "Carregar com fonte original e evitar descarga completa frequente.", "Bateria Galaxy A52", 60);
-        registrarHistorico(finalizada, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, ana.getUsuario(), "Manutenção registrada pelo técnico.");
-        registrarHistorico(finalizada, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, pedro.getUsuario(), "Pagamento confirmado pelo cliente.");
-        registrarHistorico(finalizada, StatusSolicitacao.PAGA, StatusSolicitacao.FINALIZADA, ana.getUsuario(), "Solicitação finalizada pelo funcionário.");
+        registrarHistorico(finalizada, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, mariaFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(finalizada, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joaquina.getUsuario(), "Orçamento aprovado pelo cliente.");
+        criarManutencao(finalizada, mariaFuncionario, LocalDateTime.now().minusDays(8), "Circuito revisado e sensor substituído.", "Usar pilhas de boa qualidade e evitar quedas.", "Sensor óptico", 60);
+        registrarHistorico(finalizada, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, mariaFuncionario.getUsuario(), "Manutenção registrada pelo técnico.");
+        registrarHistorico(finalizada, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, joaquina.getUsuario(), "Pagamento confirmado pelo cliente.");
+        registrarHistorico(finalizada, StatusSolicitacao.PAGA, StatusSolicitacao.FINALIZADA, mariaFuncionario.getUsuario(), "Solicitação finalizada pelo funcionário.");
     }
 
     private void seedSolicitacoesExtras(
@@ -570,25 +584,25 @@ public class DataSeeder implements CommandLineRunner {
         registrarHistorico(desktopFonte, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, diego.getUsuario(), "Orçamento registrado pelo técnico.");
         registrarHistorico(desktopFonte, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, fernanda.getUsuario(), "Orçamento aprovado pelo cliente.");
 
-        Solicitacao smartphoneCamera = criarSolicitacao(
+        Solicitacao mouseCamera = criarSolicitacao(
                 rafael,
-                categorias.get("Smartphone"),
+                categorias.get("Mouse"),
                 carla,
-                "Motorola Edge",
-                "Câmera traseira não foca e o aplicativo fecha sozinho.",
+                "Mouse Gamer HyperX",
+                "Botão lateral não funciona e o scroll apresenta falhas.",
                 StatusSolicitacao.REJEITADA,
                 LocalDateTime.now().minusDays(10),
-                "Cliente decidiu trocar de aparelho."
+                "Cliente decidiu comprar outro mouse."
         );
-        registrarHistorico(smartphoneCamera, null, StatusSolicitacao.ABERTA, rafael.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoSmartphoneCamera = criarOrcamento(smartphoneCamera, carla, LocalDateTime.now().minusDays(9),
-                new ItemSeed(TipoItem.PECA, "Módulo de câmera traseira", 1, "260.00"),
-                new ItemSeed(TipoItem.MAO_OBRA, "Troca do módulo de câmera", 1, "130.00")
+        registrarHistorico(mouseCamera, null, StatusSolicitacao.ABERTA, rafael.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoMouseCamera = criarOrcamento(mouseCamera, carla, LocalDateTime.now().minusDays(9),
+                new ItemSeed(TipoItem.PECA, "Encoder de scroll", 1, "55.00"),
+                new ItemSeed(TipoItem.MAO_OBRA, "Reparo dos botões", 1, "75.00")
         );
-        smartphoneCamera.setValorOrcado(orcamentoSmartphoneCamera.getValorTotal());
-        solicitacaoRepository.save(smartphoneCamera);
-        registrarHistorico(smartphoneCamera, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, carla.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(smartphoneCamera, StatusSolicitacao.ORCADA, StatusSolicitacao.REJEITADA, rafael.getUsuario(), "Orçamento rejeitado pelo cliente.");
+        mouseCamera.setValorOrcado(orcamentoMouseCamera.getValorTotal());
+        solicitacaoRepository.save(mouseCamera);
+        registrarHistorico(mouseCamera, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, carla.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(mouseCamera, StatusSolicitacao.ORCADA, StatusSolicitacao.REJEITADA, rafael.getUsuario(), "Orçamento rejeitado pelo cliente.");
 
         Solicitacao impressoraTinta = criarSolicitacao(
                 juliana,
@@ -612,28 +626,28 @@ public class DataSeeder implements CommandLineRunner {
         criarManutencao(impressoraTinta, diego, LocalDateTime.now().minusDays(7), "Sistema de tinta limpo e impressão normalizada.", "Realizar impressões periódicas para evitar entupimento.", "Nenhuma peça substituída", 55);
         registrarHistorico(impressoraTinta, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, diego.getUsuario(), "Manutenção registrada pelo técnico.");
 
-        Solicitacao redeCabo = criarSolicitacao(
+        Solicitacao tecladoCabo = criarSolicitacao(
                 gustavo,
-                categorias.get("Rede"),
+                categorias.get("Teclado"),
                 carla,
-                "Rede cabeada residencial",
-                "Computador não conecta via cabo de rede, apenas pelo Wi-Fi.",
+                "Teclado USB Multilaser",
+                "Computador não reconhece o teclado em nenhuma porta USB.",
                 StatusSolicitacao.PAGA,
                 LocalDateTime.now().minusDays(8),
                 null
         );
-        registrarHistorico(redeCabo, null, StatusSolicitacao.ABERTA, gustavo.getUsuario(), "Solicitação aberta pelo cliente.");
-        Orcamento orcamentoRedeCabo = criarOrcamento(redeCabo, carla, LocalDateTime.now().minusDays(7),
-                new ItemSeed(TipoItem.PECA, "Cabo de rede CAT6", 2, "25.00"),
-                new ItemSeed(TipoItem.SERVICO, "Teste e crimpagem de pontos de rede", 1, "140.00")
+        registrarHistorico(tecladoCabo, null, StatusSolicitacao.ABERTA, gustavo.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoTecladoCabo = criarOrcamento(tecladoCabo, carla, LocalDateTime.now().minusDays(7),
+                new ItemSeed(TipoItem.PECA, "Cabo USB novo", 1, "35.00"),
+                new ItemSeed(TipoItem.SERVICO, "Troca do cabo e teste dos contatos", 1, "90.00")
         );
-        redeCabo.setValorOrcado(orcamentoRedeCabo.getValorTotal());
-        solicitacaoRepository.save(redeCabo);
-        registrarHistorico(redeCabo, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, carla.getUsuario(), "Orçamento registrado pelo técnico.");
-        registrarHistorico(redeCabo, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, gustavo.getUsuario(), "Orçamento aprovado pelo cliente.");
-        criarManutencao(redeCabo, carla, LocalDateTime.now().minusDays(6), "Cabos substituídos e pontos de rede testados.", "Evitar dobrar os cabos próximos aos conectores.", "Cabos CAT6 e conectores RJ45", 80);
-        registrarHistorico(redeCabo, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, carla.getUsuario(), "Manutenção registrada pelo técnico.");
-        registrarHistorico(redeCabo, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, gustavo.getUsuario(), "Pagamento confirmado pelo cliente.");
+        tecladoCabo.setValorOrcado(orcamentoTecladoCabo.getValorTotal());
+        solicitacaoRepository.save(tecladoCabo);
+        registrarHistorico(tecladoCabo, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, carla.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(tecladoCabo, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, gustavo.getUsuario(), "Orçamento aprovado pelo cliente.");
+        criarManutencao(tecladoCabo, carla, LocalDateTime.now().minusDays(6), "Cabo substituído e teclado testado.", "Evitar dobrar o cabo próximo ao conector.", "Cabo USB", 80);
+        registrarHistorico(tecladoCabo, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, carla.getUsuario(), "Manutenção registrada pelo técnico.");
+        registrarHistorico(tecladoCabo, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, gustavo.getUsuario(), "Pagamento confirmado pelo cliente.");
 
         Solicitacao desktopVirus = criarSolicitacao(
                 beatriz,
@@ -659,6 +673,125 @@ public class DataSeeder implements CommandLineRunner {
         registrarHistorico(desktopVirus, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, diego.getUsuario(), "Manutenção registrada pelo técnico.");
         registrarHistorico(desktopVirus, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, beatriz.getUsuario(), "Pagamento confirmado pelo cliente.");
         registrarHistorico(desktopVirus, StatusSolicitacao.PAGA, StatusSolicitacao.FINALIZADA, diego.getUsuario(), "Solicitação finalizada pelo funcionário.");
+    }
+
+    private void seedSolicitacoesComplementares(
+            Map<String, Categoria> categorias,
+            Funcionario mariaFuncionario,
+            Funcionario marioFuncionario,
+            Cliente joao,
+            Cliente jose,
+            Cliente joana,
+            Cliente joaquina
+    ) {
+        Solicitacao abertaMouse = criarSolicitacao(
+                joao,
+                categorias.get("Mouse"),
+                mariaFuncionario,
+                "Mouse Logitech M170",
+                "Mouse não responde aos cliques e apresenta falha no sensor.",
+                StatusSolicitacao.ABERTA,
+                LocalDateTime.now().minusDays(14),
+                null
+        );
+        registrarHistorico(abertaMouse, null, StatusSolicitacao.ABERTA, joao.getUsuario(), "Solicitação aberta pelo cliente.");
+
+        Solicitacao abertaTeclado = criarSolicitacao(
+                jose,
+                categorias.get("Teclado"),
+                marioFuncionario,
+                "Teclado Redragon Kumara",
+                "Algumas teclas não funcionam e o cabo apresenta mau contato.",
+                StatusSolicitacao.ABERTA,
+                LocalDateTime.now().minusDays(13),
+                null
+        );
+        registrarHistorico(abertaTeclado, null, StatusSolicitacao.ABERTA, jose.getUsuario(), "Solicitação aberta pelo cliente.");
+
+        Solicitacao orcadaMouse = criarSolicitacao(
+                joana,
+                categorias.get("Mouse"),
+                mariaFuncionario,
+                "Mouse Gamer HyperX",
+                "Botão esquerdo com duplo clique involuntário.",
+                StatusSolicitacao.ORCADA,
+                LocalDateTime.now().minusDays(12),
+                null
+        );
+        registrarHistorico(orcadaMouse, null, StatusSolicitacao.ABERTA, joana.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoMouse = criarOrcamento(orcadaMouse, mariaFuncionario, LocalDateTime.now().minusDays(11),
+                new ItemSeed(TipoItem.SERVICO, "Diagnóstico do mouse", 1, "40.00"),
+                new ItemSeed(TipoItem.PECA, "Micro switch", 2, "25.00")
+        );
+        orcadaMouse.setValorOrcado(orcamentoMouse.getValorTotal());
+        solicitacaoRepository.save(orcadaMouse);
+        registrarHistorico(orcadaMouse, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, mariaFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+
+        Solicitacao aprovadaTeclado = criarSolicitacao(
+                joaquina,
+                categorias.get("Teclado"),
+                marioFuncionario,
+                "Teclado Logitech K120",
+                "Teclas Enter e Espaço falhando durante digitação.",
+                StatusSolicitacao.APROVADA,
+                LocalDateTime.now().minusDays(11),
+                null
+        );
+        registrarHistorico(aprovadaTeclado, null, StatusSolicitacao.ABERTA, joaquina.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoTeclado = criarOrcamento(aprovadaTeclado, marioFuncionario, LocalDateTime.now().minusDays(10),
+                new ItemSeed(TipoItem.SERVICO, "Limpeza e revisão de contatos", 1, "70.00"),
+                new ItemSeed(TipoItem.MAO_OBRA, "Reparo do teclado", 1, "60.00")
+        );
+        aprovadaTeclado.setValorOrcado(orcamentoTeclado.getValorTotal());
+        solicitacaoRepository.save(aprovadaTeclado);
+        registrarHistorico(aprovadaTeclado, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, marioFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(aprovadaTeclado, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joaquina.getUsuario(), "Orçamento aprovado pelo cliente.");
+
+        Solicitacao arrumadaNotebook = criarSolicitacao(
+                jose,
+                categorias.get("Notebook"),
+                mariaFuncionario,
+                "Notebook Acer Aspire",
+                "Ventoinha fazendo ruído alto e aquecimento excessivo.",
+                StatusSolicitacao.ARRUMADA,
+                LocalDateTime.now().minusDays(10),
+                null
+        );
+        registrarHistorico(arrumadaNotebook, null, StatusSolicitacao.ABERTA, jose.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoNotebook = criarOrcamento(arrumadaNotebook, mariaFuncionario, LocalDateTime.now().minusDays(9),
+                new ItemSeed(TipoItem.SERVICO, "Limpeza interna", 1, "100.00"),
+                new ItemSeed(TipoItem.MAO_OBRA, "Troca de pasta térmica", 1, "80.00")
+        );
+        arrumadaNotebook.setValorOrcado(orcamentoNotebook.getValorTotal());
+        solicitacaoRepository.save(arrumadaNotebook);
+        registrarHistorico(arrumadaNotebook, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, mariaFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(arrumadaNotebook, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, jose.getUsuario(), "Orçamento aprovado pelo cliente.");
+        criarManutencao(arrumadaNotebook, mariaFuncionario, LocalDateTime.now().minusDays(8), "Limpeza feita e pasta térmica substituída.", "Evitar usar o notebook sobre tecido.", "Pasta térmica", 90);
+        registrarHistorico(arrumadaNotebook, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, mariaFuncionario.getUsuario(), "Manutenção registrada pelo técnico.");
+
+        Solicitacao finalizadaImpressora = criarSolicitacao(
+                joana,
+                categorias.get("Impressora"),
+                marioFuncionario,
+                "Impressora Epson L3150",
+                "Impressão saindo falhada e com manchas.",
+                StatusSolicitacao.FINALIZADA,
+                LocalDateTime.now().minusDays(9),
+                null
+        );
+        registrarHistorico(finalizadaImpressora, null, StatusSolicitacao.ABERTA, joana.getUsuario(), "Solicitação aberta pelo cliente.");
+        Orcamento orcamentoImpressora = criarOrcamento(finalizadaImpressora, marioFuncionario, LocalDateTime.now().minusDays(8),
+                new ItemSeed(TipoItem.SERVICO, "Limpeza de cabeçote", 1, "120.00"),
+                new ItemSeed(TipoItem.SERVICO, "Alinhamento e teste de impressão", 1, "60.00")
+        );
+        finalizadaImpressora.setValorOrcado(orcamentoImpressora.getValorTotal());
+        solicitacaoRepository.save(finalizadaImpressora);
+        registrarHistorico(finalizadaImpressora, StatusSolicitacao.ABERTA, StatusSolicitacao.ORCADA, marioFuncionario.getUsuario(), "Orçamento registrado pelo técnico.");
+        registrarHistorico(finalizadaImpressora, StatusSolicitacao.ORCADA, StatusSolicitacao.APROVADA, joana.getUsuario(), "Orçamento aprovado pelo cliente.");
+        criarManutencao(finalizadaImpressora, marioFuncionario, LocalDateTime.now().minusDays(7), "Cabeçote limpo, alinhamento feito e impressão normalizada.", "Imprimir semanalmente para evitar entupimento.", "Nenhuma peça substituída", 70);
+        registrarHistorico(finalizadaImpressora, StatusSolicitacao.APROVADA, StatusSolicitacao.ARRUMADA, marioFuncionario.getUsuario(), "Manutenção registrada pelo técnico.");
+        registrarHistorico(finalizadaImpressora, StatusSolicitacao.ARRUMADA, StatusSolicitacao.PAGA, joana.getUsuario(), "Pagamento confirmado pelo cliente.");
+        registrarHistorico(finalizadaImpressora, StatusSolicitacao.PAGA, StatusSolicitacao.FINALIZADA, marioFuncionario.getUsuario(), "Solicitação finalizada pelo funcionário.");
     }
 
     private Solicitacao criarSolicitacao(
