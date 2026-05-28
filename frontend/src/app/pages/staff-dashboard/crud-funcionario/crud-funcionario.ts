@@ -236,7 +236,9 @@ export class CrudFuncionarioComponent implements OnInit {
 
   private fecharModal(idModal: string) {
     const elementoModal = document.getElementById(idModal);
-    const instanciaModal = elementoModal ? bootstrap.Modal.getInstance(elementoModal) : null;
+    const instanciaModal = elementoModal && typeof bootstrap !== 'undefined' && bootstrap?.Modal
+      ? bootstrap.Modal.getInstance(elementoModal)
+      : null;
     instanciaModal?.hide();
   }
 
@@ -247,7 +249,7 @@ export class CrudFuncionarioComponent implements OnInit {
     }
 
     const elementoAviso = document.getElementById('avisoSucesso');
-    if (elementoAviso) {
+    if (elementoAviso && typeof bootstrap !== 'undefined' && bootstrap?.Toast) {
       const exibirAviso = new bootstrap.Toast(elementoAviso);
       exibirAviso.show();
     }

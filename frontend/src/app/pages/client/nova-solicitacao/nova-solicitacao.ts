@@ -35,7 +35,7 @@ export class NovaSolicitacaoComponent implements OnInit {
     this.cdr.detectChanges();
 
     const toastElement = document.getElementById('avisoSucesso')!;
-    if (toastElement) {
+    if (toastElement && typeof bootstrap !== 'undefined' && bootstrap?.Toast) {
       const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
       toast.show();
     }

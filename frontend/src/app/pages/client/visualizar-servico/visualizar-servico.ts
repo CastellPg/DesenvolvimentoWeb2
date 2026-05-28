@@ -41,6 +41,7 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
   buscaFinalizada = false;
   mostrarToast = false;
   mensagemToast = '';
+  processandoResgate = false;
   private rotaSubscription: Subscription | null = null;
 
   constructor(
@@ -106,12 +107,36 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
   }
 
   resgatarServico(): void {
-    this.mensagemToast = 'Resgate de serviço ainda não foi integrado ao backend.';
-    this.mostrarToast = true;
+    const solicitacaoId = this.solicitacao?.id;
+    const clienteId = Number(localStorage.getItem('usuarioId'));
 
-    setTimeout(() => {
-      this.mostrarToast = false;
-    }, 3000);
+    if (!solicitacaoId || !clienteId) {
+      this.mensagemToast = 'Sessão inválida. Faça login novamente.';
+      this.mostrarToast = true;
+      setTimeout(() => (this.mostrarToast = false), 3000);
+      return;
+    }
+
+    this.processandoResgate = true;
+    this.solicitacaoService.resgatarServico(solicitacaoId, clienteId).pipe(
+      timeout(10000),
+      finalize(() => {
+        this.processandoResgate = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: () => {
+        this.mensagemToast = 'Serviço resgatado com sucesso! Solicitação voltou para APROVADA.';
+        this.mostrarToast = true;
+        this.buscarDados(solicitacaoId);
+        setTimeout(() => (this.mostrarToast = false), 3000);
+      },
+      error: (err) => {
+        this.mensagemToast = this.extrairMensagemErro(err);
+        this.mostrarToast = true;
+        setTimeout(() => (this.mostrarToast = false), 3000);
+      }
+    });
   }
 
   getBadgeClass(estado: string): string {
@@ -158,7 +183,7 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
       historico: historico.map((item) => ({
         estadoNovo: item.estadoNovo,
         dataHora: item.dataHora,
-        descricao: this.aplicarAcentos(item.observacoes || this.descricaoHistorico(item)),
+        descricao: this.aplicarAcentos(this.montarDescricaoHistorico(item)),
         funcionario: item.nomeResponsavel || 'Sistema'
       }))
     };
@@ -207,6 +232,18 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
     return item.estadoAnterior
       ? `Status alterado de ${this.getStatusLabel(item.estadoAnterior)} para ${this.getStatusLabel(item.estadoNovo)}.`
       : `Status inicial: ${this.getStatusLabel(item.estadoNovo)}.`;
+  }
+
+  private montarDescricaoHistorico(item: HistoricoSolicitacaoResponse): string {
+    const houveRedirecionamento = item.estadoNovo === 'REDIRECIONADA'
+      && !!item.funcionarioOrigemNome
+      && !!item.funcionarioDestinoNome;
+
+    if (houveRedirecionamento) {
+      return `Manutenção redirecionada de ${item.funcionarioOrigemNome} para ${item.funcionarioDestinoNome}.`;
+    }
+
+    return item.observacoes || this.descricaoHistorico(item);
   }
 
   private aplicarAcentos(texto: string): string {

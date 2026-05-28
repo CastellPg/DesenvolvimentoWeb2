@@ -1,17 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
-import { VisualizarServico } from './visualizar-servico';
+import { VisualizarServicoComponent } from './visualizar-servico';
 
-describe('VisualizarServico', () => {
-  let component: VisualizarServico;
-  let fixture: ComponentFixture<VisualizarServico>;
+describe('VisualizarServicoComponent', () => {
+  let component: VisualizarServicoComponent;
+  let fixture: ComponentFixture<VisualizarServicoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VisualizarServico],
+      imports: [VisualizarServicoComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(VisualizarServico);
+    fixture = TestBed.createComponent(VisualizarServicoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

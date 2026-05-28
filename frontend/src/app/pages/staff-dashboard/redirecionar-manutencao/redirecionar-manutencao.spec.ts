@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { RedirecionarManutencaoComponent } from './redirecionar-manutencao';
 
@@ -9,6 +10,7 @@ describe('RedirecionarManutencao', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RedirecionarManutencaoComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
 
     fixture = TestBed.createComponent(RedirecionarManutencaoComponent);

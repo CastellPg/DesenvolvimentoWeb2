@@ -21,6 +21,7 @@ import com.trabalhow2.backend.controller.response.ItemOrcamentoResponse;
 import com.trabalhow2.backend.controller.response.OrcamentoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse;
 import com.trabalhow2.backend.controller.response.SolicitacaoResponse.ClienteResumoResponse;
+import com.trabalhow2.backend.exception.AcessoNegadoException;
 import com.trabalhow2.backend.exception.SolicitacaoNaoEncontradaException;
 import com.trabalhow2.backend.exception.TransicaoStatusInvalidaException;
 import com.trabalhow2.backend.model.Categoria;
@@ -40,6 +41,7 @@ import com.trabalhow2.backend.repository.HistoricoSolicitacaoRepository;
 import com.trabalhow2.backend.repository.ManutencaoRepository;
 import com.trabalhow2.backend.repository.OrcamentoRepository;
 import com.trabalhow2.backend.repository.SolicitacaoRepository;
+import com.trabalhow2.backend.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +59,7 @@ public class SolicitacaoService {
     private final HistoricoSolicitacaoRepository historicoRepository;
     private final OrcamentoRepository orcamentoRepository;
     private final ManutencaoRepository manutencaoRepository;
+    private final UsuarioRepository usuarioRepository;
     private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -98,13 +101,34 @@ public class SolicitacaoService {
 
     //Centraliza a criação do log para usar nos outros métodos (Aprovar, Rejeitar, etc)
     public void registrarMudancaHistorico(Solicitacao solicitacao, String estadoAnterior, String estadoNovo, Usuario responsavel, String observacoes) {
-        HistoricoSolicitacao historico = HistoricoSolicitacao.criarRegistro(
-                solicitacao, 
-                estadoAnterior, 
-                estadoNovo, 
-                responsavel, 
-                observacoes
-        );
+        registrarMudancaHistorico(solicitacao, estadoAnterior, estadoNovo, responsavel, observacoes, null, null);
+    }
+
+    public void registrarMudancaHistorico(
+            Solicitacao solicitacao,
+            String estadoAnterior,
+            String estadoNovo,
+            Usuario responsavel,
+            String observacoes,
+            Funcionario funcionarioOrigem,
+            Funcionario funcionarioDestino) {
+        HistoricoSolicitacao historico = (funcionarioOrigem != null || funcionarioDestino != null)
+                ? HistoricoSolicitacao.criarRegistroRedirecionamento(
+                        solicitacao,
+                        estadoAnterior,
+                        estadoNovo,
+                        responsavel,
+                        observacoes,
+                        funcionarioOrigem,
+                        funcionarioDestino
+                )
+                : HistoricoSolicitacao.criarRegistro(
+                        solicitacao,
+                        estadoAnterior,
+                        estadoNovo,
+                        responsavel,
+                        observacoes
+                );
         historicoRepository.save(historico);
 
         if (estadoAnterior != null && !estadoAnterior.equals(estadoNovo)){
@@ -114,7 +138,11 @@ public class SolicitacaoService {
 
     //Busca a linha do tempo completa para a tela do Front
     @Transactional(readOnly = true)
-    public List<HistoricoSolicitacaoResponse> buscarHistorico(Long solicitacaoId) {
+    public List<HistoricoSolicitacaoResponse> buscarHistorico(Long solicitacaoId, Long usuarioIdLogado) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+        validarAcessoSolicitacao(solicitacao, usuarioIdLogado);
+
         return historicoRepository.findBySolicitacaoIdOrderByDataHoraAsc(solicitacaoId)
                 .stream()
                 .map(HistoricoSolicitacaoResponse::new)
@@ -122,14 +150,17 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public SolicitacaoResponse buscarPorId(Long id) {
+    public SolicitacaoResponse buscarPorId(Long id, Long usuarioIdLogado) {
         Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new SolicitacaoNaoEncontradaException(id));
+        validarAcessoSolicitacao(solicitacao, usuarioIdLogado);
         return paraResponse(solicitacao);
     }
 
     @Transactional(readOnly = true)
-    public List<SolicitacaoResponse> listarPorCliente(Long clienteId) {
+    public List<SolicitacaoResponse> listarPorCliente(Long clienteId, Long usuarioIdLogado) {
+        validarUsuarioLogadoComIdInformado(clienteId, usuarioIdLogado, "cliente");
+
         return solicitacaoRepository.findByClienteIdAndAtivoTrueOrderByDataCriacaoAsc(clienteId)
                 .stream()
                 .map(this::paraResponse)
@@ -137,14 +168,18 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<SolicitacaoResponse> listarPorFuncionario(Long funcionarioId) {
+    public List<SolicitacaoResponse> listarPorFuncionario(Long funcionarioId, Long usuarioIdLogado) {
+        validarUsuarioLogadoComIdInformado(funcionarioId, usuarioIdLogado, "funcionário");
+
         return solicitacaoRepository.findByFuncionarioIdAndAtivoTrueOrderByDataCriacaoAsc(funcionarioId)
                 .stream()
                 .map(this::paraResponse)
                 .toList();
     }
     @Transactional(readOnly = true)
-        public List<SolicitacaoResponse> listarAbertas() {
+        public List<SolicitacaoResponse> listarAbertas(Long usuarioIdLogado) {
+        validarPerfilFuncionario(usuarioIdLogado);
+
         return solicitacaoRepository.findByStatusAndAtivoTrueOrderByDataCriacaoAsc(StatusSolicitacao.ABERTA)
                 .stream()
                 .map(this::paraResponse)
@@ -176,9 +211,11 @@ public class SolicitacaoService {
 
     // RF005 — Busca o orçamento mais recente de uma solicitação com os itens detalhados
     @Transactional(readOnly = true)
-    public OrcamentoResponse buscarUltimoOrcamento(Long solicitacaoId) {
-        solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+    public OrcamentoResponse buscarUltimoOrcamento(Long solicitacaoId, Long usuarioIdLogado) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
                 .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+        validarAcessoSolicitacao(solicitacao, usuarioIdLogado);
+
         return orcamentoRepository.findBySolicitacaoIdOrderByVersaoDesc(solicitacaoId)
                 .stream()
                 .findFirst()
@@ -198,7 +235,7 @@ public class SolicitacaoService {
                     "A solicitação #" + solicitacaoId + " não está com status ABERTA (status atual: " + solicitacao.getStatus() + ").");
         }
 
-        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(funcionarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + funcionarioId));
 
         int versao = (int) orcamentoRepository.countBySolicitacaoId(solicitacaoId) + 1;
@@ -287,6 +324,37 @@ public class SolicitacaoService {
         return paraResponse(solicitacaoSalva);
     }
 
+    // RF009 - Resgata o serviço rejeitado e retorna a solicitação ao estado APROVADA
+    @Transactional
+    public SolicitacaoResponse resgatarServico(Long solicitacaoId, Long clienteId) {
+        Solicitacao solicitacao = solicitacaoRepository.findByIdAndAtivoTrue(solicitacaoId)
+                .orElseThrow(() -> new SolicitacaoNaoEncontradaException(solicitacaoId));
+
+        if (solicitacao.getStatus() != StatusSolicitacao.REJEITADA) {
+            throw new TransicaoStatusInvalidaException(
+                    "A solicitacao #" + solicitacaoId + " deve estar REJEITADA para ser resgatada (status atual: "
+                            + solicitacao.getStatus() + ").");
+        }
+
+        if (solicitacao.getCliente() == null || !solicitacao.getCliente().getId().equals(clienteId)) {
+            throw new IllegalArgumentException("Solicitacao nao pertence ao cliente informado.");
+        }
+
+        Cliente cliente = solicitacao.getCliente();
+        solicitacao.setStatus(StatusSolicitacao.APROVADA);
+        Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
+
+        registrarMudancaHistorico(
+                solicitacaoSalva,
+                StatusSolicitacao.REJEITADA.name(),
+                StatusSolicitacao.APROVADA.name(),
+                cliente.getUsuario(),
+                "Serviço resgatado pelo cliente."
+        );
+
+        return paraResponse(solicitacaoSalva);
+    }
+
     // RF014 - Confirma o pagamento pelo cliente. Pre-condicao: OS ARRUMADA.
     @Transactional
     public SolicitacaoResponse confirmarPagamento(Long solicitacaoId, ConfirmarPagamentoRequest request, Long clienteId) {
@@ -363,7 +431,7 @@ public class SolicitacaoService {
                             + solicitacao.getStatus() + ").");
         }
 
-        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(funcionarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + funcionarioId));
 
         Manutencao manutencao = new Manutencao();
@@ -404,10 +472,10 @@ public class SolicitacaoService {
                             + solicitacao.getStatus() + ").");
         }
 
-        Funcionario funcionarioOrigem = funcionarioRepository.findById(funcionarioOrigemId)
+        Funcionario funcionarioOrigem = funcionarioRepository.findByIdAndUsuarioAtivoTrue(funcionarioOrigemId)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário origem não encontrado com ID: " + funcionarioOrigemId));
 
-        Funcionario funcionarioDestino = funcionarioRepository.findById(request.funcionarioDestinoId())
+        Funcionario funcionarioDestino = funcionarioRepository.findByIdAndUsuarioAtivoTrue(request.funcionarioDestinoId())
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário destino não encontrado com ID: " + request.funcionarioDestinoId()));
 
         if (funcionarioOrigem.getId().equals(funcionarioDestino.getId())) {
@@ -427,7 +495,9 @@ public class SolicitacaoService {
                 StatusSolicitacao.APROVADA.name(),
                 StatusSolicitacao.REDIRECIONADA.name(),
                 funcionarioOrigem.getUsuario(),
-                "Manutenção redirecionada de " + origemNome + " para " + destinoNome + ". Motivo: " + request.motivo().trim()
+                "Manutenção redirecionada de " + origemNome + " para " + destinoNome + ". Motivo: " + request.motivo().trim(),
+                funcionarioOrigem,
+                funcionarioDestino
         );
 
         return paraResponse(solicitacaoSalva);
@@ -460,7 +530,7 @@ public class SolicitacaoService {
                     "A solicitacao #" + solicitacaoId + " precisa ter pagamento confirmado antes da finalizacao.");
         }
 
-        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(funcionarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionario nao encontrado com ID: " + funcionarioId));
 
         solicitacao.setStatus(StatusSolicitacao.FINALIZADA);
@@ -475,6 +545,37 @@ public class SolicitacaoService {
         );
 
         return paraResponse(solicitacaoSalva);
+    }
+
+    private void validarUsuarioLogadoComIdInformado(Long idInformado, Long usuarioIdLogado, String tipoRecurso) {
+        if (usuarioIdLogado == null || !usuarioIdLogado.equals(idInformado)) {
+            throw new AcessoNegadoException(
+                    "Usuário logado não autorizado a consultar solicitações deste " + tipoRecurso + "."
+            );
+        }
+    }
+
+    private void validarPerfilFuncionario(Long usuarioIdLogado) {
+        Usuario usuario = usuarioRepository.findByIdAndAtivoTrue(usuarioIdLogado)
+                .orElseThrow(() -> new AcessoNegadoException("Usuário não autorizado."));
+
+        if (usuario.getPerfil() != com.trabalhow2.backend.model.enums.Perfil.FUNCIONARIO) {
+            throw new AcessoNegadoException("Apenas funcionários podem consultar este recurso.");
+        }
+    }
+
+    private void validarAcessoSolicitacao(Solicitacao solicitacao, Long usuarioIdLogado) {
+        boolean acessoCliente = solicitacao.getCliente() != null
+                && solicitacao.getCliente().getId() != null
+                && solicitacao.getCliente().getId().equals(usuarioIdLogado);
+
+        boolean acessoFuncionario = solicitacao.getFuncionario() != null
+                && solicitacao.getFuncionario().getId() != null
+                && solicitacao.getFuncionario().getId().equals(usuarioIdLogado);
+
+        if (!acessoCliente && !acessoFuncionario) {
+            throw new AcessoNegadoException("Usuário logado não possui acesso à solicitação informada.");
+        }
     }
 
     private Solicitacao buscarSolicitacaoOrcadaDoCliente(Long solicitacaoId, Long clienteId) {

@@ -226,7 +226,7 @@ export class CategoriaEquipamentoComponent implements OnInit {
     }
 
     const elementoAviso = document.getElementById('avisoSucesso');
-    if (elementoAviso) {
+    if (elementoAviso && typeof bootstrap !== 'undefined' && bootstrap?.Toast) {
       const exibirAviso = new bootstrap.Toast(elementoAviso);
       exibirAviso.show();
     }
