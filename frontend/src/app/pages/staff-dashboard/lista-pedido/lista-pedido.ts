@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subscription, of, timer } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
+
+declare var bootstrap: any;
 
 type StatusSolicitacao =
   | 'ABERTA'
@@ -55,17 +57,21 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
   dataFim = '';
   carregando = false;
   solicitacoes: Solicitacao[] = [];
+  mensagemToast = '';
+  tipoToast: 'success' | 'danger' = 'danger';
 
   private readonly solicitacaoService = inject(SolicitacaoService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
   private cacheKey = '';
   private atualizadorAutomatico: Subscription | null = null;
+  private redirecionandoParaLogin = false;
 
   ngOnInit(): void {
     const funcionarioId = Number(localStorage.getItem('usuarioId'));
 
     if (!funcionarioId) {
-      alert('Erro de sessão. Faça login novamente.');
+      this.tratarSessaoInvalida();
       return;
     }
 
@@ -83,7 +89,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     const funcionarioId = Number(localStorage.getItem('usuarioId'));
 
     if (!funcionarioId) {
-      alert('Erro de sessão. Faça login novamente.');
+      this.tratarSessaoInvalida();
       return;
     }
 
@@ -102,7 +108,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
       error: () => {
         this.carregando = false;
         if (usarCache) {
-          alert('Não foi possível carregar as solicitações do funcionário.');
+          this.mostrarToast('Não foi possível carregar as solicitações do funcionário.');
         }
         this.cdr.detectChanges();
       }
@@ -233,7 +239,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
   private ordenarSolicitacoes(solicitacoes: Solicitacao[]): Solicitacao[] {
     return [...solicitacoes].sort(
       (solicitacao1, solicitacao2) =>
-        new Date(solicitacao2.dataOriginal).getTime() - new Date(solicitacao1.dataOriginal).getTime()
+        new Date(solicitacao1.dataOriginal).getTime() - new Date(solicitacao2.dataOriginal).getTime()
     );
   }
 
@@ -287,5 +293,28 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
       case 'REJEITADA': return 'Rejeitada';
       default: return '';
     }
+  }
+
+  private mostrarToast(mensagem: string, tipo: 'success' | 'danger' = 'danger'): void {
+    this.mensagemToast = mensagem;
+    this.tipoToast = tipo;
+    this.cdr.detectChanges();
+
+    const toastElement = document.getElementById('toastListaPedido');
+    if (toastElement && typeof bootstrap !== 'undefined' && bootstrap?.Toast) {
+      const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+      toast.show();
+    }
+  }
+
+  private tratarSessaoInvalida(): void {
+    this.mostrarToast('Erro de sessão. Faça login novamente.');
+
+    if (this.redirecionandoParaLogin) {
+      return;
+    }
+
+    this.redirecionandoParaLogin = true;
+    setTimeout(() => this.router.navigate(['/login']), 1500);
   }
 }

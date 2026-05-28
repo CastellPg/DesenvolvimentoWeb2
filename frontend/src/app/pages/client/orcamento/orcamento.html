@@ -6,7 +6,15 @@
 
   <div *ngIf="erroCarregamento" class="alert alert-danger rounded-3">{{ erroCarregamento }}</div>
   <div *ngIf="mensagemErro" class="alert alert-danger rounded-3">{{ mensagemErro }}</div>
-  <div *ngIf="mensagemSucesso" class="alert alert-success rounded-3">{{ mensagemSucesso }}</div>
+  <div *ngIf="mensagemSucesso" class="alert alert-success rounded-3 mb-2">{{ mensagemSucesso }}</div>
+  <div *ngIf="aguardandoConfirmacaoAprovacao" class="mb-3">
+    <button
+      type="button"
+      class="btn btn-success btn-sm px-3 fw-semibold"
+      (click)="confirmarAprovacaoERedirecionar()">
+      OK
+    </button>
+  </div>
 
   <a routerLink="/client/minhas-solicitacoes" class="text-decoration-none text-muted mb-4 d-inline-flex align-items-center gap-2">
     <i class="bi bi-arrow-left"></i> Voltar
@@ -96,15 +104,7 @@
           <div *ngIf="podeDecidir()" class="border rounded-4 p-4 bg-light">
             <h5 class="fw-bold mb-3">Decisão do cliente</h5>
 
-            <label for="motivoRejeicao" class="form-label fw-semibold small">Motivo da rejeição</label>
-            <textarea
-              id="motivoRejeicao"
-              class="form-control mb-3"
-              rows="3"
-              [(ngModel)]="motivoRejeicao"
-              placeholder="Obrigatório apenas se for rejeitar o orçamento"></textarea>
-
-            <div class="d-flex flex-column flex-md-row gap-2">
+            <div *ngIf="!exibindoRejeicao" class="d-flex flex-column flex-md-row gap-2">
               <button
                 type="button"
                 class="btn btn-success px-4 fw-semibold"
@@ -117,9 +117,37 @@
                 type="button"
                 class="btn btn-outline-danger px-4 fw-semibold"
                 [disabled]="processandoDecisao"
-                (click)="rejeitar()">
+                (click)="mostrarRejeicao()">
                 Rejeitar
               </button>
+            </div>
+
+            <div *ngIf="exibindoRejeicao" class="mt-2">
+              <label for="motivoRejeicao" class="form-label fw-semibold small">Motivo da rejeição</label>
+              <textarea
+                id="motivoRejeicao"
+                class="form-control mb-3"
+                rows="3"
+                [(ngModel)]="motivoRejeicao"
+                placeholder="Informe o motivo da rejeição"></textarea>
+
+              <div class="d-flex flex-column flex-md-row gap-2">
+                <button
+                  type="button"
+                  class="btn btn-danger px-4 fw-semibold"
+                  [disabled]="processandoDecisao"
+                  (click)="rejeitar()">
+                  Confirmar Rejeição
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary px-4 fw-semibold"
+                  [disabled]="processandoDecisao"
+                  (click)="cancelarRejeicao()">
+                  Cancelar
+                </button>
+              </div>
             </div>
           </div>
 

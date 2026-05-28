@@ -69,7 +69,7 @@ public class FuncionarioService {
 
     @Transactional
     public void atualizarFuncionario(Long id, AtualizarFuncionarioRequest request) {
-        Funcionario funcionario = funcionarioRepository.findById(id)
+        Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Funcionario nao encontrado."));
 
         Usuario usuario = funcionario.getUsuario();
@@ -93,12 +93,20 @@ public class FuncionarioService {
             throw new RuntimeException("Voce nao pode remover a si mesmo do sistema.");
         }
 
-        if (funcionarioRepository.count() <= 1) {
+        if (funcionarioRepository.countByUsuarioAtivoTrue() <= 1) {
             throw new RuntimeException("O sistema deve ter pelo menos um funcionario cadastrado.");
         }
 
-        funcionarioRepository.deleteById(idAlvo);
-        usuarioRepository.deleteById(idAlvo);
+        Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(idAlvo)
+                .orElseThrow(() -> new RuntimeException("Funcionario nao encontrado."));
+
+        Usuario usuario = funcionario.getUsuario();
+        if (usuario == null) {
+            throw new RuntimeException("Usuario vinculado ao funcionario nao encontrado.");
+        }
+
+        usuario.setAtivo(false);
+        usuarioRepository.save(usuario);
     }
 
     private FuncionarioResponse converterParaFuncionarioResponse(Funcionario funcionario) {

@@ -87,6 +87,10 @@ export interface HistoricoSolicitacaoResponse {
   dataHora: string;
   nomeResponsavel: string;
   observacoes: string | null;
+  funcionarioOrigemId?: number | null;
+  funcionarioOrigemNome?: string | null;
+  funcionarioDestinoId?: number | null;
+  funcionarioDestinoNome?: string | null;
 }
 
 export interface RegistrarManutencaoRequest {
@@ -109,23 +113,40 @@ export class SolicitacaoService {
   private apiUrl = 'http://localhost:8080/solicitacoes';
   private categoriasUrl = 'http://localhost:8080/categorias';
 
+  private montarHeadersUsuarioLogado(): HttpHeaders {
+    const usuarioId = localStorage.getItem('usuarioId');
+    return usuarioId
+      ? new HttpHeaders({ idUsuarioLogado: usuarioId })
+      : new HttpHeaders();
+  }
+
   //Busca a lista do cliente
   listarPorCliente(clienteId: number): Observable<SolicitacaoResponse[]> {
+    const headers = this.montarHeadersUsuarioLogado();
     return this.http
-      .get<ApiResponse<SolicitacaoResponse[]> | SolicitacaoResponse[]>(`${this.apiUrl}/cliente/${clienteId}`)
+      .get<ApiResponse<SolicitacaoResponse[]> | SolicitacaoResponse[]>(`${this.apiUrl}/cliente/${clienteId}`, { headers })
       .pipe(map(response => this.extrairLista(response)));
   }
 
   listarPorFuncionario(funcionarioId: number): Observable<SolicitacaoResponse[]> {
+    const headers = this.montarHeadersUsuarioLogado();
     return this.http
-      .get<ApiResponse<SolicitacaoResponse[]> | SolicitacaoResponse[]>(`${this.apiUrl}/funcionario/${funcionarioId}`)
+      .get<ApiResponse<SolicitacaoResponse[]> | SolicitacaoResponse[]>(`${this.apiUrl}/funcionario/${funcionarioId}`, { headers })
       .pipe(map(response => this.extrairLista(response)));
   }
 
-  //Busca os detalhes de apenas uma solicitação
-  buscarPorId(id: string | number): Observable<SolicitacaoResponse> {
+  listarAbertas(): Observable<SolicitacaoResponse[]> {
+    const headers = this.montarHeadersUsuarioLogado();
     return this.http
-      .get<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${id}`)
+      .get<ApiResponse<SolicitacaoResponse[]> | SolicitacaoResponse[]>(`${this.apiUrl}/abertas`, { headers })
+      .pipe(map(response => this.extrairLista(response)));
+  }
+
+  //Busca os detalhes de apenas uma solicitaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o
+  buscarPorId(id: string | number): Observable<SolicitacaoResponse> {
+    const headers = this.montarHeadersUsuarioLogado();
+    return this.http
+      .get<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${id}`, { headers })
       .pipe(map(response => this.extrairDados(response)));
   }
 
@@ -143,20 +164,22 @@ export class SolicitacaoService {
       .pipe(map(response => this.extrairLista(response)));
   }
 
-  // RF005 — Busca o orçamento mais recente com itens detalhados
+  // RF005 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Busca o orÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§amento mais recente com itens detalhados
   buscarUltimoOrcamento(id: number): Observable<OrcamentoResponse> {
+    const headers = this.montarHeadersUsuarioLogado();
     return this.http
-      .get<ApiResponse<OrcamentoResponse> | OrcamentoResponse>(`${this.apiUrl}/${id}/orcamento`)
+      .get<ApiResponse<OrcamentoResponse> | OrcamentoResponse>(`${this.apiUrl}/${id}/orcamento`, { headers })
       .pipe(map(response => this.extrairDados(response)));
   }
 
   buscarHistorico(id: string | number): Observable<HistoricoSolicitacaoResponse[]> {
+    const headers = this.montarHeadersUsuarioLogado();
     return this.http
-      .get<ApiResponse<HistoricoSolicitacaoResponse[]> | HistoricoSolicitacaoResponse[] | null>(`${this.apiUrl}/${id}/historico`)
+      .get<ApiResponse<HistoricoSolicitacaoResponse[]> | HistoricoSolicitacaoResponse[] | null>(`${this.apiUrl}/${id}/historico`, { headers })
       .pipe(map(response => this.extrairLista(response)));
   }
 
-  // RF010 — Efetua orçamento de uma solicitação
+  // RF010 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Efetua orÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§amento de uma solicitaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o
   efetuarOrcamento(solicitacaoId: number, request: EfetuarOrcamentoRequest, funcionarioId: number): Observable<OrcamentoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
     return this.http
@@ -178,6 +201,13 @@ export class SolicitacaoService {
       .pipe(map(response => this.extrairDados(response)));
   }
 
+  resgatarServico(solicitacaoId: number, clienteId: number): Observable<SolicitacaoResponse> {
+    const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
+    return this.http
+      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(`${this.apiUrl}/${solicitacaoId}/resgatar`, {}, { headers })
+      .pipe(map(response => this.extrairDados(response)));
+  }
+
   confirmarPagamento(solicitacaoId: number, clienteId: number, request: ConfirmarPagamentoRequest): Observable<SolicitacaoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': clienteId.toString() });
     return this.http
@@ -185,7 +215,7 @@ export class SolicitacaoService {
       .pipe(map(response => this.extrairDados(response)));
   }
 
-  // RF013 — Registra a manutenção realizada pelo técnico
+  // RF013 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Registra a manutenÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o realizada pelo tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnico
   registrarManutencao(solicitacaoId: number, request: RegistrarManutencaoRequest, funcionarioId: number): Observable<SolicitacaoResponse> {
     const headers = new HttpHeaders({ 'idUsuarioLogado': funcionarioId.toString() });
     return this.http

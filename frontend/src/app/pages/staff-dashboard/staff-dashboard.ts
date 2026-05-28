@@ -32,7 +32,7 @@ export class StaffDashboardComponent implements OnInit {
 
     this.funcionarioId = funcionarioId;
     this.carregando = true;
-    this.solicitacaoService.listarPorFuncionario(funcionarioId).pipe(
+    this.solicitacaoService.listarAbertas().pipe(
       timeout(10000),
       catchError(() => of([] as SolicitacaoResponse[])),
       finalize(() => {

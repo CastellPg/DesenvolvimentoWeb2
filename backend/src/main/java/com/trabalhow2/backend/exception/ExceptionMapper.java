@@ -89,6 +89,15 @@ public class ExceptionMapper {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
     }
 
+    @ExceptionHandler(AcessoNegadoException.class)
+    public ResponseEntity<ErrorMessage> acessoNegadoException(AcessoNegadoException exception) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setStatus(HttpStatus.FORBIDDEN.value());
+        errorMessage.setMessages(List.of(exception.getMessage()));
+        log.error("{}", errorMessage);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorMessage> runtimeException(RuntimeException exception) {
         ErrorMessage errorMessage = new ErrorMessage();

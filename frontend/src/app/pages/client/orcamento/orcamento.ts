@@ -21,6 +21,7 @@ export class OrcamentoComponent implements OnInit {
   erroCarregamento: string | null = null;
   mensagemErro: string | null = null;
   mensagemSucesso: string | null = null;
+  aguardandoConfirmacaoAprovacao = false;
   motivoRejeicao = '';
   exibindoRejeicao = false;
 
@@ -85,10 +86,11 @@ export class OrcamentoComponent implements OnInit {
       next: (solicitacaoAtualizada) => {
         this.solicitacao = solicitacaoAtualizada;
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
-        this.mensagemSucesso = 'Serviço aprovado com sucesso.';
+        this.exibindoRejeicao = false;
+        this.mensagemSucesso = 'Serviço Aprovado no Valor ' + this.formatarMoeda(solicitacaoAtualizada.valorOrcado) + '.';
+        this.aguardandoConfirmacaoAprovacao = true;
         this.processandoDecisao = false;
         this.cdr.detectChanges();
-        this.voltarParaListaAposDecisao();
       },
       error: (erro) => {
         this.mensagemErro = this.extrairMensagemErro(erro, 'Não foi possível aprovar o serviço.');
@@ -119,7 +121,8 @@ export class OrcamentoComponent implements OnInit {
         this.atualizarSolicitacaoNoCache(solicitacaoAtualizada);
         this.motivoRejeicao = '';
         this.exibindoRejeicao = false;
-        this.mensagemSucesso = 'Serviço rejeitado com sucesso.';
+        this.mensagemSucesso = 'Serviço Rejeitado.';
+        this.aguardandoConfirmacaoAprovacao = false;
         this.processandoDecisao = false;
         this.cdr.detectChanges();
         this.voltarParaListaAposDecisao();
@@ -233,10 +236,22 @@ export class OrcamentoComponent implements OnInit {
   private limparMensagens(): void {
     this.mensagemErro = null;
     this.mensagemSucesso = null;
+    this.aguardandoConfirmacaoAprovacao = false;
+  }
+
+  confirmarAprovacaoERedirecionar(): void {
+    this.router.navigate(['/client/dashboard']);
   }
 
   private voltarParaListaAposDecisao(): void {
     setTimeout(() => this.router.navigate(['/client/minhas-solicitacoes']), 1200);
+  }
+
+  private formatarMoeda(valor: number | null | undefined): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor ?? 0);
   }
 
   private carregarSolicitacaoDoCache(id: string): void {
@@ -308,7 +323,7 @@ export class OrcamentoComponent implements OnInit {
     }
 
     if (erro?.status === 409) {
-      return erro.error?.messages?.join(' | ') || 'Essa solicitação não está mais ORCADA.';
+      return erro.error?.messages?.join(' | ') || 'Essa solicitação não está mais ORÇADA.';
     }
 
     if (erro?.status === 0) {

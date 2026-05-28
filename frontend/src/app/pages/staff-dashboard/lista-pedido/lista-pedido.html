@@ -1,4 +1,18 @@
 <div class="container-fluid py-4 px-5">
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    <div id="toastListaPedido"
+         class="toast align-items-center border-0"
+         [ngClass]="tipoToast === 'danger' ? 'text-bg-danger' : 'text-bg-success'"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">{{ mensagemToast }}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="header mb-4">
     <h1 class="h3 fw-bold">Visualização de Solicitações</h1>
   </div>

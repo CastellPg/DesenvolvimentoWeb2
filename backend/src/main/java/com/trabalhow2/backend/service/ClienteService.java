@@ -115,7 +115,7 @@ public class ClienteService {
         if (usuarioRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email já cadastrado.");
         }
-        if (clienteRepository.existsByCpf(cpfLimpo)){
+        if (clienteRepository.existsByCpfAndUsuarioAtivoTrue(cpfLimpo)){
             throw new IllegalArgumentException("CPF já cadastrado.");
         }
         if (request.getCep() == null || request.getCep().isBlank()) {
@@ -176,13 +176,13 @@ public class ClienteService {
     }
 
     public ClienteResponse buscarPorId(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findByIdAndUsuarioAtivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
         return converterParaClienteResponse(cliente);
     }
 
     public List<ClienteResponse> listarTodos() {
-        return clienteRepository.findAll()
+        return clienteRepository.findByUsuarioAtivoTrue()
                 .stream()
                 .map(this::converterParaClienteResponse)
                 .toList();
@@ -190,7 +190,7 @@ public class ClienteService {
 
     @Transactional
     public void atualizarCliente(Long id, AtualizarClienteRequest request) {
-        Cliente cliente = clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findByIdAndUsuarioAtivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
 
         Usuario usuario = cliente.getUsuario();
@@ -231,13 +231,14 @@ public class ClienteService {
 
     @Transactional
     public void deletarCliente(Long id) {
-        Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado com esse id." + id));
+        Cliente cliente = clienteRepository.findByIdAndUsuarioAtivoTrue(id)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com esse id." + id));
         Usuario usuario = cliente.getUsuario();
         if (usuario == null) {
             throw new RuntimeException("Usuário do cliente não encontrado.");
         }
 
-        clienteRepository.delete(cliente);
-        usuarioRepository.delete(usuario);
+        usuario.setAtivo(false);
+        usuarioRepository.save(usuario);
     }
 }

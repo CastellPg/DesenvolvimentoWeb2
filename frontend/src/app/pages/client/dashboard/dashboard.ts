@@ -49,8 +49,7 @@ export class DashboardComponent implements OnInit {
       .subscribe({
         next: (dadosRetornadosDoBanco) => {
           this.solicitacoes = dadosRetornadosDoBanco
-            .filter((solicitacao) => this.exigeAcaoDoCliente(solicitacao.status))
-            .sort((a, b) => new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime());
+            .sort((a, b) => new Date(a.dataCriacao).getTime() - new Date(b.dataCriacao).getTime());
           this.cdr.detectChanges();
         },
         error: (erro) => {
@@ -101,10 +100,6 @@ export class DashboardComponent implements OnInit {
       case 'ABERTA': return 'ABERTA';
       default: return status;
     }
-  }
-
-  private exigeAcaoDoCliente(status: string): boolean {
-    return status === 'ORCADA' || status === 'ARRUMADA';
   }
 
   private extrairMensagemErro(err: any): string {

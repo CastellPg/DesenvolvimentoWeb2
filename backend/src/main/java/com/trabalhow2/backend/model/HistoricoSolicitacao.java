@@ -1,6 +1,14 @@
 package com.trabalhow2.backend.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,34 +36,107 @@ public class HistoricoSolicitacao {
     @JoinColumn(name = "usuario_responsavel_id")
     private Usuario usuarioResponsavel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "funcionario_origem_id")
+    private Funcionario funcionarioOrigem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "funcionario_destino_id")
+    private Funcionario funcionarioDestino;
+
     @Column(columnDefinition = "TEXT")
     private String observacoes;
 
-    // Construtor vazio (obrigatório para o JPA)
-    protected HistoricoSolicitacao() {}
+    protected HistoricoSolicitacao() {
+    }
 
-    // Construtor privado para forçar o uso do Factory Method
-    private HistoricoSolicitacao(Solicitacao solicitacao, String estadoAnterior, String estadoNovo, Usuario usuarioResponsavel, String observacoes) {
+    private HistoricoSolicitacao(
+            Solicitacao solicitacao,
+            String estadoAnterior,
+            String estadoNovo,
+            Usuario usuarioResponsavel,
+            String observacoes,
+            Funcionario funcionarioOrigem,
+            Funcionario funcionarioDestino) {
         this.solicitacao = solicitacao;
         this.estadoAnterior = estadoAnterior;
         this.estadoNovo = estadoNovo;
-        this.dataHora = LocalDateTime.now(); // Regra de negócio isolada aqui
+        this.dataHora = LocalDateTime.now();
         this.usuarioResponsavel = usuarioResponsavel;
         this.observacoes = observacoes;
+        this.funcionarioOrigem = funcionarioOrigem;
+        this.funcionarioDestino = funcionarioDestino;
     }
 
-    // PADRÃO DE PROJETO: Factory Method
-    // Oculta a complexidade da instanciação e protege a dataHora de ser adulterada
-    public static HistoricoSolicitacao criarRegistro(Solicitacao solicitacao, String estadoAnterior, String estadoNovo, Usuario responsavel, String observacoes) {
-        return new HistoricoSolicitacao(solicitacao, estadoAnterior, estadoNovo, responsavel, observacoes);
+    public static HistoricoSolicitacao criarRegistro(
+            Solicitacao solicitacao,
+            String estadoAnterior,
+            String estadoNovo,
+            Usuario responsavel,
+            String observacoes) {
+        return new HistoricoSolicitacao(
+                solicitacao,
+                estadoAnterior,
+                estadoNovo,
+                responsavel,
+                observacoes,
+                null,
+                null
+        );
     }
 
-    
-    public Long getId() { return id; }
-    public Solicitacao getSolicitacao() { return solicitacao; }
-    public String getEstadoAnterior() { return estadoAnterior; }
-    public String getEstadoNovo() { return estadoNovo; }
-    public LocalDateTime getDataHora() { return dataHora; }
-    public Usuario getUsuarioResponsavel() { return usuarioResponsavel; }
-    public String getObservacoes() { return observacoes; }
+    public static HistoricoSolicitacao criarRegistroRedirecionamento(
+            Solicitacao solicitacao,
+            String estadoAnterior,
+            String estadoNovo,
+            Usuario responsavel,
+            String observacoes,
+            Funcionario funcionarioOrigem,
+            Funcionario funcionarioDestino) {
+        return new HistoricoSolicitacao(
+                solicitacao,
+                estadoAnterior,
+                estadoNovo,
+                responsavel,
+                observacoes,
+                funcionarioOrigem,
+                funcionarioDestino
+        );
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Solicitacao getSolicitacao() {
+        return solicitacao;
+    }
+
+    public String getEstadoAnterior() {
+        return estadoAnterior;
+    }
+
+    public String getEstadoNovo() {
+        return estadoNovo;
+    }
+
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+
+    public Usuario getUsuarioResponsavel() {
+        return usuarioResponsavel;
+    }
+
+    public Funcionario getFuncionarioOrigem() {
+        return funcionarioOrigem;
+    }
+
+    public Funcionario getFuncionarioDestino() {
+        return funcionarioDestino;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
 }

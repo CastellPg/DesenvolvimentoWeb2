@@ -12,18 +12,18 @@
   </div>
 
   <div *ngIf="carregando && solicitacoes.length === 0" class="text-center text-muted py-5">
-    Carregando pendências...
+    Carregando solicitações...
   </div>
 
   <div *ngIf="!carregando && !erro && solicitacoes.length === 0" class="text-center text-muted py-5">
-    Nenhuma pendência encontrada para este cliente.
+    Nenhuma solicitação encontrada para este cliente.
   </div>
 
-  <div *ngIf="solicitacoes.length > 0 && !erro" class="alert alert-danger d-flex align-items-center border-0 bg-danger-subtle text-danger p-3 mb-4 rounded-3" role="alert">
-    <i class="bi bi-exclamation-circle me-2 fs-5"></i>
+  <div *ngIf="solicitacoes.length > 0 && !erro" class="alert alert-secondary d-flex align-items-center border-0 bg-light text-secondary p-3 mb-4 rounded-3" role="alert">
+    <i class="bi bi-list-ul me-2 fs-5"></i>
     <div>
-      <h6 class="mb-0 fw-bold">Pendências - Atenção Imediata</h6>
-      <small>Existem solicitações aguardando sua ação.</small>
+      <h6 class="mb-0 fw-bold">Histórico de Solicitações</h6>
+      <small>Lista completa das suas solicitações de manutenção.</small>
     </div>
   </div>
 
@@ -35,11 +35,17 @@
           <div class="col-12 col-md-6 mb-3 mb-md-0">
             <div class="d-flex align-items-center gap-2 mb-2">
               <span class="badge px-2 py-1" [ngClass]="getBadgeClass(req.status)">{{ getStatusLabel(req.status) }}</span>
-              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataCriacao | date:'dd/MM/yyyy' }}</small>
+              <small class="text-muted"><i class="bi bi-calendar3"></i> {{ req.dataCriacao | date:'dd/MM/yyyy, HH:mm' }}</small>
             </div>
-            
+
             <small class="text-muted d-block" style="font-size: 0.75rem;">Equipamento</small>
-            <h6 class="fw-bold mb-0">{{ req.descricaoEquipamento || 'Não informado' }}</h6>
+            <h6 class="fw-bold mb-0">
+              {{
+                (req.descricaoEquipamento || 'Não informado').length > 30
+                  ? (req.descricaoEquipamento || 'Não informado' | slice:0:30) + '...'
+                  : (req.descricaoEquipamento || 'Não informado')
+              }}
+            </h6>
 
             <div *ngIf="req.valorOrcado" class="mt-2">
               <small class="text-muted d-block" style="font-size: 0.75rem;">Valor Orçado</small>
@@ -62,6 +68,9 @@
             <button *ngSwitchCase="'ORCADA'" [routerLink]="['/client/orcamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100">
               Aprovar/Rejeitar
             </button>
+            <button *ngSwitchCase="'REJEITADA'" [routerLink]="['/client/visualizar', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100">
+              Resgatar Serviço
+            </button>
             <button *ngSwitchCase="'ARRUMADA'" [routerLink]="['/client/pagamento', req.id]" class="btn btn-dark rounded-pill px-3 py-2 fw-medium btn-sm w-100">
               Pagar Serviço
             </button>
@@ -72,3 +81,4 @@
     </div>
   </div>
 </div>
+

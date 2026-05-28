@@ -58,7 +58,7 @@ export class MinhasSolicitacoesComponent implements OnInit {
         next: (resposta) => {
           this.todasSolicitacoes = resposta
             .map((solicitacao) => this.converterSolicitacao(solicitacao))
-            .sort((a, b) => new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime());
+            .sort((a, b) => new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime());
           this.salvarSolicitacoesNoCache(clienteId);
           this.cdr.detectChanges();
         },
