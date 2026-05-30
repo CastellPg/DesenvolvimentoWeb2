@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -7,10 +7,11 @@ import { finalize } from 'rxjs';
 declare var bootstrap: any;
 
 interface FuncionarioApi {
-  id: number;
+  id: number | string;
   nome: string;
   email: string;
-  data_nascimento: string;
+  data_nascimento?: string;
+  dataNascimento?: string;
 }
 
 interface Funcionario {
@@ -48,6 +49,8 @@ export class CrudFuncionarioComponent implements OnInit {
 
   idParaExcluir: number | null = null;
   idParaEditar: number | null = null;
+  excluindo = false;
+  atualizando = false;
   carregando = false;
   funcionarios: Funcionario[] = [];
 
@@ -57,6 +60,7 @@ export class CrudFuncionarioComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -82,23 +86,43 @@ export class CrudFuncionarioComponent implements OnInit {
   }
 
   confirmarExclusao() {
-    if (this.idParaExcluir === null) {
+    if (this.idParaExcluir === null || this.excluindo) {
       return;
     }
 
     const idExcluido = this.idParaExcluir;
-    this.idParaExcluir = null;
+    const funcionarioSelecionado = this.funcionarios.find(funcionario => funcionario.id === idExcluido);
 
-    this.http.delete(`${this.apiUrl}/${idExcluido}`, { headers: this.criarHeadersRemocao() }).subscribe({
-      next: () => {
-        this.funcionarios = this.funcionarios.filter(funcionario => funcionario.id !== idExcluido);
-        this.salvarFuncionariosNoCache();
-        this.mostrarAviso('Funcionario removido com sucesso!');
-      },
-      error: (erro) => {
-        this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao remover funcionario.'));
-      }
-    });
+    if (funcionarioSelecionado?.voce) {
+      this.idParaExcluir = null;
+      this.mostrarAviso('Você não pode remover a si mesmo do sistema.');
+      return;
+    }
+
+    this.idParaExcluir = null;
+    this.excluindo = true;
+
+    this.http.delete(`${this.apiUrl}/${idExcluido}`, { headers: this.criarHeadersRemocao() })
+      .pipe(
+        finalize(() => {
+          this.excluindo = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.funcionarios = this.funcionarios.filter(
+            funcionario => Number(funcionario.id) !== Number(idExcluido)
+          );
+          this.salvarFuncionariosNoCache();
+          this.cdr.detectChanges();
+          this.listarFuncionarios();
+          this.mostrarAviso('Funcionario removido com sucesso!');
+        },
+        error: (erro) => {
+          this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao remover funcionario.'));
+        }
+      });
   }
 
   listarFuncionarios() {
@@ -113,6 +137,7 @@ export class CrudFuncionarioComponent implements OnInit {
             funcionariosApi.map(funcionario => this.converterFuncionario(funcionario))
           );
           this.salvarFuncionariosNoCache();
+          this.cdr.detectChanges();
         },
         error: (erro) => this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao carregar funcionarios.'))
       });
@@ -158,53 +183,64 @@ export class CrudFuncionarioComponent implements OnInit {
   }
 
   atualizarFuncionario() {
-    if (this.formEditarFuncionario.invalid || this.idParaEditar === null) {
+    if (this.formEditarFuncionario.invalid || this.idParaEditar === null || this.atualizando) {
       this.formEditarFuncionario.markAllAsTouched();
       return;
     }
 
     const idAtualizado = this.idParaEditar;
-    const funcionariosAntesDaAtualizacao = [...this.funcionarios];
     const request = {
       nome: this.formEditarFuncionario.value.nome,
       email: this.formEditarFuncionario.value.email,
       data_nascimento: this.formEditarFuncionario.value.dataNascimento
     };
 
-    this.funcionarios = this.ordenarFuncionarios(
-      this.funcionarios.map(funcionario =>
-        funcionario.id === idAtualizado
-          ? {
-              ...funcionario,
-              nome: request.nome,
-              email: request.email,
-              dataNascimento: request.data_nascimento
-            }
-          : funcionario
-      )
-    );
-    this.salvarFuncionariosNoCache();
-    this.idParaEditar = null;
+    this.atualizando = true;
 
-    this.http.put(`${this.apiUrl}/${idAtualizado}`, request, { responseType: 'text' }).subscribe({
-      next: () => this.mostrarAviso('Funcionario atualizado com sucesso!'),
-      error: () => {
-        this.funcionarios = funcionariosAntesDaAtualizacao;
-        this.salvarFuncionariosNoCache();
-        this.mostrarAviso('Erro ao atualizar funcionario.');
-      }
-    });
+    this.http.put(`${this.apiUrl}/${idAtualizado}`, request, { responseType: 'text' })
+      .pipe(
+        finalize(() => {
+          this.atualizando = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.funcionarios = this.ordenarFuncionarios(
+            this.funcionarios.map(funcionario =>
+              funcionario.id === idAtualizado
+                ? {
+                    ...funcionario,
+                    nome: request.nome,
+                    email: request.email,
+                    dataNascimento: request.data_nascimento
+                  }
+                : funcionario
+            )
+          );
+          this.salvarFuncionariosNoCache();
+          this.idParaEditar = null;
+          this.fecharModal('modalEditarFuncionario');
+          this.mostrarAviso('Funcionario atualizado com sucesso!');
+          this.listarFuncionarios();
+        },
+        error: (erro) => {
+          this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao atualizar funcionario.'));
+        }
+      });
   }
 
   private converterFuncionario(funcionario: FuncionarioApi): Funcionario {
     const usuarioLogadoId = Number(localStorage.getItem('usuarioId'));
+    const idNormalizado = Number(funcionario.id);
+    const dataNascimento = funcionario.data_nascimento || funcionario.dataNascimento || '';
 
     return {
-      id: funcionario.id,
+      id: idNormalizado,
       nome: funcionario.nome,
       email: funcionario.email,
-      dataNascimento: funcionario.data_nascimento,
-      voce: funcionario.id === usuarioLogadoId
+      dataNascimento,
+      voce: idNormalizado === usuarioLogadoId
     };
   }
 
@@ -218,7 +254,10 @@ export class CrudFuncionarioComponent implements OnInit {
 
     if (funcionariosEmCache) {
       try {
-        this.funcionarios = this.ordenarFuncionarios(JSON.parse(funcionariosEmCache));
+        const funcionariosDoCache = JSON.parse(funcionariosEmCache);
+        this.funcionarios = Array.isArray(funcionariosDoCache)
+          ? this.ordenarFuncionarios(funcionariosDoCache.map((item: any) => this.converterFuncionario(item)))
+          : [];
       } catch {
         localStorage.removeItem(this.cacheKey);
       }
@@ -256,6 +295,8 @@ export class CrudFuncionarioComponent implements OnInit {
 
   private fecharModal(idModal: string) {
     const elementoModal = document.getElementById(idModal);
+    const elementoAtivo = document.activeElement as HTMLElement | null;
+    elementoAtivo?.blur();
     const instanciaModal = elementoModal && typeof bootstrap !== 'undefined' && bootstrap?.Modal
       ? bootstrap.Modal.getInstance(elementoModal)
       : null;

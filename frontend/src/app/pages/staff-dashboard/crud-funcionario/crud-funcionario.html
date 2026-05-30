@@ -64,6 +64,8 @@
 
                     <button
                       class="btn btn-danger"
+                      [disabled]="funcionario.voce"
+                      [title]="funcionario.voce ? 'Você não pode remover a si mesmo.' : 'Remover funcionário'"
                       data-bs-toggle="modal"
                       data-bs-target="#modalExcluirFuncionario"
                       (click)="prepararExclusao(funcionario.id)">
@@ -228,9 +230,8 @@
               <button
                 type="submit"
                 class="btn btn-dark py-2 fw-semibold rounded-3"
-                data-bs-dismiss="modal"
-                [disabled]="formEditarFuncionario.invalid">
-                Atualizar
+                [disabled]="formEditarFuncionario.invalid || atualizando">
+                {{ atualizando ? 'Atualizando...' : 'Atualizar' }}
               </button>
 
               <button
@@ -262,9 +263,10 @@
             <button
               type="button"
               class="btn btn-danger py-2 fw-semibold rounded-3 border"
+              [disabled]="excluindo"
               (click)="confirmarExclusao()"
               data-bs-dismiss="modal">
-              Sim, excluir
+              {{ excluindo ? 'Excluindo...' : 'Sim, excluir' }}
             </button>
 
             <button

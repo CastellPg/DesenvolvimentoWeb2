@@ -286,7 +286,11 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
       .replace(/\bSOLICITACAO\b/g, 'SOLICITAÇÃO')
       .replace(/\bsolicitacao\b/g, 'solicitação')
       .replace(/\btecnico\b/g, 'técnico')
-      .replace(/\bTecnico\b/g, 'Técnico');
+      .replace(/\bTecnico\b/g, 'Técnico')
+      .replace(/\bDescricao\b/g, 'Descrição')
+      .replace(/\bdescricao\b/g, 'descrição')
+      .replace(/\bOrientacoes\b/g, 'Orientações')
+      .replace(/\borientacoes\b/g, 'orientações');
   }
 
   private extrairMensagemErro(err: any): string {
