@@ -56,6 +56,11 @@
           <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-center justify-content-center os-border-problema">
             <small class="text-muted d-block" style="font-size: 0.75rem;">Defeito Relatado</small>
             <span class="fw-medium os-text-problema">{{ req.descricaoDefeito || 'N/A' }}</span>
+
+            <div *ngIf="req.status === 'REJEITADA' && req.motivoRejeicao" class="w-100 mt-2 p-2 bg-danger-subtle rounded-3 border border-danger-subtle">
+              <small class="text-danger fw-bold text-uppercase d-block" style="font-size: 0.7rem;">Motivo da Rejeição</small>
+              <small class="text-danger">{{ req.motivoRejeicao }}</small>
+            </div>
           </div>
         </div>
 

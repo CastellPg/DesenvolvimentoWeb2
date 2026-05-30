@@ -35,9 +35,7 @@ export class EfetuarManutencaoComponent implements OnInit {
 
     this.formManutencao = this.fb.group({
       descricaoManutencao: ['', Validators.required],
-      orientacoesCliente: ['', Validators.required],
-      pecasUsadas: [''],
-      tempoGasto: [null, [Validators.min(1), Validators.pattern('^[0-9]*$')]]
+      orientacoesCliente: ['', Validators.required]
     });
 
     if (!id) {
@@ -80,13 +78,11 @@ export class EfetuarManutencaoComponent implements OnInit {
       return;
     }
 
-    const { descricaoManutencao, orientacoesCliente, pecasUsadas, tempoGasto } = this.formManutencao.value;
+    const { descricaoManutencao, orientacoesCliente } = this.formManutencao.value;
 
     const request: RegistrarManutencaoRequest = {
       descricaoManutencao,
-      orientacoesCliente,
-      pecasUsadas: pecasUsadas || undefined,
-      tempoGasto: tempoGasto ? Number(tempoGasto) : undefined
+      orientacoesCliente
     };
 
     this.enviando = true;
@@ -167,6 +163,8 @@ export class EfetuarManutencaoComponent implements OnInit {
               status: solicitacaoAtualizada.status,
               valorOrcado: solicitacaoAtualizada.valorOrcado,
               motivoRejeicao: solicitacaoAtualizada.motivoRejeicao,
+              descricaoManutencao: solicitacaoAtualizada.descricaoManutencao,
+              orientacoesCliente: solicitacaoAtualizada.orientacoesCliente,
             }
           : item
       );

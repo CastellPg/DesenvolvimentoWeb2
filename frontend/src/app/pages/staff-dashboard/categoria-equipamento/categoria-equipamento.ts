@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { finalize, timeout } from 'rxjs';
@@ -20,7 +20,6 @@ interface ApiResponse<T> {
 @Component({
   selector: 'app-categoria-equipamento',
   imports: [
-    HttpClientModule,
     ReactiveFormsModule,
     CommonModule,
   ],

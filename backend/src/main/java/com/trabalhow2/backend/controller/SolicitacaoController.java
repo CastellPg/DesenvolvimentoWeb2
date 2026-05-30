@@ -60,8 +60,9 @@ public class SolicitacaoController {
     })
     @PostMapping
     public ResponseEntity<SolicitacaoResponse> abrirSolicitacao(
-            @RequestBody @Valid AbrirSolicitacaoRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoService.abrirSolicitacao(request));
+            @RequestBody @Valid AbrirSolicitacaoRequest request,
+            @RequestHeader("idUsuarioLogado") Long usuarioIdLogado) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoService.abrirSolicitacao(request, usuarioIdLogado));
     }
 
     @Operation(

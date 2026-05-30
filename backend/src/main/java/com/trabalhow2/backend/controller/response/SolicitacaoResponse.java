@@ -26,7 +26,9 @@ public record SolicitacaoResponse(
 
         boolean pagamentoDivergente,
         String motivoRejeicao,
-        ClienteResumoResponse cliente
+        ClienteResumoResponse cliente,
+        String descricaoManutencao,
+        String orientacoesCliente
 ) {
         public record ClienteResumoResponse(
                 Long id,

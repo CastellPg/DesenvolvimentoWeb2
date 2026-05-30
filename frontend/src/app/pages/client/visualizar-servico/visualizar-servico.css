@@ -37,6 +37,24 @@
   border-radius: 50%;
 }
 
+.timeline-card .badge {
+  margin-bottom: 0.65rem;
+}
+
+.timeline-descricao {
+  margin: 0 0 0.7rem 0;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.timeline-responsavel {
+  display: block;
+  margin-top: 0.25rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed #e9ecef;
+  font-size: 0.72rem;
+}
+
 .toast-container {
   width: 100%;
   max-width: 400px;

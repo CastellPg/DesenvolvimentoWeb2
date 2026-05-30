@@ -19,6 +19,8 @@ export interface SolicitacaoResponse {
   descricaoEquipamento: string;
   categoria: string;
   descricaoDefeito: string;
+  descricaoManutencao?: string | null;
+  orientacoesCliente?: string | null;
   status: string;
   dataCriacao: string;
   valorOrcado: number | null;
@@ -152,8 +154,9 @@ export class SolicitacaoService {
 
   // RF004
   abrirSolicitacao(request: AbrirSolicitacaoRequest): Observable<SolicitacaoResponse> {
+    const headers = this.montarHeadersUsuarioLogado();
     return this.http
-      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(this.apiUrl, request)
+      .post<ApiResponse<SolicitacaoResponse> | SolicitacaoResponse>(this.apiUrl, request, { headers })
       .pipe(map(response => this.extrairDados(response)));
   }
 

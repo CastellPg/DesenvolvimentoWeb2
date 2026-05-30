@@ -6,15 +6,16 @@ import { provideNgxMask } from 'ngx-mask';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { backendCredentialsInterceptor } from './interceptors/backend-credentials.interceptor';
+import { sessionExpiredInterceptor } from './interceptors/session-expired.interceptor';
 
 registerLocaleData(localePt);
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
+      provideBrowserGlobalErrorListeners(),
      provideRouter(routes),
-      provideHttpClient(withInterceptors([backendCredentialsInterceptor])),
+      provideHttpClient(withInterceptors([backendCredentialsInterceptor, sessionExpiredInterceptor])),
       provideNgxMask(),
       { provide: LOCALE_ID, useValue: 'pt-BR' }
      ],

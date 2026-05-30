@@ -12,6 +12,7 @@ export interface Solicitacao {
   estado: string;
   valor?: number | null;
   descricaoDefeito?: string;
+  motivoRejeicao?: string | null;
 }
 
 @Component({
@@ -121,7 +122,8 @@ export class MinhasSolicitacoesComponent implements OnInit {
       categoria: solicitacao.categoria || '-',
       estado: solicitacao.status,
       valor: solicitacao.valorOrcado,
-      descricaoDefeito: solicitacao.descricaoDefeito || '-'
+      descricaoDefeito: solicitacao.descricaoDefeito || '-',
+      motivoRejeicao: solicitacao.motivoRejeicao ?? null
     };
   }
 

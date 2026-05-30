@@ -156,6 +156,18 @@
             <span class="fw-medium os-text-problema">{{ solicitacao.problema }}</span>
           </div>
 
+          <div *ngIf="solicitacao.status === 'ARRUMADA'" class="col-12 mt-3 pt-3 border-top os-border-problema">
+            <div class="mb-3">
+              <label class="d-block text-secondary small">Descrição da Manutenção</label>
+              <span class="fw-medium os-text-problema">{{ solicitacao.descricaoManutencao || '-' }}</span>
+            </div>
+
+            <div>
+              <label class="d-block text-secondary small">Orientações para o Cliente</label>
+              <span class="fw-medium os-text-problema">{{ solicitacao.orientacoesCliente || '-' }}</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

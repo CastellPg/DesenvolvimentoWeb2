@@ -2,8 +2,8 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Subscription, of, timer } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { Subscription, forkJoin, of, timer } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { SolicitacaoResponse, SolicitacaoService } from '../../../services/solicitacao.service';
 
 declare var bootstrap: any;
@@ -42,6 +42,8 @@ interface Solicitacao {
   valorPago?: number | null;
   dataHoraPagamento?: string | null;
   pagamentoDivergente?: boolean;
+  descricaoManutencao?: string;
+  orientacoesCliente?: string;
 }
 
 @Component({
@@ -99,7 +101,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     }
 
     this.carregando = this.solicitacoes.length === 0;
-    this.solicitacaoService.listarPorFuncionario(funcionarioId).subscribe({
+    this.listarSolicitacoesDoFuncionarioComAbertas(funcionarioId).subscribe({
       next: (resposta) => {
         this.atualizarSolicitacoes(resposta);
         this.carregando = false;
@@ -192,7 +194,7 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
     this.atualizadorAutomatico = timer(0, 3000)
       .pipe(
         switchMap(() =>
-          this.solicitacaoService.listarPorFuncionario(funcionarioId).pipe(
+          this.listarSolicitacoesDoFuncionarioComAbertas(funcionarioId).pipe(
             catchError(() => of(null))
           )
         )
@@ -261,6 +263,8 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
       valorPago: solicitacao.valorPago,
       dataHoraPagamento: solicitacao.dataHoraPagamento,
       pagamentoDivergente: solicitacao.pagamentoDivergente,
+      descricaoManutencao: solicitacao.descricaoManutencao || undefined,
+      orientacoesCliente: solicitacao.orientacoesCliente || undefined,
       cliente: {
         nome: solicitacao.cliente?.nome || '-',
         email: solicitacao.cliente?.email || '-',
@@ -293,6 +297,26 @@ export class ListaPedidoComponent implements OnInit, OnDestroy {
       case 'REJEITADA': return 'Rejeitada';
       default: return '';
     }
+  }
+
+  private listarSolicitacoesDoFuncionarioComAbertas(funcionarioId: number) {
+    return forkJoin({
+      solicitacoesFuncionario: this.solicitacaoService.listarPorFuncionario(funcionarioId).pipe(
+        catchError(() => of([] as SolicitacaoResponse[]))
+      ),
+      solicitacoesAbertas: this.solicitacaoService.listarAbertas().pipe(
+        catchError(() => of([] as SolicitacaoResponse[]))
+      ),
+    }).pipe(
+      map(({ solicitacoesFuncionario, solicitacoesAbertas }) => {
+        const mapa = new Map<number, SolicitacaoResponse>();
+
+        solicitacoesFuncionario.forEach(solicitacao => mapa.set(solicitacao.id, solicitacao));
+        solicitacoesAbertas.forEach(solicitacao => mapa.set(solicitacao.id, solicitacao));
+
+        return Array.from(mapa.values());
+      })
+    );
   }
 
   private mostrarToast(mensagem: string, tipo: 'success' | 'danger' = 'danger'): void {

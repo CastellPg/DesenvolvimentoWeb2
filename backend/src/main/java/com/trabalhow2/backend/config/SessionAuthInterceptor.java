@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.trabalhow2.backend.model.Usuario;
+import com.trabalhow2.backend.model.enums.Perfil;
 import com.trabalhow2.backend.repository.UsuarioRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,20 +28,31 @@ public class SessionAuthInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession(false);
         if (session == null) {
-            respostaNaoAutorizada(response, "Sessão inválida. Faça login novamente.");
+            respostaNaoAutorizada(response, "Sessao invalida. Faca login novamente.");
             return false;
         }
 
         Object usuarioIdAttr = session.getAttribute("usuarioId");
         if (!(usuarioIdAttr instanceof Long usuarioId)) {
             session.invalidate();
-            respostaNaoAutorizada(response, "Sessão inválida. Faça login novamente.");
+            respostaNaoAutorizada(response, "Sessao invalida. Faca login novamente.");
             return false;
         }
 
-        if (usuarioRepository.findByIdAndAtivoTrue(usuarioId).isEmpty()) {
+        Usuario usuario = usuarioRepository.findByIdAndAtivoTrue(usuarioId).orElse(null);
+        if (usuario == null) {
             session.invalidate();
-            respostaNaoAutorizada(response, "Usuário não autorizado.");
+            respostaNaoAutorizada(response, "Usuario nao autorizado.");
+            return false;
+        }
+
+        if (rotaExigePerfilFuncionario(request) && usuario.getPerfil() != Perfil.FUNCIONARIO) {
+            respostaAcessoNegado(response, "Acesso permitido apenas para funcionarios.");
+            return false;
+        }
+
+        if (rotaExigePerfilCliente(request) && usuario.getPerfil() != Perfil.CLIENTE) {
+            respostaAcessoNegado(response, "Acesso permitido apenas para clientes.");
             return false;
         }
 
@@ -48,16 +61,33 @@ public class SessionAuthInterceptor implements HandlerInterceptor {
             try {
                 Long idHeader = Long.parseLong(idUsuarioLogado);
                 if (!usuarioId.equals(idHeader)) {
-                    respostaAcessoNegado(response, "Usuário logado não corresponde ao header informado.");
+                    respostaAcessoNegado(response, "Usuario logado nao corresponde ao header informado.");
                     return false;
                 }
             } catch (NumberFormatException ex) {
-                respostaAcessoNegado(response, "Header idUsuarioLogado inválido.");
+                respostaAcessoNegado(response, "Header idUsuarioLogado invalido.");
                 return false;
             }
         }
 
         return true;
+    }
+
+    private boolean rotaExigePerfilFuncionario(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        boolean gestaoCategorias = path.startsWith("/categorias")
+                && !"GET".equalsIgnoreCase(method);
+
+        return path.startsWith("/funcionarios")
+                || gestaoCategorias
+                || path.startsWith("/relatorios/receitas");
+    }
+
+    private boolean rotaExigePerfilCliente(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/clientes") && !path.startsWith("/clientes/cadastro");
     }
 
     private void respostaNaoAutorizada(HttpServletResponse response, String mensagem) throws IOException {

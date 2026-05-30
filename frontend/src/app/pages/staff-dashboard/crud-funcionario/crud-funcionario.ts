@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
@@ -26,10 +26,15 @@ interface ApiError {
   messages?: string[];
 }
 
+interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  messages?: string[];
+}
+
 @Component({
   selector: 'app-crud-funcionario',
   imports: [
-    HttpClientModule,
     ReactiveFormsModule,
     CommonModule,
   ],
@@ -82,18 +87,16 @@ export class CrudFuncionarioComponent implements OnInit {
     }
 
     const idExcluido = this.idParaExcluir;
-    const funcionariosAntesDaExclusao = [...this.funcionarios];
-
-    this.funcionarios = this.funcionarios.filter(funcionario => funcionario.id !== idExcluido);
-    this.salvarFuncionariosNoCache();
     this.idParaExcluir = null;
 
     this.http.delete(`${this.apiUrl}/${idExcluido}`, { headers: this.criarHeadersRemocao() }).subscribe({
-      next: () => this.mostrarAviso('Funcionario removido com sucesso!'),
-      error: () => {
-        this.funcionarios = funcionariosAntesDaExclusao;
+      next: () => {
+        this.funcionarios = this.funcionarios.filter(funcionario => funcionario.id !== idExcluido);
         this.salvarFuncionariosNoCache();
-        this.mostrarAviso('Erro ao remover funcionario.');
+        this.mostrarAviso('Funcionario removido com sucesso!');
+      },
+      error: (erro) => {
+        this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao remover funcionario.'));
       }
     });
   }
@@ -101,11 +104,14 @@ export class CrudFuncionarioComponent implements OnInit {
   listarFuncionarios() {
     this.carregando = true;
 
-    this.http.get<FuncionarioApi[]>(this.apiUrl)
+    this.http.get<ApiResponse<FuncionarioApi[]> | FuncionarioApi[]>(this.apiUrl)
       .pipe(finalize(() => this.carregando = false))
       .subscribe({
         next: (resposta) => {
-          this.funcionarios = this.ordenarFuncionarios(resposta.map(funcionario => this.converterFuncionario(funcionario)));
+          const funcionariosApi = this.extrairLista(resposta);
+          this.funcionarios = this.ordenarFuncionarios(
+            funcionariosApi.map(funcionario => this.converterFuncionario(funcionario))
+          );
           this.salvarFuncionariosNoCache();
         },
         error: (erro) => this.mostrarAviso(this.extrairMensagemErro(erro, 'Erro ao carregar funcionarios.'))
@@ -125,8 +131,9 @@ export class CrudFuncionarioComponent implements OnInit {
       data_nascimento: this.formFuncionario.value.dataNascimento
     };
 
-    this.http.post<FuncionarioApi>(this.apiUrl, request).subscribe({
-      next: (funcionarioCriado) => {
+    this.http.post<ApiResponse<FuncionarioApi> | FuncionarioApi>(this.apiUrl, request).subscribe({
+      next: (resposta) => {
+        const funcionarioCriado = this.extrairDados(resposta);
         this.formFuncionario.reset();
         this.funcionarios = this.ordenarFuncionarios([
           ...this.funcionarios,
@@ -224,6 +231,19 @@ export class CrudFuncionarioComponent implements OnInit {
 
   private ordenarFuncionarios(funcionarios: Funcionario[]) {
     return [...funcionarios].sort((funcionario1, funcionario2) => funcionario1.id - funcionario2.id);
+  }
+
+  private extrairDados<T>(resposta: ApiResponse<T> | T): T {
+    if (resposta && typeof resposta === 'object' && 'data' in resposta) {
+      return (resposta as ApiResponse<T>).data;
+    }
+
+    return resposta as T;
+  }
+
+  private extrairLista(resposta: ApiResponse<FuncionarioApi[]> | FuncionarioApi[]): FuncionarioApi[] {
+    const dados = this.extrairDados(resposta);
+    return Array.isArray(dados) ? dados : [];
   }
 
   private extrairMensagemErro(erro: { error?: ApiError | string }, mensagemPadrao: string) {
