@@ -1,4 +1,4 @@
-import { Component, WritableSignal, signal, inject } from '@angular/core';
+﻿import { Component, WritableSignal, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -29,20 +29,19 @@ export class LoginComponent {
 
   fazerLogin() {
     this.mensagemErro.set('');
-    console.log('Pegando os dados do form', this.loginUsuario);
 
     if (!this.loginUsuario.email || !this.loginUsuario.senha) {
-      this.mensagemErro.set('Email e senha são obrigatórios!');
+      this.mensagemErro.set('Email e senha sÃ£o obrigatÃ³rios!');
       return;
     }
 
     if (this.loginUsuario.email.length > 100) {
-      this.mensagemErro.set('Email é muito longo!');
+      this.mensagemErro.set('Email Ã© muito longo!');
       return;
     }
 
     if (this.loginUsuario.senha.length < 4) {
-      this.mensagemErro.set('Senha precisa ter pelo menos 4 dígitos!');
+      this.mensagemErro.set('Senha precisa ter pelo menos 4 dÃ­gitos!');
       return;
     }
 
@@ -51,7 +50,7 @@ export class LoginComponent {
         const usuario = response.data ?? response;
 
         if (!usuario?.id || !usuario?.perfil) {
-          this.mensagemErro.set('Resposta de login inválida.');
+          this.mensagemErro.set('Resposta de login invÃ¡lida.');
           return;
         }
 
@@ -64,18 +63,18 @@ export class LoginComponent {
         } else if (usuario.perfil === 'FUNCIONARIO') {
           this.router.navigate(['/staff']);
         } else {
-          this.mensagemErro.set('Perfil de usuário inválido.');
+          this.mensagemErro.set('Perfil de usuÃ¡rio invÃ¡lido.');
         }
       },
       error: (error) => {
         console.error('Erro ao fazer login:', error);
 
         if (error.status === 401) {
-          this.mensagemErro.set('Email ou senha inválidos.');
+          this.mensagemErro.set('Email ou senha invÃ¡lidos.');
         } else if (error.status === 400) {
-          this.mensagemErro.set('Dados enviados inválidos.');
+          this.mensagemErro.set('Dados enviados invÃ¡lidos.');
         } else if (error.status === 0) {
-          this.mensagemErro.set('Não foi possível conectar ao servidor.');
+          this.mensagemErro.set('NÃ£o foi possÃ­vel conectar ao servidor.');
         } else {
           this.mensagemErro.set('Erro ao fazer login. Tente novamente.');
         }
@@ -83,3 +82,4 @@ export class LoginComponent {
     });
   }
 }
+

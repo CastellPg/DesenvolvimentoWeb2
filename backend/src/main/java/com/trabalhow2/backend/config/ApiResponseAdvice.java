@@ -1,5 +1,7 @@
 package com.trabalhow2.backend.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -15,6 +17,8 @@ import com.trabalhow2.backend.controller.response.ApiResponse;
 @RestControllerAdvice(basePackages = "com.trabalhow2.backend.controller")
 public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         return true;
@@ -28,6 +32,11 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             Class<? extends HttpMessageConverter<?>> selectedConverterType,
             ServerHttpRequest request,
             ServerHttpResponse response) {
+
+        int status = 200;
+        if (response instanceof ServletServerHttpResponse servletResponse) {
+            status = servletResponse.getServletResponse().getStatus();
+        }
 
         if (body instanceof ApiResponse<?>) {
             return body;
@@ -50,9 +59,12 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        int status = 200;
-        if (response instanceof ServletServerHttpResponse servletResponse) {
-            status = servletResponse.getServletResponse().getStatus();
+        if (body instanceof String texto) {
+            try {
+                return objectMapper.writeValueAsString(ApiResponse.of(status, defaultMessage(status), texto));
+            } catch (JsonProcessingException exception) {
+                throw new RuntimeException("Erro ao serializar resposta da API.", exception);
+            }
         }
 
         return ApiResponse.of(status, defaultMessage(status), body);

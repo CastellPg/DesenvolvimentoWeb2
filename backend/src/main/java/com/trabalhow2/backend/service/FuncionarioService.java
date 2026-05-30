@@ -19,6 +19,7 @@ import com.trabalhow2.backend.model.Usuario;
 import com.trabalhow2.backend.model.enums.Perfil;
 import com.trabalhow2.backend.repository.FuncionarioRepository;
 import com.trabalhow2.backend.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class FuncionarioService {
@@ -70,13 +71,17 @@ public class FuncionarioService {
     @Transactional
     public void atualizarFuncionario(Long id, AtualizarFuncionarioRequest request) {
         Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(id)
-                .orElseThrow(() -> new RuntimeException("Funcionario nao encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Funcionario nao encontrado."));
 
         Usuario usuario = funcionario.getUsuario();
+        if (usuario == null) {
+            throw new EntityNotFoundException("Usuario vinculado ao funcionario nao encontrado.");
+        }
+
         String emailNormalizado = normalizarEmail(request.email());
 
         if (!usuario.getEmail().equals(emailNormalizado) && usuarioRepository.existsByEmail(emailNormalizado)) {
-            throw new RuntimeException("Este e-mail ja esta sendo usado por outro usuario.");
+            throw new IllegalArgumentException("Este e-mail ja esta sendo usado por outro usuario.");
         }
 
         usuario.setNome(request.nome());
@@ -90,19 +95,19 @@ public class FuncionarioService {
     @Transactional
     public void removerFuncionario(Long idAlvo, Long idLogado) {
         if (idAlvo.equals(idLogado)) {
-            throw new RuntimeException("Voce nao pode remover a si mesmo do sistema.");
+            throw new IllegalArgumentException("Voce nao pode remover a si mesmo do sistema.");
         }
 
         if (funcionarioRepository.countByUsuarioAtivoTrue() <= 1) {
-            throw new RuntimeException("O sistema deve ter pelo menos um funcionario cadastrado.");
+            throw new IllegalArgumentException("O sistema deve ter pelo menos um funcionario cadastrado.");
         }
 
         Funcionario funcionario = funcionarioRepository.findByIdAndUsuarioAtivoTrue(idAlvo)
-                .orElseThrow(() -> new RuntimeException("Funcionario nao encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Funcionario nao encontrado."));
 
         Usuario usuario = funcionario.getUsuario();
         if (usuario == null) {
-            throw new RuntimeException("Usuario vinculado ao funcionario nao encontrado.");
+            throw new EntityNotFoundException("Usuario vinculado ao funcionario nao encontrado.");
         }
 
         usuario.setAtivo(false);

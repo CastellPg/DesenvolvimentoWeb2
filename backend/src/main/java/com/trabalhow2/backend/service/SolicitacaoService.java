@@ -453,9 +453,9 @@ public class SolicitacaoService {
         solicitacao.setStatus(StatusSolicitacao.ARRUMADA);
         Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
 
-        String observacaoHistorico = "Manutencao registrada pelo tecnico."
-                + " Descricao da manutencao: " + request.descricaoManutencao()
-                + " Orientacoes para o cliente: " + request.orientacoesCliente();
+        String observacaoHistorico = "Manutenção registrada pelo técnico."
+                + " Descrição da manutenção: " + request.descricaoManutencao()
+                + " Orientações para o cliente: " + request.orientacoesCliente();
 
         registrarMudancaHistorico(
                 solicitacaoSalva,
