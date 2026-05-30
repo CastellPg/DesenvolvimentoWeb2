@@ -106,9 +106,16 @@
             <div *ngFor="let item of solicitacao.historico" class="timeline-item">
               <div class="d-flex flex-column">
                 <small class="text-muted fw-bold mb-1">{{ item.dataHora | date:'dd/MM/yyyy, HH:mm' }}</small>
-                <div class="bg-white p-3 rounded-3 shadow-sm border">
-                  <span class="badge mb-2" [ngClass]="getBadgeClass(item.estadoNovo)">{{ getStatusLabel(item.estadoNovo) }}</span>                  <p class="mb-1 small fw-medium">{{ item.descricao }}</p>
-                  <small class="text-muted" style="font-size: 0.70rem;">
+                <div class="bg-white p-3 rounded-3 shadow-sm border timeline-card">
+                  <span class="badge" [ngClass]="getBadgeClass(item.estadoNovo)">{{ getStatusLabel(item.estadoNovo) }}</span>
+                  <p class="small fw-medium timeline-descricao">{{ item.descricao }}</p>
+
+                  <div *ngIf="item.estadoNovo === 'REJEITADA' && item.motivoRejeicao" class="mt-2 p-2 bg-danger-subtle rounded-3 border border-danger-subtle">
+                    <small class="text-danger fw-bold text-uppercase d-block" style="font-size: 0.7rem;">Motivo da Rejeição</small>
+                    <small class="text-danger">{{ item.motivoRejeicao }}</small>
+                  </div>
+
+                  <small class="text-muted timeline-responsavel">
                     <i class="bi bi-person me-1"></i> Por: {{ item.funcionario }}
                   </small>
                 </div>

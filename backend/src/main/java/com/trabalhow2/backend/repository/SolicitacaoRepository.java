@@ -26,6 +26,18 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     
     List<Solicitacao> findByFuncionarioIdAndAtivoTrueOrderByDataCriacaoAsc(Long funcionarioId);
 
+    @Query("""
+           SELECT s
+           FROM Solicitacao s
+           WHERE s.ativo = true
+             AND (s.status <> :statusRedirecionada OR s.funcionario.id = :funcionarioId)
+           ORDER BY s.dataCriacao ASC
+           """)
+    List<Solicitacao> listarParaVisualizacaoFuncionario(
+            @Param("funcionarioId") Long funcionarioId,
+            @Param("statusRedirecionada") StatusSolicitacao statusRedirecionada
+    );
+
     @Query("SELECT s FROM Solicitacao s WHERE s.ativo = true " +
            "AND (:status IS NULL OR s.status = :status) " +
            "AND (:categoriaId IS NULL OR s.categoria.id = :categoriaId) " +

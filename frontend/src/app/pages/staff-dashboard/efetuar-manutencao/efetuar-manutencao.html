@@ -133,29 +133,6 @@
             </div>
           </div>
 
-          <div class="mb-4">
-            <label class="form-label fw-medium">Peças Utilizadas</label>
-            <textarea
-              class="form-control rounded-3"
-              rows="2"
-              formControlName="pecasUsadas"
-              placeholder="Informe as peças trocadas ou utilizadas (opcional)..."></textarea>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label fw-medium">Tempo Gasto (minutos)</label>
-            <input
-              type="number"
-              class="form-control rounded-3"
-              formControlName="tempoGasto"
-              placeholder="Ex: 90"
-              min="1" />
-            <div
-              class="text-danger small mt-1"
-              *ngIf="formManutencao.get('tempoGasto')?.touched && formManutencao.get('tempoGasto')?.invalid">
-              Informe um valor positivo em minutos.
-            </div>
-          </div>
 
           <div class="mb-4 bg-light p-3 rounded-3 text-muted" style="font-size: 0.85rem;">
             <p class="mb-1">Informações do Registro</p>

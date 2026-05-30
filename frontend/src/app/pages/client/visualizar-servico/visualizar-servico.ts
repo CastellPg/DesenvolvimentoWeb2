@@ -13,6 +13,7 @@ interface HistoricoView {
   dataHora: string;
   descricao: string;
   funcionario: string;
+  motivoRejeicao: string | null;
 }
 
 interface SolicitacaoView {
@@ -184,7 +185,8 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
         estadoNovo: item.estadoNovo,
         dataHora: item.dataHora,
         descricao: this.aplicarAcentos(this.montarDescricaoHistorico(item)),
-        funcionario: item.nomeResponsavel || 'Sistema'
+        funcionario: item.nomeResponsavel || 'Sistema',
+        motivoRejeicao: this.extrairMotivoRejeicaoHistorico(item, solicitacao.motivoRejeicao)
       }))
     };
   }
@@ -246,6 +248,27 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
     return item.observacoes || this.descricaoHistorico(item);
   }
 
+  private extrairMotivoRejeicaoHistorico(
+    item: HistoricoSolicitacaoResponse,
+    motivoAtualSolicitacao: string | null
+  ): string | null {
+    if (item.estadoNovo !== 'REJEITADA') {
+      return null;
+    }
+
+    const observacoes = item.observacoes?.trim();
+    if (observacoes) {
+      const motivoExtraido = observacoes.match(/motivo:\s*(.+)$/i);
+      if (motivoExtraido?.[1]) {
+        return motivoExtraido[1].trim();
+      }
+
+      return observacoes;
+    }
+
+    return motivoAtualSolicitacao?.trim() || null;
+  }
+
   private aplicarAcentos(texto: string): string {
     return texto
       .replace(/\bORCAMENTO\b/g, 'ORÇAMENTO')
@@ -278,3 +301,4 @@ export class VisualizarServicoComponent implements OnInit, OnDestroy {
     return err?.error?.messages?.join(' | ') || err?.error?.message || 'Não foi possível carregar a solicitação.';
   }
 }
+

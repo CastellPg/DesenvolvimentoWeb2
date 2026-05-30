@@ -36,6 +36,11 @@
             <div *ngIf="req.valor">
               <small class="text-success fw-bold">{{ req.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</small>
             </div>
+
+            <div *ngIf="req.estado === 'REJEITADA' && req.motivoRejeicao" class="mt-2 p-2 bg-danger-subtle rounded-3 border border-danger-subtle">
+              <small class="text-danger fw-bold text-uppercase d-block" style="font-size: 0.7rem;">Motivo da Rejeição</small>
+              <small class="text-danger">{{ req.motivoRejeicao }}</small>
+            </div>
           </div>
 
           <div class="col-12 col-md-4 text-md-center">

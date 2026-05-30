@@ -63,7 +63,10 @@ public class SolicitacaoService {
     private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public SolicitacaoResponse abrirSolicitacao(AbrirSolicitacaoRequest request) {
+    public SolicitacaoResponse abrirSolicitacao(AbrirSolicitacaoRequest request, Long usuarioIdLogado) {
+        validarPerfilCliente(usuarioIdLogado);
+        validarUsuarioLogadoComIdInformado(request.clienteId(), usuarioIdLogado, "cliente");
+
         Cliente cliente = clienteRepository.findById(request.clienteId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Cliente nao encontrado com ID: " + request.clienteId()));
@@ -171,7 +174,8 @@ public class SolicitacaoService {
     public List<SolicitacaoResponse> listarPorFuncionario(Long funcionarioId, Long usuarioIdLogado) {
         validarUsuarioLogadoComIdInformado(funcionarioId, usuarioIdLogado, "funcionário");
 
-        return solicitacaoRepository.findByFuncionarioIdAndAtivoTrueOrderByDataCriacaoAsc(funcionarioId)
+        return solicitacaoRepository
+                .listarParaVisualizacaoFuncionario(funcionarioId, StatusSolicitacao.REDIRECIONADA)
                 .stream()
                 .map(this::paraResponse)
                 .toList();
@@ -449,12 +453,16 @@ public class SolicitacaoService {
         solicitacao.setStatus(StatusSolicitacao.ARRUMADA);
         Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
 
+        String observacaoHistorico = "Manutencao registrada pelo tecnico."
+                + " Descricao da manutencao: " + request.descricaoManutencao()
+                + " Orientacoes para o cliente: " + request.orientacoesCliente();
+
         registrarMudancaHistorico(
                 solicitacaoSalva,
                 estadoAnterior,
                 StatusSolicitacao.ARRUMADA.name(),
                 funcionario.getUsuario(),
-                "Manutenção registrada pelo técnico."
+                observacaoHistorico
         );
 
         return paraResponse(solicitacaoSalva);
@@ -564,6 +572,14 @@ public class SolicitacaoService {
         }
     }
 
+    private void validarPerfilCliente(Long usuarioIdLogado) {
+        Usuario usuario = usuarioRepository.findByIdAndAtivoTrue(usuarioIdLogado)
+                .orElseThrow(() -> new AcessoNegadoException("Usuário não autorizado."));
+
+        if (usuario.getPerfil() != com.trabalhow2.backend.model.enums.Perfil.CLIENTE) {
+            throw new AcessoNegadoException("Apenas clientes podem executar este recurso.");
+        }
+    }
     private void validarAcessoSolicitacao(Solicitacao solicitacao, Long usuarioIdLogado) {
         boolean acessoCliente = solicitacao.getCliente() != null
                 && solicitacao.getCliente().getId() != null
@@ -616,6 +632,8 @@ public class SolicitacaoService {
     }
 
     private SolicitacaoResponse paraResponse(Solicitacao solicitacao) {
+        ManutencaoResumo manutencaoResumo = obterResumoManutencao(solicitacao);
+
         return new SolicitacaoResponse(
                 solicitacao.getId(),
                 solicitacao.getDescricaoEquipamento(),
@@ -628,8 +646,32 @@ public class SolicitacaoService {
                 solicitacao.getDataHoraPagamento(),
                 solicitacao.isPagamentoDivergente(),
                 solicitacao.getMotivoRejeicao(),
-                paraClienteResumo(solicitacao.getCliente())
+                paraClienteResumo(solicitacao.getCliente()),
+                manutencaoResumo.descricaoManutencao(),
+                manutencaoResumo.orientacoesCliente()
         );
+    }
+
+    private ManutencaoResumo obterResumoManutencao(Solicitacao solicitacao) {
+        StatusSolicitacao status = solicitacao.getStatus();
+        if (status != StatusSolicitacao.ARRUMADA
+                && status != StatusSolicitacao.PAGA
+                && status != StatusSolicitacao.FINALIZADA) {
+            return ManutencaoResumo.vazio();
+        }
+
+        return manutencaoRepository.findTopBySolicitacaoIdOrderByDataHoraDesc(solicitacao.getId())
+                .map(manutencao -> new ManutencaoResumo(
+                        manutencao.getDescricaoManutencao(),
+                        manutencao.getOrientacoesCliente()
+                ))
+                .orElseGet(ManutencaoResumo::vazio);
+    }
+
+    private record ManutencaoResumo(String descricaoManutencao, String orientacoesCliente) {
+        private static ManutencaoResumo vazio() {
+            return new ManutencaoResumo(null, null);
+        }
     }
 
     private ClienteResumoResponse paraClienteResumo(Cliente cliente) {
@@ -661,3 +703,4 @@ public class SolicitacaoService {
                 .orElse("");
     }
 }
+

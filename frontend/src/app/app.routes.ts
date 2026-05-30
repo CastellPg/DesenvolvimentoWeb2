@@ -12,26 +12,30 @@ import { ReceitasComponent } from './pages/staff-dashboard/receitas/receitas';
 import { EfetuarManutencaoComponent } from './pages/staff-dashboard/efetuar-manutencao/efetuar-manutencao';
 import { FinalizarSolicitacaoComponent } from './pages/staff-dashboard/finalizar-solicitacao/finalizar-solicitacao';
 import { RedirecionarManutencaoComponent } from './pages/staff-dashboard/redirecionar-manutencao/redirecionar-manutencao';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
 
     {path: 'login', component: LoginComponent},
     {path: 'registro', component: RegistroComponent},
-    {path: 'staff', component: StaffDashboardComponent},
+    {path: 'staff', component: StaffDashboardComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
     {path: 'staff-dashboard', redirectTo: 'staff', pathMatch: 'full'},
-    {path: 'funcionario/pedidos', component: ListaPedidoComponent },
-    {path: 'receitas-categorias', component: ReceitasCategoriaComponent },
-    {path: 'categorias', component: CategoriaEquipamentoComponent},
-    {path: 'receitas', component: ReceitasComponent},
-    {path: 'funcionarios', component: CrudFuncionarioComponent},
-    {path: 'efetuar-orcamento/:id', component: EfetuarOrcamentoComponent },
-    {path: 'efetuar-manutencao/:id', component: EfetuarManutencaoComponent },
-    {path: 'finalizar-solicitacao/:id', component: FinalizarSolicitacaoComponent },
-    {path: 'solicitacoes', component: ListaPedidoComponent },
-    {path: 'redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent },
+    {path: 'funcionario/pedidos', component: ListaPedidoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'receitas-categorias', component: ReceitasCategoriaComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'categorias', component: CategoriaEquipamentoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'receitas', component: ReceitasComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'funcionarios', component: CrudFuncionarioComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'efetuar-orcamento/:id', component: EfetuarOrcamentoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'efetuar-manutencao/:id', component: EfetuarManutencaoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'finalizar-solicitacao/:id', component: FinalizarSolicitacaoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'solicitacoes', component: ListaPedidoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
+    {path: 'redirecionar-manutencao/:id', component: RedirecionarManutencaoComponent, canActivate: [authGuard], data: { perfil: 'FUNCIONARIO' }},
     {
         path: 'client',
         component: ClientComponent,
+        canActivate: [authGuard],
+        canActivateChild: [authGuard],
+        data: { perfil: 'CLIENTE' },
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             {
@@ -61,7 +65,6 @@ export const routes: Routes = [
         ]
     },
 
-    {path: 'funcionarios', component: CrudFuncionarioComponent},
-
     {path: '', redirectTo: 'login', pathMatch: 'full'},
+    {path: '**', redirectTo: 'login'},
 ];
