@@ -15,18 +15,4 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
     Optional<Funcionario> findByIdAndUsuarioAtivoTrue(Long id);
 
     long countByUsuarioAtivoTrue();
-
-    @Query(value = """
-            SELECT f.*
-            FROM funcionarios f
-            JOIN usuarios u ON u.id = f.id
-            LEFT JOIN solicitacoes s
-                ON s.funcionario_responsavel_id = f.id
-                AND s.ativo = true
-            WHERE u.ativo = true
-            GROUP BY f.id
-            ORDER BY COUNT(s.id) ASC, f.id ASC
-            LIMIT 1
-            """, nativeQuery = true)
-    Optional<Funcionario> findFuncionarioComMenosSolicitacoes();
 }
