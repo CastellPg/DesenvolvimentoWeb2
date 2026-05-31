@@ -30,7 +30,10 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
            SELECT s
            FROM Solicitacao s
            WHERE s.ativo = true
-             AND (s.status <> :statusRedirecionada OR s.funcionario.id = :funcionarioId)
+             AND (
+                 s.status <> :statusRedirecionada
+                 OR (s.funcionario IS NOT NULL AND s.funcionario.id = :funcionarioId)
+             )
            ORDER BY s.dataCriacao ASC
            """)
     List<Solicitacao> listarParaVisualizacaoFuncionario(

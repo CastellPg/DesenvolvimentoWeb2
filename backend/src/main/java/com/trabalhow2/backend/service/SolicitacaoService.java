@@ -75,10 +75,6 @@ public class SolicitacaoService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Categoria nao encontrada com ID: " + request.categoriaId()));
 
-        Funcionario funcionarioResponsavel = funcionarioRepository.findFuncionarioComMenosSolicitacoes()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Nenhum funcionario cadastrado para receber solicitacoes."));
-
         Solicitacao solicitacao = new Solicitacao();
         solicitacao.setCliente(cliente);
         solicitacao.setDescricaoEquipamento(request.descricaoEquipamento());
@@ -86,7 +82,7 @@ public class SolicitacaoService {
         solicitacao.setDescricaoDefeito(request.descricaoDefeito());
         solicitacao.setStatus(StatusSolicitacao.ABERTA);
         solicitacao.setDataCriacao(LocalDateTime.now());
-        solicitacao.setFuncionario(funcionarioResponsavel);
+        solicitacao.setFuncionario(null);
 
         Solicitacao solicitacaoSalva = solicitacaoRepository.save(solicitacao);
 
@@ -581,17 +577,35 @@ public class SolicitacaoService {
         }
     }
     private void validarAcessoSolicitacao(Solicitacao solicitacao, Long usuarioIdLogado) {
-        boolean acessoCliente = solicitacao.getCliente() != null
-                && solicitacao.getCliente().getId() != null
-                && solicitacao.getCliente().getId().equals(usuarioIdLogado);
+        Usuario usuario = usuarioRepository.findByIdAndAtivoTrue(usuarioIdLogado)
+                .orElseThrow(() -> new AcessoNegadoException("Usuário não autorizado."));
 
-        boolean acessoFuncionario = solicitacao.getFuncionario() != null
-                && solicitacao.getFuncionario().getId() != null
-                && solicitacao.getFuncionario().getId().equals(usuarioIdLogado);
+        if (usuario.getPerfil() == com.trabalhow2.backend.model.enums.Perfil.CLIENTE) {
+            boolean acessoCliente = solicitacao.getCliente() != null
+                    && solicitacao.getCliente().getId() != null
+                    && solicitacao.getCliente().getId().equals(usuarioIdLogado);
 
-        if (!acessoCliente && !acessoFuncionario) {
-            throw new AcessoNegadoException("Usuário logado não possui acesso à solicitação informada.");
+            if (!acessoCliente) {
+                throw new AcessoNegadoException("Usuário logado não possui acesso à solicitação informada.");
+            }
+            return;
         }
+
+        if (usuario.getPerfil() == com.trabalhow2.backend.model.enums.Perfil.FUNCIONARIO) {
+            if (solicitacao.getStatus() == StatusSolicitacao.REDIRECIONADA) {
+                boolean acessoRedirecionada = solicitacao.getFuncionario() != null
+                        && solicitacao.getFuncionario().getId() != null
+                        && solicitacao.getFuncionario().getId().equals(usuarioIdLogado);
+
+                if (!acessoRedirecionada) {
+                    throw new AcessoNegadoException(
+                            "Solicitações redirecionadas só podem ser acessadas pelo funcionário de destino.");
+                }
+            }
+            return;
+        }
+
+        throw new AcessoNegadoException("Perfil de usuário não autorizado para acessar solicitações.");
     }
 
     private Solicitacao buscarSolicitacaoOrcadaDoCliente(Long solicitacaoId, Long clienteId) {
