@@ -1,0 +1,16 @@
+.app-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-sidebar {
+  flex: 0 0 280px;
+  width: 280px;
+  height: 100vh;
+}
+
+.app-main {
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+}

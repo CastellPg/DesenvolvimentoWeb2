@@ -1,6 +1,6 @@
 :host {
   display: block;
-  height: 100vh;
+  height: 100%;
 }
 
 .sidebar {
@@ -9,7 +9,7 @@
   background-color: #ffffff;
   border-right: 1px solid #e2e8f0;
   color: #000000;
-  position: relative;
+  overflow-y: auto;
 }
 
 .header-section {
