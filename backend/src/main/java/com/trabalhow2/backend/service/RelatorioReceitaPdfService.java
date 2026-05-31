@@ -36,9 +36,11 @@ public class RelatorioReceitaPdfService {
         LocalDate dataInicio,
         LocalDate dataFim
     ) {
+        // Esse metodo monta o PDF do relatorio por periodo.
         return criarPdf("Relatório de Receitas por Período", document -> {
             document.add(new Paragraph("Período: " + descricaoPeriodo(dataInicio, dataFim)));
 
+            // Cria uma tabela com 3 colunas: data, quantidade e valor.
             Table table = new Table(UnitValue.createPercentArray(new float[] { 2, 2, 3 }))
                 .useAllAvailableWidth();
 
@@ -88,6 +90,7 @@ public class RelatorioReceitaPdfService {
     }
 
     public byte[] gerarGeral(ReceitaGeralResponse geral) {
+        // PDF menor, com os mesmos indicadores dos cards da tela.
         return criarPdf("Relatório Geral de Receitas", document -> {
             Table table = new Table(UnitValue.createPercentArray(new float[] { 3, 3 }))
                 .useAllAvailableWidth();
@@ -109,6 +112,7 @@ public class RelatorioReceitaPdfService {
     }
 
     private byte[] criarPdf(String titulo, Consumer<Document> conteudo) {
+        // Cria um arquivo em memória
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(output);
             PdfDocument pdf = new PdfDocument(writer);
@@ -118,9 +122,11 @@ public class RelatorioReceitaPdfService {
                 document.add(new Paragraph("Gerado em: " + LocalDate.now().format(DATA_BR)));
                 document.add(new Paragraph(" "));
 
+                // entra a tabela específica de cada relatorio
                 conteudo.accept(document);
             }
 
+            // devolve o PDF como bytes
             return output.toByteArray();
         } catch (Exception e) {
             throw new IllegalStateException("Erro ao gerar relatório em PDF.", e);

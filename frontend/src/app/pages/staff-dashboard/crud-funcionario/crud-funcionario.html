@@ -142,9 +142,12 @@
             <div class="mb-3">
               <label class="form-label fw-bold small">Data de Nascimento *</label>
               <input
-                type="date"
+                type="text"
                 class="form-control bg-light border-0 py-2 px-3 rounded-3"
-                formControlName="dataNascimento">
+                formControlName="dataNascimento"
+                mask="00/00/0000"
+                [dropSpecialCharacters]="false"
+                placeholder="dd/mm/aaaa">
 
               <div *ngIf="formFuncionario.get('dataNascimento')?.invalid && formFuncionario.get('dataNascimento')?.touched"
                    class="text-danger small mt-1">
@@ -216,9 +219,12 @@
             <div class="mb-3">
               <label class="form-label fw-bold small mb-1">Data de Nascimento *</label>
               <input
-                type="date"
+                type="text"
                 class="form-control bg-light border-0 py-2 px-3 rounded-3"
-                formControlName="dataNascimento">
+                formControlName="dataNascimento"
+                mask="00/00/0000"
+                [dropSpecialCharacters]="false"
+                placeholder="dd/mm/aaaa">
 
               <div *ngIf="formEditarFuncionario.get('dataNascimento')?.invalid && formEditarFuncionario.get('dataNascimento')?.touched"
                    class="text-danger small mt-1">

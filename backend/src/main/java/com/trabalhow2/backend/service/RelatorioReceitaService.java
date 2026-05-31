@@ -31,6 +31,7 @@ public class RelatorioReceitaService {
     public List<ReceitaPorCategoriaResponse> buscarPorCategoria() {
         List<ReceitaPorCategoriaResponse> categorias = repository.buscarPorCategoria();
 
+        // Soma o valor de todas as categorias para descobrir o total geral
         BigDecimal total = categorias.stream()
             .map(ReceitaPorCategoriaResponse::valorTotal)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -39,6 +40,7 @@ public class RelatorioReceitaService {
             return categorias;
         }
 
+        // Formula: valor da categoria * 100 / total
         return categorias.stream()
             .map(categoria -> new ReceitaPorCategoriaResponse(
                 categoria.categoriaId(),
@@ -54,10 +56,10 @@ public class RelatorioReceitaService {
 
     public ReceitaGeralResponse buscarGeral() {
         ReceitaGeralResponse geral = repository.buscarGeral();
-
         BigDecimal ticketMedio = BigDecimal.ZERO;
 
         if (geral.totalSolicitacoes() > 0) {
+            // Ticket medio = receita total / quantidade de solicitacoes.
             ticketMedio = geral.receitaTotal()
                 .divide(BigDecimal.valueOf(geral.totalSolicitacoes()), 2, RoundingMode.HALF_UP);
         }
@@ -71,6 +73,8 @@ public class RelatorioReceitaService {
 
     public byte[] gerarPdfPorPeriodo(LocalDate dataInicio, LocalDate dataFim) {
         List<ReceitaPorPeriodoResponse> receitas = buscarPorPeriodo(dataInicio, dataFim);
+
+        // PDF é um arquivo em bytes.
         return pdfService.gerarPorPeriodo(receitas, dataInicio, dataFim);
     }
 

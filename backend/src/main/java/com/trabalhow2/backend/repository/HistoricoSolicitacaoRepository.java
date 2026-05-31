@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface HistoricoSolicitacaoRepository extends JpaRepository<HistoricoSolicitacao, Long> {
     
-    // Spring Data cria a query SQL para listar ordenado pela data
     List<HistoricoSolicitacao> findBySolicitacaoIdOrderByDataHoraAsc(Long solicitacaoId);
 }

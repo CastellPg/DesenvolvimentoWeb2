@@ -17,7 +17,6 @@ export class NavbarComponent implements OnInit {
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit() {
-    //pega as info q estao salvas no localStorege do login e exibe no navbar
     this.nomeUsuario = localStorage.getItem('nomeUsuario');
     this.perfilUsuario = localStorage.getItem('perfil');
   }

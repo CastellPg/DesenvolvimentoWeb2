@@ -3,9 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
+import { NgxMaskDirective } from 'ngx-mask';
 
 declare var bootstrap: any;
-
 interface FuncionarioApi {
   id: number | string;
   nome: string;
@@ -38,12 +38,12 @@ interface ApiResponse<T> {
   imports: [
     ReactiveFormsModule,
     CommonModule,
+    NgxMaskDirective,
   ],
   templateUrl: './crud-funcionario.html',
   styleUrl: './crud-funcionario.css',
 })
 export class CrudFuncionarioComponent implements OnInit {
-
   private readonly apiUrl = 'http://localhost:8080/funcionarios';
   private readonly cacheKey = 'funcionarios';
 
@@ -68,13 +68,13 @@ export class CrudFuncionarioComponent implements OnInit {
       nome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]],
-      dataNascimento: ['', Validators.required]
+      dataNascimento: ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}\/\d{4}$/)]]
     });
 
     this.formEditarFuncionario = this.fb.group({
       nome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      dataNascimento: ['', Validators.required]
+      dataNascimento: ['', [Validators.required, Validators.pattern(/^\d{2}\/\d{2}\/\d{4}$/)]]
     });
 
     this.carregarFuncionariosDoCache();
@@ -93,6 +93,7 @@ export class CrudFuncionarioComponent implements OnInit {
     const idExcluido = this.idParaExcluir;
     const funcionarioSelecionado = this.funcionarios.find(funcionario => funcionario.id === idExcluido);
 
+    // Bloqueio na tela para não deixar o funcionario se excluir
     if (funcionarioSelecionado?.voce) {
       this.idParaExcluir = null;
       this.mostrarAviso('Você não pode remover a si mesmo do sistema.');
@@ -127,7 +128,6 @@ export class CrudFuncionarioComponent implements OnInit {
 
   listarFuncionarios() {
     this.carregando = true;
-
     this.http.get<ApiResponse<FuncionarioApi[]> | FuncionarioApi[]>(this.apiUrl)
       .pipe(finalize(() => this.carregando = false))
       .subscribe({
@@ -153,7 +153,7 @@ export class CrudFuncionarioComponent implements OnInit {
       nome: this.formFuncionario.value.nome,
       email: this.formFuncionario.value.email,
       senha: this.formFuncionario.value.senha,
-      data_nascimento: this.formFuncionario.value.dataNascimento
+      data_nascimento: this.converterDataParaApi(this.formFuncionario.value.dataNascimento)
     };
 
     this.http.post<ApiResponse<FuncionarioApi> | FuncionarioApi>(this.apiUrl, request).subscribe({
@@ -178,7 +178,7 @@ export class CrudFuncionarioComponent implements OnInit {
     this.formEditarFuncionario.patchValue({
       nome: funcionario.nome,
       email: funcionario.email,
-      dataNascimento: funcionario.dataNascimento
+      dataNascimento: this.formatarDataParaTela(funcionario.dataNascimento)
     });
   }
 
@@ -192,7 +192,7 @@ export class CrudFuncionarioComponent implements OnInit {
     const request = {
       nome: this.formEditarFuncionario.value.nome,
       email: this.formEditarFuncionario.value.email,
-      data_nascimento: this.formEditarFuncionario.value.dataNascimento
+      data_nascimento: this.converterDataParaApi(this.formEditarFuncionario.value.dataNascimento)
     };
 
     this.atualizando = true;
@@ -270,6 +270,24 @@ export class CrudFuncionarioComponent implements OnInit {
 
   private ordenarFuncionarios(funcionarios: Funcionario[]) {
     return [...funcionarios].sort((funcionario1, funcionario2) => funcionario1.id - funcionario2.id);
+  }
+
+  private formatarDataParaTela(data: string): string {
+    if (!data) {
+      return '';
+    }
+
+    const [ano, mes, dia] = data.split('-');
+    if (!ano || !mes || !dia) {
+      return data;
+    }
+
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  private converterDataParaApi(data: string): string {
+    const [dia, mes, ano] = data.split('/');
+    return `${ano}-${mes}-${dia}`;
   }
 
   private extrairDados<T>(resposta: ApiResponse<T> | T): T {

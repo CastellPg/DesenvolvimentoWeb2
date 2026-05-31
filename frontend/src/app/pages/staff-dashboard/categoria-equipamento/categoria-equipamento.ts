@@ -27,8 +27,8 @@ interface ApiResponse<T> {
   styleUrl: './categoria-equipamento.css',
 })
 export class CategoriaEquipamentoComponent implements OnInit {
-
   private readonly apiUrl = 'http://localhost:8080/categorias';
+  // Cache so para a tela nao abrir vazia enquanto o backend responde.
   private readonly cacheKey = 'categoriasEquipamento';
 
   idParaExcluir: number | null = null;
@@ -47,10 +47,12 @@ export class CategoriaEquipamentoComponent implements OnInit {
       nome: ['', Validators.required]
     });
 
+    // Formulario separado para editar, assim nao mistura com o cadastro novo
     this.formEditarCategoria = this.fb.group({
       nome: ['', Validators.required]
     });
 
+    // Mostra o cache primeiro e depois atualiza de verdade buscando no backend
     this.carregarCategoriasDoCache();
     this.listarCategorias();
   }
@@ -64,6 +66,8 @@ export class CategoriaEquipamentoComponent implements OnInit {
       const idExcluido = this.idParaExcluir;
       const categoriasAntesDaExclusao = [...this.categorias];
 
+      // Tira da tela antes da resposta para parecer mais rapido
+      // Se der erro, coloca a lista antiga de volta
       this.categorias = this.categorias.filter(categoria => categoria.id !== idExcluido);
       this.salvarCategoriasNoCache();
       this.idParaExcluir = null;
@@ -83,7 +87,6 @@ export class CategoriaEquipamentoComponent implements OnInit {
 
   listarCategorias() {
     this.carregando = true;
-
     this.http.get<ApiResponse<Categoria[]> | Categoria[]>(this.apiUrl)
       .pipe(
         timeout(10000),
@@ -137,10 +140,10 @@ export class CategoriaEquipamentoComponent implements OnInit {
 
       const idAtualizado = this.idParaEditar;
       const categoriasAntesDaAtualizacao = [...this.categorias];
+      // Mesmo formato do request de atualizar categoria no backend.
       const categoria = {
         nome: this.formEditarCategoria.value.nome
       };
-
       this.categorias = this.ordenarCategorias(
         this.categorias.map(categoriaAtual =>
           categoriaAtual.id === idAtualizado

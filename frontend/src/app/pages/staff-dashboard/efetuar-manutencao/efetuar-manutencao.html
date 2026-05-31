@@ -11,7 +11,6 @@
     <h1 class="h3 fw-bold">Efetuar Manutenção</h1>
   </div>
 
-  <!-- Loading state -->
   <div *ngIf="carregando" class="text-center py-5">
     <div class="spinner-border text-dark" role="status">
       <span class="visually-hidden">Carregando...</span>
@@ -20,7 +19,6 @@
 
   <ng-container *ngIf="!carregando">
 
-    <!-- Alerts -->
     <div *ngIf="mensagemErro" class="alert alert-danger rounded-3" role="alert">
       {{ mensagemErro }}
     </div>

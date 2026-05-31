@@ -1,56 +1,63 @@
-CREATE DATABASE web2_bd;
+CREATE DATABASE IF NOT EXISTS web2_bd
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
 USE web2_bd;
 
-CREATE TABLE categorias (
+CREATE TABLE IF NOT EXISTS usuarios (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL UNIQUE,
-    ativo BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE usuarios (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(190) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     salt VARCHAR(255) NOT NULL,
-    perfil VARCHAR(20) NOT NULL,
-    ativo BOOLEAN NOT NULL DEFAULT TRUE
-);
+    perfil ENUM('CLIENTE','FUNCIONARIO') NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT uq_usuarios_email UNIQUE (email)
+) ENGINE=InnoDB;
 
-CREATE TABLE clientes (
+CREATE TABLE IF NOT EXISTS clientes (
     id BIGINT PRIMARY KEY,
-    cpf VARCHAR(11) NOT NULL UNIQUE,
-    telefone VARCHAR(15),
+    cpf VARCHAR(11) NOT NULL,
+    telefone VARCHAR(20),
     cep VARCHAR(8),
-    logradouro VARCHAR(80),
-    numero VARCHAR(10),
-    complemento VARCHAR(50),
-    bairro VARCHAR(50),
-    cidade VARCHAR(50),
+    logradouro VARCHAR(120),
+    numero VARCHAR(20),
+    complemento VARCHAR(80),
+    bairro VARCHAR(80),
+    cidade VARCHAR(80),
     estado VARCHAR(2),
-    FOREIGN KEY (id) REFERENCES usuarios(id)
-);
+    CONSTRAINT uq_clientes_cpf UNIQUE (cpf),
+    CONSTRAINT fk_clientes_usuario
+        FOREIGN KEY (id) REFERENCES usuarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
 
-CREATE TABLE funcionarios (
+CREATE TABLE IF NOT EXISTS funcionarios (
     id BIGINT PRIMARY KEY,
     data_nascimento DATE,
-    FOREIGN KEY (id) REFERENCES usuarios(id)
-);
+    CONSTRAINT fk_funcionarios_usuario
+        FOREIGN KEY (id) REFERENCES usuarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
 
-CREATE TABLE solicitacoes (
+
+CREATE TABLE IF NOT EXISTS categorias (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    cliente_id BIGINT NOT NULL,
-    categoria_id BIGINT NOT NULL,
-    funcionario_responsavel_id BIGINT NOT NULL,
-    descricao_equipamento VARCHAR(50) NOT NULL,
-    descricao_defeito TEXT NOT NULL,
-    descricao_manutencao TEXT,
-    orientacoes_cliente TEXT,
-    data_hora_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    valor_orcamento DECIMAL(10,2),
-    data_hora_orcamento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    motivo_rejeicao TEXT,
-    data_hora_pagamento DATETIME,
+    nome VARCHAR(50) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT uq_categorias_nome UNIQUE (nome)
+) ENGINE=InnoDB;
+
+
+CREATE TABLE IF NOT EXISTS solicitacoes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id BIGINT,
+    categoria_id BIGINT,
+    funcionario_responsavel_id BIGINT NULL,
+    descricao_equipamento VARCHAR(50),
+    descricao_defeito TEXT,
     estado ENUM(
         'ABERTA',
         'ORCADA',
@@ -60,43 +67,136 @@ CREATE TABLE solicitacoes (
         'ARRUMADA',
         'PAGA',
         'FINALIZADA'
-    ) NOT NULL DEFAULT 'ABERTA',
+    ),
+    data_hora_criacao DATETIME(6),
+    valor_orcamento DECIMAL(10,2),
+    valor_pago DECIMAL(10,2),
+    data_hora_pagamento DATETIME(6),
+    pagamento_divergente BOOLEAN NOT NULL DEFAULT FALSE,
+    motivo_rejeicao TEXT,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
 
-    FOREIGN KEY (cliente_id) REFERENCES clientes(id),
-    FOREIGN KEY (categoria_id) REFERENCES categorias(id),
-    FOREIGN KEY (funcionario_responsavel_id) REFERENCES funcionarios(id)
-);
+    CONSTRAINT fk_solicitacoes_cliente
+        FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
 
-CREATE TABLE historico_solicitacoes (
+    CONSTRAINT fk_solicitacoes_categoria
+        FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_solicitacoes_funcionario
+        FOREIGN KEY (funcionario_responsavel_id) REFERENCES funcionarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_solicitacao_estado ON solicitacoes (estado);
+CREATE INDEX idx_solicitacao_data ON solicitacoes (data_hora_criacao);
+CREATE INDEX idx_solicitacao_categoria ON solicitacoes (categoria_id);
+CREATE INDEX idx_solicitacao_funcionario ON solicitacoes (funcionario_responsavel_id);
+
+-- Índices úteis para filtros frequentes
+CREATE INDEX idx_solicitacao_ativo_estado_data ON solicitacoes (ativo, estado, data_hora_criacao);
+CREATE INDEX idx_solicitacao_cliente_ativo_data ON solicitacoes (cliente_id, ativo, data_hora_criacao);
+
+CREATE TABLE IF NOT EXISTS orcamentos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     solicitacao_id BIGINT NOT NULL,
+    funcionario_id BIGINT NOT NULL,
+    data_hora DATETIME(6) NOT NULL,
+    versao INT NOT NULL,
+    valor_total DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT fk_orcamentos_solicitacao
+        FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_orcamentos_funcionario
+        FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_orcamentos_solicitacao_versao ON orcamentos (solicitacao_id, versao);
+CREATE INDEX idx_orcamentos_data_hora ON orcamentos (data_hora);
+
+
+CREATE TABLE IF NOT EXISTS itens_orcamento (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    orcamento_id BIGINT NOT NULL,
+    tipo ENUM('PECA','MAO_OBRA','SERVICO') NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    quantidade INT NOT NULL,
+    valor_unitario DECIMAL(10,2) NOT NULL,
+    valor_total DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT fk_itens_orcamento_orcamento
+        FOREIGN KEY (orcamento_id) REFERENCES orcamentos(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_itens_orcamento_orcamento_id ON itens_orcamento (orcamento_id);
+
+CREATE TABLE IF NOT EXISTS manutencoes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    solicitacao_id BIGINT,
+    funcionario_id BIGINT,
+    data_hora DATETIME(6) NOT NULL,
+    descricao_manutencao TEXT NOT NULL,
+    orientacoes_cliente TEXT NOT NULL,
+    pecas_usadas TEXT,
+    tempo_gasto INT,
+
+    CONSTRAINT fk_manutencoes_solicitacao
+        FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_manutencoes_funcionario
+        FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_manutencoes_solicitacao_id ON manutencoes (solicitacao_id);
+CREATE INDEX idx_manutencoes_funcionario_id ON manutencoes (funcionario_id);
+
+
+CREATE TABLE IF NOT EXISTS historico_solicitacao (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    solicitacao_id BIGINT NOT NULL,
+    estado_anterior VARCHAR(20) NULL,
+    estado_novo VARCHAR(20) NOT NULL,
+    data_hora DATETIME(6) NOT NULL,
+    usuario_responsavel_id BIGINT NULL,
     funcionario_origem_id BIGINT NULL,
     funcionario_destino_id BIGINT NULL,
-    estado_anterior ENUM(
-        'ABERTA',
-        'ORCADA',
-        'APROVADA',
-        'REJEITADA',
-        'REDIRECIONADA',
-        'ARRUMADA',
-        'PAGA',
-        'FINALIZADA'
-    ),
-    estado_novo ENUM(
-        'ABERTA',
-        'ORCADA',
-        'APROVADA',
-        'REJEITADA',
-        'REDIRECIONADA',
-        'ARRUMADA',
-        'PAGA',
-        'FINALIZADA'
-    ) NOT NULL,
-    data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    descricao_manutencao TEXT,
-    orientacoes_cliente TEXT,
+    observacoes TEXT,
 
-    FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id),
-    FOREIGN KEY (funcionario_origem_id) REFERENCES funcionarios(id),
-    FOREIGN KEY (funcionario_destino_id) REFERENCES funcionarios(id)
-);
+    CONSTRAINT fk_hist_solicitacao
+        FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_hist_usuario_responsavel
+        FOREIGN KEY (usuario_responsavel_id) REFERENCES usuarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_hist_funcionario_origem
+        FOREIGN KEY (funcionario_origem_id) REFERENCES funcionarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_hist_funcionario_destino
+        FOREIGN KEY (funcionario_destino_id) REFERENCES funcionarios(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE INDEX idx_hist_solicitacao_data ON historico_solicitacao (solicitacao_id, data_hora);
+CREATE INDEX idx_hist_estado_novo ON historico_solicitacao (estado_novo);

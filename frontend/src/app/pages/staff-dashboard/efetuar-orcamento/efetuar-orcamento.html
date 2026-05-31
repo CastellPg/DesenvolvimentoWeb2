@@ -11,17 +11,14 @@
     <h1 class="h3 fw-bold">Efetuar Orçamento</h1>
   </div>
 
-  <!-- Loading -->
   <div *ngIf="carregando && !solicitacao" class="text-center py-5">
     <div class="spinner-border text-dark" role="status"></div>
   </div>
 
-  <!-- Erro ao carregar -->
   <div *ngIf="erro && !solicitacao" class="alert alert-danger rounded-3">{{ erro }}</div>
 
   <ng-container *ngIf="solicitacao && !carregando">
 
-    <!-- Dados do Cliente -->
     <div class="card border-light shadow-sm rounded-4 mb-4">
       <div class="card-body p-4">
         <h2 class="h6 fw-bold mb-4">Dados do Cliente</h2>
@@ -57,7 +54,6 @@
       </div>
     </div>
 
-    <!-- Dados da Solicitação -->
     <div class="card border-light shadow-sm rounded-4 mb-4">
       <div class="card-body p-4">
         <h2 class="h6 fw-bold mb-4">Dados da Solicitação</h2>
@@ -93,12 +89,10 @@
       </div>
     </div>
 
-    <!-- Itens do Orçamento -->
     <div class="card border-light shadow-sm rounded-4 mb-4">
       <div class="card-body p-4">
         <h2 class="h6 fw-bold mb-4">Itens do Orçamento</h2>
 
-        <!-- Formulário adicionar item -->
         <form [formGroup]="formItem" (ngSubmit)="adicionarItem()" class="row g-3 mb-4 align-items-end">
           <div class="col-md-2">
             <label class="text-muted small mb-1">Tipo</label>
@@ -136,7 +130,6 @@
           </div>
         </form>
 
-        <!-- Tabela de itens -->
         <div *ngIf="itens.length > 0">
           <table class="table table-sm table-hover">
             <thead class="table-light">
@@ -179,10 +172,8 @@
           Nenhum item adicionado ainda.
         </p>
 
-        <!-- Erro de envio -->
         <div *ngIf="erro && solicitacao" class="alert alert-danger rounded-3 mt-3">{{ erro }}</div>
 
-        <!-- Botões -->
         <div class="d-flex justify-content-between mt-4">
           <button type="button"
             class="btn btn-dark fw-bold px-5 py-2 rounded-3"
@@ -204,7 +195,6 @@
 
 </div>
 
-<!-- Toast de sucesso -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div id="avisoSucesso" class="toast align-items-center text-white bg-dark border-0 rounded-4 shadow"
     role="alert" aria-live="assertive" aria-atomic="true">

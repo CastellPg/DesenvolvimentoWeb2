@@ -14,7 +14,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("API de Manutenção de Equipamentos")
-                        .description("Documentação oficial da API REST do sistema de Controle de Manutenção de Equipamentos (TCC/TADS).")
+                        .description("Documentação oficial da API REST do sistema de Controle de Manutenção de Equipamentos (TADS).")
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("Equipe de Desenvolvimento Web II")
